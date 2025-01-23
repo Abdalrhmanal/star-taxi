@@ -196,7 +196,6 @@ const StructureTable: React.FC<StructureTableProps> = ({
         </TableBody>
       </Table>
 
-      {/* الباجينيشن */}
       <TablePagination
         sx={{ backgroundColor: "#717680" }}
         rowsPerPageOptions={pageSizeOptions}
