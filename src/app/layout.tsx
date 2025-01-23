@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import Navbar from "@/components/layout/navbar";
+import { Grid } from "@mui/material"; // Corrected import
+import Sidebar from "@/components/side-bar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,10 +26,35 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const dataSourceName = "api/companies";
+  const columns = [
+    /* { headerName: "ID", field: "id", sortable: true }, */
+    { headerName: "Name", field: "company_name", sortable: false },
+    { headerName: "description", field: "description", sortable: true },
+    { headerName: "company_email", field: "company_email", sortable: true },
+    { headerName: "company_address", field: "company_address", sortable: true },
+  ];
+
+  const handleActionClick = (row: any) => {
+    console.log("Row clicked:", row);
+  };
   return (
     <html lang="en">
+
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <AuthProvider>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Navbar />
+            </Grid>
+            <Grid item xs={9}>
+              {children}
+            </Grid>
+            <Grid item xs={3} >
+              <Sidebar />
+            </Grid>
+          </Grid>
+        </AuthProvider>
       </body>
     </html>
   );
