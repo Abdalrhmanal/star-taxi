@@ -14,6 +14,7 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import { renderCell } from "../using-cellRenderer";
 
 interface Column {
   field: string;
@@ -176,7 +177,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
                     key={column.field}
                     sx={{ textAlign: "right" }}
                   >
-                    {row[column.field] ?? "-"}
+                    {renderCell(column.field, row[column.field], row)}
                   </TableCell>
                 ))}
                 <TableCell align="center">

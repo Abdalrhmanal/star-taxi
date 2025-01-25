@@ -6,12 +6,13 @@ function Drivers() {
     const dataSourceName = "api/drivers";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
-        { headerName: "Name", field: "company_name", sortable: false },
-        { headerName: "description", field: "description", sortable: true },
-        { headerName: "company_email", field: "company_email", sortable: true },
-        { headerName: "company_address", field: "company_address", sortable: true },
-    ];
+        { headerName: "الاسم", field: "name", sortable: false },
+        { headerName: "الايميل", field: "email", sortable: true },
+        { headerName: "الجنس", field: "gender", sortable: true },
+        { headerName: "رقم الجوال", field: "phone_number", sortable: true },
+        { headerName: " حالة السائق", field: "driver_state", sortable: true },
 
+    ];
     const handleActionClick = (row: any) => {
         console.log("Row clicked:", row);
     };

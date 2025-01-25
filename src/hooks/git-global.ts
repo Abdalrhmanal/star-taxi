@@ -16,7 +16,7 @@ type UseGlobalDataResult<T> = {
   refetch: () => void;
 };
 
-const BASE_URL = "https://schoolskyline.shop";
+const BASE_URL = "https://tawsella.online";
 
 const useGlobalData = function <T>({
   dataSourceName,
