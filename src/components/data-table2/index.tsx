@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import StructureTable from "./structure-table";
 import LoadingTable from "./loding";
-import useGlobalData from "@/hooks/git-global";
+import useGlobalData from "@/hooks/get-global";
 
 interface GridTableProps {
   dataSourceName: string;

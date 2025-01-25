@@ -13,9 +13,12 @@ import {
   TableSortLabel,
   Typography,
   TextField,
+  Grid,
+  Button,
 } from "@mui/material";
 import { renderCell } from "../using-cellRenderer";
-
+import AddIcon from '@mui/icons-material/Add';
+import ActionsCell from "../actions-cell";
 interface Column {
   field: string;
   headerName: string;
@@ -76,13 +79,13 @@ const StructureTable: React.FC<StructureTableProps> = ({
 
   const filteredRows = searchTerm
     ? rows.filter((row) =>
-        columns.some((column) =>
-          row[column.field]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        )
+      columns.some((column) =>
+        row[column.field]
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       )
+    )
     : rows;
 
   const sortedRows = filteredRows.sort((a, b) => {
@@ -100,16 +103,35 @@ const StructureTable: React.FC<StructureTableProps> = ({
 
   return (
     <Box p={1} sx={{ direction: "rtl" }}>
-      {/* مربع البحث */}
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="بحث..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ marginBottom: 2 }}
-        inputProps={{ style: { textAlign: "right" } }}
-      />
+
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={10}>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            placeholder="بحث..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{
+              input: { textAlign: "right" },
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={2} textAlign="center">
+          <Button
+            variant="contained"
+            endIcon={<AddIcon />}
+            fullWidth
+            onClick={() => console.log("تم النقر على زر إضافة سائق")}
+          >
+            اضافة سائق
+          </Button>
+        </Grid>
+      </Grid>
+
+
       <Table>
         {/* رأس الجدول */}
         <TableHead sx={{ borderBottom: "2px solid" }}>
@@ -164,8 +186,8 @@ const StructureTable: React.FC<StructureTableProps> = ({
         {/* جسم الجدول */}
         <TableBody sx={{ backgroundColor: "#fff", borderTop: 1 }}>
           {paginatedRows.length > 0 ? (
-            paginatedRows.map((row) => (
-              <TableRow key={row.id}>
+            paginatedRows.map((row, index) => (
+              <TableRow key={row.id || index}>
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedRows.includes(row.id)}
@@ -181,9 +203,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
                   </TableCell>
                 ))}
                 <TableCell align="center">
-                  <IconButton onClick={() => onActionClick?.(row)}>
-                    <Typography variant="body1">عرض</Typography>
-                  </IconButton>
+                  <ActionsCell row={row} />
                 </TableCell>
               </TableRow>
             ))
