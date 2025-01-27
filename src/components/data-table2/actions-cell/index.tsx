@@ -9,18 +9,22 @@ import {
     DialogTitle,
     Button,
     Drawer,
-    TextField,
+    Alert,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useRouter } from 'next/navigation';
+import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
+import useDeleteData from "@/hooks/delete-global";
 
-const ActionsCell: React.FC<{ row: any }> = ({ row }) => {
+const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { isLoading, isError, success, deleteData } = useDeleteData({
+        dataSourceName: `api/drivers/${row.driver_id}`,
+    });
     const router = useRouter();
-    console.log(row);
 
     // وظيفة عرض الصفحة
     const handleView = () => {
@@ -38,8 +42,12 @@ const ActionsCell: React.FC<{ row: any }> = ({ row }) => {
     };
 
     // تأكيد الحذف
-    const confirmDelete = () => {
-        console.log(`تم حذف الريكورد: ${row.driver_id}`);
+    const confirmDelete = async () => {
+        const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
+        if (confirm) {
+            await deleteData(row.driver_id);
+            onDataUpdated(); // استدعاء دالة المكون الأب بعد نجاح الحذف
+        }
         setIsDialogOpen(false);
     };
 
@@ -68,8 +76,8 @@ const ActionsCell: React.FC<{ row: any }> = ({ row }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setIsDialogOpen(false)}>إلغاء</Button>
-                    <Button onClick={confirmDelete} color="error">
-                        حذف
+                    <Button onClick={confirmDelete} color="error" disabled={isLoading}>
+                        {isLoading ? "جاري الحذف..." : "حذف"}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -80,38 +88,27 @@ const ActionsCell: React.FC<{ row: any }> = ({ row }) => {
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
             >
-                <Box sx={{ width: 300, p: 2 }}>
-                    <Typography variant="h6" mb={2}>
-                        تعديل الريكورد
-                    </Typography>
-                    {/* الحقول المسؤولة عن التعديل */}
-                    <TextField
-                        fullWidth
-                        label="الاسم"
-                        defaultValue={row.name}
-                        variant="outlined"
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        fullWidth
-                        label="العمر"
-                        defaultValue={row.age}
-                        variant="outlined"
-                        sx={{ mb: 2 }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        onClick={() => {
-                            console.log("تم تعديل الريكورد:", row.driver_id);
-                            setIsDrawerOpen(false);
-                        }}
-                    >
-                        حفظ
-                    </Button>
+                <Box sx={{ width: 600, p: 2 }}>
+                    <EditDriver data={row} />
                 </Box>
             </Drawer>
+
+            {/* عرض رسالة الخطأ أو النجاح */}
+            {(isError || success) && (
+                <Alert
+                    severity={isError ? "error" : "success"}
+                    sx={{
+                        position: "fixed", // لوضعها فوق الصفحة
+                        top: 16, // المسافة من أعلى الصفحة
+                        left: "50%", // توسيط العنصر
+                        transform: "translateX(-50%)", // توسيط العنصر بشكل دقيق
+                        width: "auto", // ضبط العرض
+                        zIndex: 9999, // التأكد من أن الرسالة تظهر فوق العناصر الأخرى
+                    }}
+                >
+                    {isError ? `خطأ: ${isError}` : "تم الحذف بنجاح!"}
+                </Alert>
+            )}
         </Box>
     );
 };

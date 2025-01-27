@@ -6,6 +6,8 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import SettingsIcon from '@mui/icons-material/Settings';
+import CampaignIcon from '@mui/icons-material/Campaign'; 
+import AssessmentIcon from '@mui/icons-material/Assessment'; 
 export interface MenuItem {
   text: string;
   href: string;
@@ -24,13 +26,15 @@ export const menuItems: MenuItem[] = [
     isActive: false,
     isExpanded: false,
     children: [
-      { text: "الطلبات الحالية", href: "/requestlive", icon: <BusinessIcon />, isActive: false },
-      { text: "الطلبات المنتهية", href: "/requestdone", icon: <BusinessIcon />, isActive: false },
+      { text: "الطلبات الحالية", href: "/requests", icon: <BusinessIcon />, isActive: false },
+      { text: "الطلبات المنتهية", href: "/requests", icon: <BusinessIcon />, isActive: false },
     ],
   },
   { text: "السائقين", href: "/drivers", icon: <PeopleAltIcon />, isActive: false },
   { text: "السيارات", href: "/cars", icon: <DirectionsCarIcon />, isActive: false },
-  { text: "الرحلات", href: "/treps", icon: <FlightTakeoffIcon />, isActive: false },
-  { text: "الحسابات", href: "/calculations", icon: <CalculateIcon />, isActive: false },
+  { text: "الرحلات", href: "/trips", icon: <FlightTakeoffIcon />, isActive: false },
+  { text: "الحسابات", href: "/accounts", icon: <CalculateIcon />, isActive: false },
+  { text: "الاعلانات", href: "/advertisements", icon: <CampaignIcon />, isActive: false },
+  { text: "التقارير", href: "/reports", icon: <AssessmentIcon />, isActive: false },
   { text: "الاعدادات", href: "/settings", icon: <SettingsIcon />, isActive: false },
 ];

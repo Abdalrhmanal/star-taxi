@@ -40,9 +40,9 @@ const useCreateData = function <T>({
             };
 
             const url = `${BASE_URL}/${dataSourceName}`;
-            await axios.post(url, data, { headers }); // استخدام `POST` للإضافة
+            await axios.post(url, data, { headers }); 
 
-            setSuccess(true); // الإضافة ناجحة
+            setSuccess(true);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setIsError(error.message);

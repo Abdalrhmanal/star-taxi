@@ -39,7 +39,7 @@ const useDeleteData = function ({
                 Authorization: `Bearer ${token}`,
             };
 
-            const url = `${BASE_URL}/${dataSourceName}/${id}`;
+            const url = `${BASE_URL}/${dataSourceName}`;
             await axios.delete(url, { headers }); // استخدام `DELETE` للحذف
 
             setSuccess(true); // الحذف ناجح

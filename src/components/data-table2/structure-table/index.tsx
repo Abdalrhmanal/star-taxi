@@ -19,6 +19,8 @@ import {
 import { renderCell } from "../using-cellRenderer";
 import AddIcon from '@mui/icons-material/Add';
 import ActionsCell from "../actions-cell";
+import { useRouter } from "next/navigation";
+
 interface Column {
   field: string;
   headerName: string;
@@ -39,6 +41,7 @@ interface StructureTableProps {
   pageSizeOptions?: number[];
   onPageChange?: (newPage: number, newPageSize: number) => void;
   onActionClick?: (row: RowData) => void;
+  onDataUpdated: () => void;
 }
 
 const StructureTable: React.FC<StructureTableProps> = ({
@@ -50,11 +53,13 @@ const StructureTable: React.FC<StructureTableProps> = ({
   pageSizeOptions = [5, 10, 25],
   onPageChange,
   onActionClick,
+  onDataUpdated
 }) => {
   const [orderBy, setOrderBy] = useState<string | null>(null);
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const router = useRouter();
 
   const handleSort = (field: string) => {
     const isAsc = orderBy === field && orderDirection === "asc";
@@ -79,13 +84,13 @@ const StructureTable: React.FC<StructureTableProps> = ({
 
   const filteredRows = searchTerm
     ? rows.filter((row) =>
-      columns.some((column) =>
-        row[column.field]
-          ?.toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+        columns.some((column) =>
+          row[column.field]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
       )
-    )
     : rows;
 
   const sortedRows = filteredRows.sort((a, b) => {
@@ -100,6 +105,15 @@ const StructureTable: React.FC<StructureTableProps> = ({
     pageNumber * pageSize,
     pageNumber * pageSize + pageSize
   );
+
+  // دالة زر الإضافة
+  const handleAddClick = () => {
+    const currentPath = window.location.pathname; // الحصول على المسار الحالي
+    router.push(`${currentPath}/create`); // إضافة /create إلى المسار الحالي
+  };
+  const refreshData = async () => {
+    onDataUpdated();
+  }
 
   return (
     <Box p={1} sx={{ direction: "rtl" }}>
@@ -124,13 +138,12 @@ const StructureTable: React.FC<StructureTableProps> = ({
             variant="contained"
             endIcon={<AddIcon />}
             fullWidth
-            onClick={() => console.log("تم النقر على زر إضافة سائق")}
+            onClick={handleAddClick} // استخدام الدالة المعدلة
           >
-            اضافة سائق
+            اضافة
           </Button>
         </Grid>
       </Grid>
-
 
       <Table>
         {/* رأس الجدول */}
@@ -203,7 +216,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
                   </TableCell>
                 ))}
                 <TableCell align="center">
-                  <ActionsCell row={row} />
+                  <ActionsCell row={row} onDataUpdated={refreshData} />
                 </TableCell>
               </TableRow>
             ))

@@ -28,6 +28,7 @@ const GridTable: React.FC<GridTableProps> = ({
   const {
     data: GlobalData,
     isLoading: GlobalLoading,
+    refetch
   } = useGlobalData<GlobalDataType>({
     dataSourceName,
     enabled: true,
@@ -36,7 +37,9 @@ const GridTable: React.FC<GridTableProps> = ({
 
   if (GlobalLoading) return <LoadingTable columnCount={10} rowCount={8} />;
   if (!GlobalData) return <p>No Data Available</p>;
-
+  const refreshData = async () => {
+    refetch()
+  }
   return (
     <StructureTable
       rows={GlobalData?.data || []}
@@ -49,6 +52,7 @@ const GridTable: React.FC<GridTableProps> = ({
         setPageSize(newPageSize);
       }}
       onActionClick={onActionClick}
+      onDataUpdated={refreshData}
     />
   );
 };

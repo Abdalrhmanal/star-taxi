@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Chip } from "@mui/material";
+import { Typography, Chip, Grid, Avatar } from "@mui/material";
 
 export const renderCell = (field: string, value: any, row: any): React.ReactNode => {
   switch (field) {
@@ -12,10 +12,30 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       );
 
     case "age":
-      return <Typography color="primary" sx={{color:"red"}}>{row.age} سنة</Typography>;
+      return <Typography color="primary" sx={{ color: "red" }}>{row.age} سنة</Typography>;
 
     case "name":
-      return <Typography fontWeight="bold" sx={{color:"red"}}>{row.name}</Typography>;
+      return <>
+        <Grid container spacing={1}>
+          <Grid item xs={4}>
+            <Avatar
+              alt="User Avatar"
+              src={`https://tawsella.online/api/${row.avatar}`} 
+              sx={{ width: 40, height: 40 }} 
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <Grid item xs={12} >
+              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.name}</Typography>
+            </Grid>
+            <Grid item xs={12} >
+              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender}</Typography>
+            </Grid>
+          </Grid>
+
+        </Grid>
+
+      </>;
 
     case "actions":
       return (
