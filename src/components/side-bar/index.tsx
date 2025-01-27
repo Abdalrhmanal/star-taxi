@@ -8,7 +8,6 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-  Switch,
   Button,
 } from "@mui/material";
 import {
@@ -17,13 +16,21 @@ import {
   ExpandMore,
   LogoutOutlined,
 } from "@mui/icons-material";
-import { MenuItem, menuItems } from "./using-sidebar/index";
+//import { MenuItem, menuItems } from "./using-sidebar/index";
 import useLogout from "@/hooks/logout";
+import { useRouter } from "next/navigation";
+import { MenuItem, menuItems } from "@/components/side-bar/using-sidebar";
 
 const Sidebar: FC = () => {
   const [items, setItems] = useState(menuItems);
+  const router = useRouter();
 
-  const handleItemClick = (clickedItemText: string) => {
+  const handleItemClick = (clickedItemText: string, href?: string) => {
+    if (href) {
+      router.push(href); // Navigate to the link
+      return;
+    }
+
     const updatedItems = items.map((item) => {
       if (item.text === clickedItemText) {
         return {
@@ -36,7 +43,12 @@ const Sidebar: FC = () => {
     setItems(updatedItems);
   };
 
-  const handleSubItemClick = (parentText: string, subItemText: string) => {
+  const handleSubItemClick = (parentText: string, subItemText: string, href?: string) => {
+    if (href) {
+      router.push(href); // Navigate to the link
+      return;
+    }
+
     const updatedItems = items.map((item) => {
       if (item.text === parentText && item.children) {
         const updatedChildren = item.children.map((child) => ({
@@ -55,7 +67,7 @@ const Sidebar: FC = () => {
       <Box key={item.text}>
         <ListItem
           component="button"
-          onClick={() => handleItemClick(item.text)}
+          onClick={() => handleItemClick(item.text, item.href)}
           sx={{
             bgcolor: item.isActive ? "#E3F2FD" : "transparent",
             color: item.isActive ? "#1976D2" : "#000",
@@ -82,7 +94,6 @@ const Sidebar: FC = () => {
             }}
           />
           {item.children && (item.isExpanded ? <ExpandLess /> : <ExpandMore />)}
-
         </ListItem>
 
         {item.children && (
@@ -92,7 +103,7 @@ const Sidebar: FC = () => {
                 <ListItem
                   key={child.text}
                   component="button"
-                  onClick={() => handleSubItemClick(item.text, child.text)}
+                  onClick={() => handleSubItemClick(item.text, child.text, child.href)}
                   sx={{
                     bgcolor: child.isActive ? "#E3F2FD" : "transparent",
                     color: child.isActive ? "#1976D2" : "#000",
@@ -118,7 +129,6 @@ const Sidebar: FC = () => {
                       textAlign: "right",
                     }}
                   />
-
                 </ListItem>
               ))}
             </List>
@@ -139,7 +149,7 @@ const Sidebar: FC = () => {
         height: "85vh",
         backgroundColor: "#FDFDFD",
         padding: "16px",
-        direction: "rtl", 
+        direction: "rtl",
         ml: "auto",
         borderRadius: "20px",
         boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.08)",
@@ -177,7 +187,7 @@ const Sidebar: FC = () => {
           onClick={logout}
           disabled={loading}
         >
-          {loading ? "جاري تسجيل الخرووج..." : "تسجيل الخروج"}
+          {loading ? "جاري تسجيل الخروج..." : "تسجيل الخروج"}
         </Button>
         {error && <Box sx={{ color: "error.main", mt: "8px" }}>{error}</Box>}
       </Box>
