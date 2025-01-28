@@ -15,21 +15,22 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       return <Typography color="primary" sx={{ color: "red" }}>{row.age} سنة</Typography>;
 
     case "name":
+    case "driverName":
       return <>
         <Grid container spacing={1}>
           <Grid item xs={4}>
             <Avatar
               alt="User Avatar"
-              src={`https://tawsella.online/api/${row.avatar}`} 
-              sx={{ width: 40, height: 40 }} 
+              src={`https://tawsella.online/api/${row.avatar || row.driverAvatar}`}
+              sx={{ width: 40, height: 40 }}
             />
           </Grid>
           <Grid item xs={8}>
             <Grid item xs={12} >
-              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.name}</Typography>
+              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.name || row.driverName || ''}</Typography>
             </Grid>
             <Grid item xs={12} >
-              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender}</Typography>
+              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender || ''}</Typography>
             </Grid>
           </Grid>
 
