@@ -21,7 +21,7 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
           <Grid item xs={4}>
             <Avatar
               alt="User Avatar"
-              src={`https://tawsella.online/api/${row.avatar || row.driverAvatar}`}
+              src={`https://tawsella.online/${row.avatar || row.driverAvatar}`}
               sx={{ width: 40, height: 40 }}
             />
           </Grid>
@@ -51,7 +51,24 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
           عرض
         </Typography>
       );
+    case "logo":
+      console.log(row.logo);
 
+      return (
+        <Avatar
+          alt="User Avatar"
+          src={`https://tawsella.online/${row.logo}`}
+          sx={{ width: 40, height: 40 }}
+        />
+      );
+    case "image":
+      return (
+        <Avatar
+          alt="User Avatar"
+          src={`https://tawsella.online/${row.image}`}
+          sx={{ width: 40, height: 40 }}
+        />
+      );
     default:
       return value ?? "-";
   }

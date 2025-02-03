@@ -5,14 +5,14 @@ import React from 'react'
 
 function Advertisements() {
 
-    const dataSourceName = "api/drivers";
+    const dataSourceName = "api/advertisements";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
-        { headerName: "الاسم", field: "name", sortable: false },
-        { headerName: "الايميل", field: "email", sortable: true },
-        { headerName: "الجنس", field: "gender", sortable: true },
-        { headerName: "رقم الجوال", field: "phone_number", sortable: true },
-        { headerName: " حالة السائق", field: "driver_state", sortable: true },
+        { headerName: "العنوان", field: "title", sortable: false },
+        { headerName: "الشعار", field: "logo", sortable: true },
+        { headerName: "صورة الاعلان", field: "image", sortable: true },
+        { headerName: "التاريخ", field: "validity_date", sortable: true },
+        { headerName: "الوصف", field: "description", sortable: true },
 
     ];
     const handleActionClick = (row: any) => {
