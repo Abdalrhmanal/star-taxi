@@ -1,5 +1,6 @@
 "use client";
 import GridTable from '@/components/data-table2';
+import HeaderPage from '@/components/head-page';
 import React from 'react'
 
 function Offers() {
@@ -19,6 +20,8 @@ function Offers() {
     };
     return (
         <>
+            <HeaderPage pluralName="العروض" />
+
             <GridTable
                 dataSourceName={dataSourceName}
                 columns={columns}

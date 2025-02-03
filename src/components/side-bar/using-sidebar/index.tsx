@@ -26,8 +26,8 @@ export const menuItems: MenuItem[] = [
     isActive: false,
     isExpanded: false,
     children: [
-      { text: "الطلبات الحالية", href: "/requests", icon: <BusinessIcon />, isActive: false },
-      { text: "الطلبات المنتهية", href: "/requests", icon: <BusinessIcon />, isActive: false },
+      { text: "الطلبات الحالية", href: "/requests/live", icon: <BusinessIcon />, isActive: false },
+      { text: "الطلبات المنتهية", href: "/requests/done", icon: <BusinessIcon />, isActive: false },
     ],
   },
   { text: "السائقين", href: "/drivers", icon: <PeopleAltIcon />, isActive: false },

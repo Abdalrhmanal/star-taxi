@@ -4,14 +4,16 @@ import GridTable from '@/components/data-table2';
 import HeaderPage from '@/components/head-page';
 import React from 'react'
 
-function Accounts() {
-    const dataSourceName = "api/calculations";
+function RequestsLive() {
+
+    const dataSourceName = "api/taxi-movement/current";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
         { headerName: "الاسم", field: "name", sortable: false },
-        { headerName: "لوحة السيارة", field: "plate_number", sortable: true },
-        { headerName: "الحساب اليومي", field: "today_account", sortable: true },
-        { headerName: "جميع الحسابات", field: "all_account", sortable: true },
+        { headerName: "الايميل", field: "email", sortable: true },
+        { headerName: "الجنس", field: "gender", sortable: true },
+        { headerName: "رقم الجوال", field: "phone_number", sortable: true },
+        { headerName: " حالة السائق", field: "driver_state", sortable: true },
 
     ];
     const handleActionClick = (row: any) => {
@@ -19,7 +21,8 @@ function Accounts() {
     };
     return (
         <>
-        <HeaderPage pluralName="الحسابات" />
+            <HeaderPage pluralName="الرحلات الحالية " />
+
             <GridTable
                 dataSourceName={dataSourceName}
                 columns={columns}
@@ -29,5 +32,4 @@ function Accounts() {
     )
 }
 
-export default Accounts;
-
+export default RequestsLive;

@@ -1,5 +1,6 @@
 "use client";
 import GridTable from '@/components/data-table2'
+import HeaderPage from '@/components/head-page';
 import React from 'react'
 
 function Drivers() {
@@ -18,6 +19,7 @@ function Drivers() {
     };
     return (
         <>
+            <HeaderPage pluralName="السائقين" />
             <GridTable
                 dataSourceName={dataSourceName}
                 columns={columns}

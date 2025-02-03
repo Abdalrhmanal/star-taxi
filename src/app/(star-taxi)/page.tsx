@@ -3,6 +3,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
+import HeaderPage from '@/components/head-page';
 
 const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 
@@ -31,15 +32,18 @@ const GoogleMapComponent = () => {
 };
 
 export default function Home() {
-  return (
-    <Grid container spacing={2} sx={{ direction: 'rtl', height: '100vh' }}>
+  return (<>
+    <HeaderPage pluralName="الصفحة الرئيسية" />
+
+    <Grid container spacing={2} sx={{ direction: 'rtl', height: '87vh' }}>
       <Grid item xs={3}>
-        
+
       </Grid>
       <Grid item xs={9}>
         <GoogleMapComponent />
       </Grid>
 
     </Grid>
+  </>
   );
 }

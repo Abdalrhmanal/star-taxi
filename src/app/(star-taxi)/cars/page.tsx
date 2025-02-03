@@ -1,5 +1,6 @@
 "use client";
 import GridTable from '@/components/data-table2';
+import HeaderPage from '@/components/head-page';
 import React from 'react'
 
 function Cars() {
@@ -10,7 +11,7 @@ function Cars() {
         { headerName: "السيارة", field: "car_name", sortable: true },
         { headerName: "المصباح", field: "lamp_number", sortable: true },
         { headerName: "رقم اللوحة", field: "plate_number", sortable: true },
-      //  { headerName: " حالة السائق", field: "driver_state", sortable: true },
+        //  { headerName: " حالة السائق", field: "driver_state", sortable: true },
 
     ];
     const handleActionClick = (row: any) => {
@@ -18,6 +19,7 @@ function Cars() {
     };
     return (
         <>
+            <HeaderPage pluralName="السيارات" />
             <GridTable
                 dataSourceName={dataSourceName}
                 columns={columns}
