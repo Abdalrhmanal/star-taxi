@@ -3,7 +3,7 @@ import GridTable from '@/components/data-table2';
 import React from 'react'
 
 function Trips() {
-    const dataSourceName = "api/drivers";
+    const dataSourceName = "api/our-services";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
         { headerName: "الاسم", field: "name", sortable: false },

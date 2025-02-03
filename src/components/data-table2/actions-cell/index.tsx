@@ -19,16 +19,18 @@ import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
 import useDeleteData from "@/hooks/delete-global";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
+    const currentPath = window.location.pathname;
+    const id = row.driver_id || row.id;
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { isLoading, isError, success, deleteData } = useDeleteData({
-        dataSourceName: `api/drivers/${row.driver_id}`,
+        dataSourceName: `api${currentPath+'/'+id}`,
     });
     const router = useRouter();
-
     // وظيفة عرض الصفحة
     const handleView = () => {
-        router.push(`/drivers/${row.driver_id}`);
+        
+        router.push(`${currentPath+'/'+id}`);
     };
 
     // وظيفة فتح درور التعديل
@@ -45,7 +47,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
     const confirmDelete = async () => {
         const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
         if (confirm) {
-            await deleteData(row.driver_id);
+            await deleteData(id);
             onDataUpdated(); // استدعاء دالة المكون الأب بعد نجاح الحذف
         }
         setIsDialogOpen(false);
@@ -84,11 +86,11 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
 
             {/* درور التعديل */}
             <Drawer
-                anchor="right"
+                anchor="left"
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
             >
-                <Box sx={{ width: 600, p: 2 }}>
+                <Box sx={{ width: 500,padding: 3 }}>
                     <EditDriver data={row} />
                 </Box>
             </Drawer>

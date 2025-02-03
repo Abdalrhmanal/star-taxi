@@ -59,7 +59,7 @@ console.log(data);
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+    <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", }}>
       {/* عرض التنبيه للنجاح أو الخطأ في رأس الصفحة */}
       {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
