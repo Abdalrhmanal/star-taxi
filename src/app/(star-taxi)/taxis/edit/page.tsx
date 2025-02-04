@@ -26,7 +26,7 @@ type Driver = {
 
 const EditCar = ({ data }: { data: Car }) => {
     // جلب قائمة السائقين الذين has_taxi === false
-    const { data: GlobalData, isLoading: GlobalLoading } = useGlobalData<Driver[]>({
+    const { data: GlobalData, isLoading: GlobalLoading } = useGlobalData<Driver | any>({
         dataSourceName: "api/drivers",
         enabled: true,
         setOldDataAsPlaceholder: true,

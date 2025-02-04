@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
 import useDeleteData from "@/hooks/delete-global";
 import EditCar from "@/app/(star-taxi)/taxis/edit/page";
+import EditOffer from "@/app/(star-taxi)/offers/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = window.location.pathname;
@@ -94,7 +95,8 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 <Box sx={{ width: 500, padding: 3 }}>
                     {currentPath === "/drivers" && <EditDriver data={row} />}
                     {currentPath === "/taxis" && <EditCar data={row} />}
-                    {currentPath !== "/drivers" && currentPath !== "/taxis" && <>dd</>}
+                    {currentPath === "/offers" && <EditOffer data={row} />}
+                    {currentPath !== "/drivers" && currentPath !== "/taxis" && <></>}
                 </Box>
             </Drawer>
 
