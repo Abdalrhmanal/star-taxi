@@ -33,7 +33,7 @@ const GoogleMapComponent = () => {
 
 export default function Home() {
   return (<>
-    <HeaderPage pluralName="الصفحة الرئيسية" />
+    {/* <HeaderPage pluralName="الصفحة الرئيسية" /> */}
 
     <Grid container spacing={2} sx={{ direction: 'rtl', height: '87vh' }}>
       <Grid item xs={3}>

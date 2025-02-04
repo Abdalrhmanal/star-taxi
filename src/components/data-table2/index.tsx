@@ -29,11 +29,12 @@ const GridTable: React.FC<GridTableProps> = ({
     data: GlobalData,
     isLoading: GlobalLoading,
     refetch
-  } = useGlobalData<GlobalDataType>({
+  } = useGlobalData<GlobalDataType | any>({
     dataSourceName,
     enabled: true,
     setOldDataAsPlaceholder: true,
   });
+ 
 
   if (GlobalLoading) return <LoadingTable columnCount={10} rowCount={8} />;
   if (!GlobalData) return <p>No Data Available</p>;
@@ -42,7 +43,7 @@ const GridTable: React.FC<GridTableProps> = ({
   }
   return (
     <StructureTable
-      rows={GlobalData?.data || []}
+      rows={GlobalData?.data.movements ? GlobalData?.data.movements :GlobalData?.data  || []}
       columns={columns}
       totalCount={GlobalData.pagination?.totalCount || 0}
       pageNumber={pageNumber}

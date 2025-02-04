@@ -1,12 +1,12 @@
 import React from 'react'
 
-function CreateCar() {
+function EditOffers() {
 
     return (
         <>
-            CreateCar
+            EditOffers
         </>
     )
 }
 
-export default CreateCar
+export default EditOffers

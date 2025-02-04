@@ -17,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useRouter } from 'next/navigation';
 import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
 import useDeleteData from "@/hooks/delete-global";
+import EditCar from "@/app/(star-taxi)/taxis/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = window.location.pathname;
@@ -24,13 +25,13 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { isLoading, isError, success, deleteData } = useDeleteData({
-        dataSourceName: `api${currentPath+'/'+id}`,
+        dataSourceName: `api${currentPath + '/' + id}`,
     });
     const router = useRouter();
     // وظيفة عرض الصفحة
     const handleView = () => {
-        
-        router.push(`${currentPath+'/'+id}`);
+
+        router.push(`${currentPath + '/' + id}`);
     };
 
     // وظيفة فتح درور التعديل
@@ -56,9 +57,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
     return (
         <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
             {/* زر العرض */}
-            <IconButton onClick={handleView}>
+            {/*   <IconButton onClick={handleView}>
                 <VisibilityIcon color="primary" />
-            </IconButton>
+            </IconButton> */}
 
             {/* زر التعديل */}
             <IconButton onClick={handleEdit}>
@@ -90,8 +91,10 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
             >
-                <Box sx={{ width: 500,padding: 3 }}>
-                    <EditDriver data={row} />
+                <Box sx={{ width: 500, padding: 3 }}>
+                    {currentPath === "/drivers" && <EditDriver data={row} />}
+                    {currentPath === "/taxis" && <EditCar data={row} />}
+                    {currentPath !== "/drivers" && currentPath !== "/taxis" && <>dd</>}
                 </Box>
             </Drawer>
 

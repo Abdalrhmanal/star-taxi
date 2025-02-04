@@ -4,14 +4,13 @@ import HeaderPage from '@/components/head-page';
 import React from 'react'
 
 function Trips() {
-    const dataSourceName = "api/our-services";
+    const dataSourceName = "api/movement-types";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
-        { headerName: "الاسم", field: "name", sortable: false },
-        { headerName: "الايميل", field: "email", sortable: true },
-        { headerName: "الجنس", field: "gender", sortable: true },
-        { headerName: "رقم الجوال", field: "phone_number", sortable: true },
-        { headerName: " حالة السائق", field: "driver_state", sortable: true },
+        { headerName: "العنوان", field: "type", sortable: false },
+        { headerName: "الوصف", field: "description", sortable: true },
+        { headerName: "السعر", field: "price", sortable: true },
+       
 
     ];
     const handleActionClick = (row: any) => {
