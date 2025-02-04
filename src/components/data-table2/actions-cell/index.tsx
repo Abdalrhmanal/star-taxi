@@ -19,6 +19,7 @@ import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
 import useDeleteData from "@/hooks/delete-global";
 import EditCar from "@/app/(star-taxi)/taxis/edit/page";
 import EditOffer from "@/app/(star-taxi)/offers/edit/page";
+import EditMovementType from "@/app/(star-taxi)/movement-types/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = window.location.pathname;
@@ -96,6 +97,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                     {currentPath === "/drivers" && <EditDriver data={row} />}
                     {currentPath === "/taxis" && <EditCar data={row} />}
                     {currentPath === "/offers" && <EditOffer data={row} />}
+                    {currentPath === "/movement-types" && <EditMovementType data={row} />}
                     {currentPath !== "/drivers" && currentPath !== "/taxis" && <></>}
                 </Box>
             </Drawer>

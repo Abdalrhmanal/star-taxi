@@ -66,7 +66,8 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
         <Avatar
           alt="User Avatar"
           src={`https://tawsella.online/${row.image}`}
-          sx={{ width: 40, height: 40 }}
+          sx={{ width: 100, height: 100 }}
+          variant="square" 
         />
       );
     default:

@@ -149,7 +149,7 @@ const EditOffer = ({ data }: { data: Offer & { id: string } }) => {
                             <Autocomplete
                                 options={GlobalData?.data?.movementTypes || []}
                                 getOptionLabel={(option) => option.type}
-                                value={selectedMovementType} 
+                                value={selectedMovementType}
                                 onChange={(_, value) => {
                                     setSelectedMovementType(value);
                                     setValue("movement_type_id", value ? value.id : "");
