@@ -60,7 +60,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const router = useRouter();
-
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
   const handleSort = (field: string) => {
     const isAsc = orderBy === field && orderDirection === "asc";
     const direction = isAsc ? "desc" : "asc";
@@ -84,13 +84,13 @@ const StructureTable: React.FC<StructureTableProps> = ({
 
   const filteredRows = searchTerm
     ? rows.filter((row) =>
-        columns.some((column) =>
-          row[column.field]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        )
+      columns.some((column) =>
+        row[column.field]
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       )
+    )
     : rows;
 
   const sortedRows = filteredRows.sort((a, b) => {
@@ -119,30 +119,47 @@ const StructureTable: React.FC<StructureTableProps> = ({
     <Box p={1} sx={{ direction: "rtl" }}>
 
       <Grid container spacing={2} alignItems="center">
-        <Grid item xs={10}>
-          <TextField
-            fullWidth
-            size="small"
-            variant="outlined"
-            placeholder="بحث..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{
-              input: { textAlign: "right" },
-            }}
-          />
-        </Grid>
+        {currentPath === "/accounts" ? <>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
+              placeholder="بحث..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                input: { textAlign: "right" },
+              }}
+            />
+          </Grid>
+        </> : <>
+          <Grid item xs={10}>
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
+              placeholder="بحث..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                input: { textAlign: "right" },
+              }}
+            />
+          </Grid>
 
-        <Grid item xs={2} textAlign="center">
-          <Button
-            variant="contained"
-            endIcon={<AddIcon />}
-            fullWidth
-            onClick={handleAddClick} // استخدام الدالة المعدلة
-          >
-            اضافة
-          </Button>
-        </Grid>
+          <Grid item xs={2} textAlign="center">
+            <Button
+              variant="contained"
+              endIcon={<AddIcon />}
+              fullWidth
+              onClick={handleAddClick} // استخدام الدالة المعدلة
+            >
+              اضافة
+            </Button>
+          </Grid>
+        </>}
+
       </Grid>
 
       <Table>

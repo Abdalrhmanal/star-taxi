@@ -10,6 +10,7 @@ import {
     Button,
     Drawer,
     Alert,
+    DialogContentText,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,20 +21,31 @@ import useDeleteData from "@/hooks/delete-global";
 import EditCar from "@/app/(star-taxi)/taxis/edit/page";
 import EditOffer from "@/app/(star-taxi)/offers/edit/page";
 import EditMovementType from "@/app/(star-taxi)/movement-types/edit/page";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import useCreateData from "@/hooks/post-global";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
-    const currentPath = window.location.pathname;
+    const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
     const id = row.driver_id || row.id;
+    
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
+    const [selectedDriver, setSelectedDriver] = useState<any>(null);
+
     const { isLoading, isError, success, deleteData } = useDeleteData({
-        dataSourceName: `api${currentPath + '/' + id}`,
+        dataSourceName: `api${currentPath}/${id}`,
     });
+
+    const { isLoading: isCreating, isError: createError, success: createSuccess, createData } = useCreateData({
+        dataSourceName: "api/drivers",
+    });
+
     const router = useRouter();
+
     // وظيفة عرض الصفحة
     const handleView = () => {
-
-        router.push(`${currentPath + '/' + id}`);
+        router.push(`${currentPath}/${id}`);
     };
 
     // وظيفة فتح درور التعديل
@@ -51,29 +63,50 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
         const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
         if (confirm) {
             await deleteData(id);
-            onDataUpdated(); // استدعاء دالة المكون الأب بعد نجاح الحذف
+            onDataUpdated();
         }
         setIsDialogOpen(false);
     };
 
+    // فتح نافذة الدفع
+    const handlePaymentClick = () => {
+        setSelectedDriver(row);
+        setOpenPaymentDialog(true);
+    };
+
+    // تأكيد الدفع
+    const confirmPayment = async () => {
+        if (selectedDriver) {
+            await createData(selectedDriver.driver_id);
+            setOpenPaymentDialog(false);
+        }
+    };
+
     return (
         <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-            {/* زر العرض */}
-            {/*   <IconButton onClick={handleView}>
-                <VisibilityIcon color="primary" />
-            </IconButton> */}
+            {currentPath === "/accounts" ? (
+                <>
+                    <IconButton onClick={handlePaymentClick}>
+                        <AccountBalanceWalletIcon color="secondary" />
+                    </IconButton>
+                    <IconButton onClick={handleDelete}>
+                        <DeleteIcon color="error" />
+                    </IconButton>
+                </>
+            ) : (
+                <>
+                    {/* زر التعديل */}
+                    <IconButton onClick={handleEdit}>
+                        <EditIcon color="secondary" />
+                    </IconButton>
+                    {/* زر الحذف */}
+                    <IconButton onClick={handleDelete}>
+                        <DeleteIcon color="error" />
+                    </IconButton>
+                </>
+            )}
 
-            {/* زر التعديل */}
-            <IconButton onClick={handleEdit}>
-                <EditIcon color="secondary" />
-            </IconButton>
-
-            {/* زر الحذف */}
-            <IconButton onClick={handleDelete}>
-                <DeleteIcon color="error" />
-            </IconButton>
-
-            {/* نافذة منبثقة لتأكيد الحذف */}
+            {/* نافذة تأكيد الحذف */}
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
                 <DialogTitle>تأكيد الحذف</DialogTitle>
                 <DialogContent>
@@ -87,35 +120,48 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 </DialogActions>
             </Dialog>
 
+            {/* نافذة تأكيد الدفع */}
+            <Dialog open={openPaymentDialog} onClose={() => setOpenPaymentDialog(false)}>
+                <DialogTitle>تأكيد الدفع</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        هل أنت متأكد أنك تريد إجراء الدفع لـ {selectedDriver?.name}؟
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenPaymentDialog(false)} color="primary">
+                        إلغاء
+                    </Button>
+                    <Button onClick={confirmPayment} color="primary" disabled={isCreating}>
+                        {isCreating ? "جاري الدفع..." : "تأكيد الدفع"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             {/* درور التعديل */}
-            <Drawer
-                anchor="left"
-                open={isDrawerOpen}
-                onClose={() => setIsDrawerOpen(false)}
-            >
+            <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
                     {currentPath === "/drivers" && <EditDriver data={row} />}
                     {currentPath === "/taxis" && <EditCar data={row} />}
                     {currentPath === "/offers" && <EditOffer data={row} />}
                     {currentPath === "/movement-types" && <EditMovementType data={row} />}
-                    {currentPath !== "/drivers" && currentPath !== "/taxis" && <></>}
                 </Box>
             </Drawer>
 
             {/* عرض رسالة الخطأ أو النجاح */}
-            {(isError || success) && (
+            {(isError || success || createError || createSuccess) && (
                 <Alert
-                    severity={isError ? "error" : "success"}
+                    severity={isError || createError ? "error" : "success"}
                     sx={{
-                        position: "fixed", // لوضعها فوق الصفحة
-                        top: 16, // المسافة من أعلى الصفحة
-                        left: "50%", // توسيط العنصر
-                        transform: "translateX(-50%)", // توسيط العنصر بشكل دقيق
-                        width: "auto", // ضبط العرض
-                        zIndex: 9999, // التأكد من أن الرسالة تظهر فوق العناصر الأخرى
+                        position: "fixed",
+                        top: 16,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: "auto",
+                        zIndex: 9999,
                     }}
                 >
-                    {isError ? `خطأ: ${isError}` : "تم الحذف بنجاح!"}
+                    {isError ? `خطأ: ${isError}` : success ? "تم الحذف بنجاح!" : createError ? `خطأ: ${createError}` : "تم الدفع بنجاح!"}
                 </Alert>
             )}
         </Box>
