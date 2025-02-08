@@ -108,13 +108,18 @@ const StructureTable: React.FC<StructureTableProps> = ({
 
   // دالة زر الإضافة
   const handleAddClick = () => {
-    const currentPath = window.location.pathname; // الحصول على المسار الحالي
-    router.push(`${currentPath}/create`); // إضافة /create إلى المسار الحالي
+    const currentPath = window.location.pathname;
+    router.push(`${currentPath}/create`);
   };
   const refreshData = async () => {
     onDataUpdated();
   }
-
+   const handlelocationDriversClick = () => {
+    const currentPath = window.location.pathname;
+    router.push(`${currentPath}/location-drivers`);
+  };
+  
+ 
   return (
     <Box p={1} sx={{ direction: "rtl" }}>
 
@@ -134,30 +139,65 @@ const StructureTable: React.FC<StructureTableProps> = ({
             />
           </Grid>
         </> : <>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              size="small"
-              variant="outlined"
-              placeholder="بحث..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{
-                input: { textAlign: "right" },
-              }}
-            />
-          </Grid>
+          {currentPath === "/drivers" ? (<>
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+                size="small"
+                variant="outlined"
+                placeholder="بحث..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{
+                  input: { textAlign: "right" },
+                }}
+              />
+            </Grid>
 
-          <Grid item xs={2} textAlign="center">
-            <Button
-              variant="contained"
-              endIcon={<AddIcon />}
-              fullWidth
-              onClick={handleAddClick} // استخدام الدالة المعدلة
-            >
-              اضافة
-            </Button>
-          </Grid>
+            <Grid item xs={2} textAlign="center">
+              <Button
+                variant="contained"
+                endIcon={<AddIcon />}
+                fullWidth
+                onClick={handleAddClick} // استخدام الدالة المعدلة
+              >
+                اضافة
+              </Button>
+            </Grid>
+            <Grid item xs={2} textAlign="center">
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handlelocationDriversClick} // استخدام الدالة المعدلة
+              >
+                مواقع السائقين
+              </Button>
+            </Grid>
+          </>) : (<>
+            <Grid item xs={10}>
+              <TextField
+                fullWidth
+                size="small"
+                variant="outlined"
+                placeholder="بحث..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{
+                  input: { textAlign: "right" },
+                }}
+              />
+            </Grid>
+            <Grid item xs={2} textAlign="center">
+              <Button
+                variant="contained"
+                endIcon={<AddIcon />}
+                fullWidth
+                onClick={handleAddClick} // استخدام الدالة المعدلة
+              >
+                اضافة
+              </Button>
+            </Grid>
+          </>)}
         </>}
 
       </Grid>

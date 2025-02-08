@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -19,6 +19,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import getEchoInstance from "@/reverb";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -66,7 +67,18 @@ const Navbar = () => {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  useEffect(() => {
+    const echo = getEchoInstance();
+    if (!echo) return;
 
+    echo.channel("chat").listen("MessageSent", (data: any) => {
+      console.log("📩 New message received:", data);
+    });
+
+    return () => {
+      echo.leaveChannel("chat");
+    };
+  }, []);
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -163,7 +175,7 @@ const Navbar = () => {
       <AppBar position="static">
         <Toolbar>
           {/* أيقونة القائمة */}
-         {/*  <IconButton
+          {/*  <IconButton
             size="large"
             edge="start"
             color="inherit"
