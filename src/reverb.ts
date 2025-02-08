@@ -1,20 +1,27 @@
+"use client";
+
 import Echo from "laravel-echo";
 import Cookies from "js-cookie";
-import Pusher from "pusher-js"; 
+import Pusher from "pusher-js";
 
 declare global {
   interface Window {
     Echo?: Echo<any>;
+    Pusher?: any;
   }
 }
 
 const getEchoInstance = () => {
   if (typeof window === "undefined") return null; 
 
+  if (!window.Pusher) {
+    window.Pusher = Pusher;
+  }
+
   if (!window.Echo) {
     const token = Cookies.get("auth_user");
 
-    window.Echo = new Echo({
+    window.Echo = new Echo<any>({
       broadcaster: "reverb",
       key: "ni31bwqnyb4g9pbkk7sn",
       wsHost: "reverb.tawsella.online",
