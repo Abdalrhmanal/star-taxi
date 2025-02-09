@@ -1,8 +1,8 @@
-import { Avatar, Typography } from '@mui/material';
-import { alpha, Box } from '@mui/system';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { generateRandomColor, getInitials } from '../Tab/helpers';
+import { Avatar, Typography } from "@mui/material";
+import { alpha, Box } from "@mui/system";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { generateRandomColor, getInitials } from "../Tab/helpers";
 
 interface TabsListProps {
   item: any;
@@ -12,75 +12,83 @@ interface TabsListProps {
 
 function TabsList({ item, selectedId, setSelectedId }: TabsListProps) {
   const router = useRouter();
-  const [itemColor, setItemColor] = useState<string>('');
+  const [itemColor, setItemColor] = useState<string>("");
 
   useEffect(() => {
-    const storedColor = localStorage.getItem(`color_${item?.id}`);
+    const storedColor = localStorage.getItem(`color_${item?.request_id}`);
     if (storedColor) {
       setItemColor(storedColor);
     } else {
       const newColor = generateRandomColor();
       setItemColor(newColor);
-      localStorage.setItem(`color_${item?.id}`, newColor);
+      localStorage.setItem(`color_${item?.request_id}`, newColor);
     }
-  }, [item?.id]);
+  }, [item?.request_id]);
 
   const getitemStyle = (routeId: string | undefined) => {
     return routeId === selectedId
       ? {
-        backgroundColor: alpha('#007bff', 0.1),
-        borderLeft: '4px solid #007bff',
-      }
+          backgroundColor: alpha("#007bff", 0.1),
+          borderRight: "4px solid #007bff", // تغيير إلى borderRight لتناسب RTL
+        }
       : {};
   };
 
   const handleClick = () => {
-    setSelectedId(item?.id);
+    setSelectedId(item?.request_id);
     const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set('Id', item?.id);
+    newUrl.searchParams.set("Id", item?.request_id);
     router.push(newUrl.toString());
   };
 
-  const employeeName = item?.employee
-    ? `${item?.customer || ''} ${item?.taxiMovement.gender || ''}`.trim()
-    : 'Unknown Driver';
-
- 
   return (
     <Box
       py={1.2}
       display="flex"
+      flexDirection="row-reverse"
       justifyContent="space-between"
       alignItems="center"
       sx={{
-        cursor: 'pointer',
-        ...getitemStyle(item?.id),
-        p: '7px',
-        width: '100%',
+        cursor: "pointer",
+        ...getitemStyle(item?.request_id),
+        p: "7px",
+        width: "100%",
+        textAlign: "right",
       }}
       onClick={handleClick}
     >
       <Box display="flex" gap={2} alignItems="center">
         {/^#[0-9A-F]{6}$/i.test(itemColor) && (
-          <Avatar sx={{ color: itemColor, backgroundColor: alpha(itemColor, 0.12) }}>
-            {getInitials(typeof employeeName === 'string' ? employeeName : 'Unknown Driver')}
+          <Avatar
+            sx={{
+              color: itemColor,
+              backgroundColor: alpha(itemColor, 0.12),
+            }}
+          >
+            {getInitials(item?.customer || "زبون مجهول")}
           </Avatar>
         )}
+
         <Box display="flex" flexDirection="column">
           <Typography fontWeight="500">
-            {typeof employeeName === 'string' ? employeeName : 'Unknown Driver'}
+            {item?.customer || "زبون مجهول"} - {item?.gender || "غير محدد"}
           </Typography>
-          <Typography fontSize="14px" color="text.secondary">#{item?.id?.slice(-4) || 'Unknown Status'}</Typography>
+          <Typography fontSize="14px" color="text.secondary">
+            {item?.customer_address || "عنوان غير متوفر"} →{" "}
+            {item?.destination_address || "وجهة غير متوفرة"}
+          </Typography>
+          <Typography fontSize="12px" color="text.secondary">
+            {item?.time || "تاريخ غير متوفر"}
+          </Typography>
         </Box>
       </Box>
-      <Box display="flex" flexDirection="column" alignItems="flex-end" ml="auto">
+
+      <Box display="flex" flexDirection="column" alignItems="flex-end">
         <Typography fontWeight="500" color="primary.light">
-          {item?.employee?.driverStatus}
+          {item?.drivers?.length ? "🚖 يوجد سائقين متاحين" : "⛔ لا يوجد سائقين"}
         </Typography>
         <Typography fontWeight="400" textAlign="right">
-          {`${item?.consignments?.filter(
-            (consignment: { status: string }) => consignment.status === 'Completed'
-          ).length ?? 0} / ${item?.consignments?.length ?? 0}`}
+          {item?.index ? `عدد الطلبات: ${item?.index}` : "لا يوجد طلبات"}
         </Typography>
       </Box>
     </Box>

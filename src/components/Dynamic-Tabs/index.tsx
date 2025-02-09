@@ -16,7 +16,7 @@ function TabDynamis({ routesData, higthTab, isLoading }: { routesData: any[], is
 
     const filterItems = (items: any[], searchField: string) => {
         if (!items || !Array.isArray(items)) {
-            console.error("Invalid itemsData", items);
+            console?.error("Invalid itemsData", items);
             return [];
         }
         if (!itemSearchQuery) {
