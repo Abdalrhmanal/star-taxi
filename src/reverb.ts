@@ -25,7 +25,7 @@ const getEchoInstance = () => {
       broadcaster: "reverb", 
       key: "ni31bwqnyb4g9pbkk7sn",
       wsHost: "reverb.tawsella.online",
-      wsPort: 6001,
+      wsPort: 8090,
       wssPort: 443,
       forceTLS: true,
       disableStats: true,
