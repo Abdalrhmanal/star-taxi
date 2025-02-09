@@ -4,6 +4,7 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import HeaderPage from '@/components/head-page';
+import TabDynamis from '@/components/Dynamic-Tabs';
 
 const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 
@@ -32,12 +33,18 @@ const GoogleMapComponent = () => {
 };
 
 export default function Home() {
+  const isLoading = false;
+  const routesData: any[] = [];
   return (<>
     {/* <HeaderPage pluralName="الصفحة الرئيسية" /> */}
 
     <Grid container spacing={2} sx={{ direction: 'rtl', height: '87vh' }}>
       <Grid item xs={3}>
-
+      <TabDynamis
+            routesData={routesData}
+            isLoading={isLoading}
+            higthTab={79}
+          />
       </Grid>
       <Grid item xs={9}>
         <GoogleMapComponent />
