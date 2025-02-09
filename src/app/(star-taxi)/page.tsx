@@ -46,13 +46,16 @@ export default function Home() {
     console.log(`✅ الاشتراك في القناة TaxiMovement.${userId}`);
 
     const echo = getEchoInstance();
+    console.log('echo', echo);
 
     if (echo) {
       const channel = echo.channel(`TaxiMovement.${userId}`);
+      console.log('ddd', channel);
 
       channel
         .listen(".requestingTransportationService", (event: any) => {
           console.log("📌 طلب جديد وصل:", event);
+          console.log("📍", event.start_latitude, event.start_longitude);
 
           setIsLoading(true);
 

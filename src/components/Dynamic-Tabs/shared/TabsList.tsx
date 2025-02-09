@@ -42,7 +42,7 @@ function TabsList({ item, selectedId, setSelectedId }: TabsListProps) {
   };
 
   const employeeName = item?.employee
-    ? `${item?.employee.firstName || ''} ${item?.employee.lastName || ''}`.trim()
+    ? `${item?.customer || ''} ${item?.taxiMovement.gender || ''}`.trim()
     : 'Unknown Driver';
 
  
