@@ -2,18 +2,19 @@
 
 import Echo from "laravel-echo";
 import Cookies from "js-cookie";
-import Pusher from "pusher-js";
+import Pusher from "pusher-js"; // ✅ Laravel Echo يحتاج إلى Pusher حتى مع Reverb
 
 declare global {
   interface Window {
-    Echo?: Echo<any>;
+    Echo?: any;
     Pusher?: any;
   }
 }
 
 const getEchoInstance = () => {
-  if (typeof window === "undefined") return null; 
+  if (typeof window === "undefined") return null;
 
+  // ✅ تأكد من تعريف Pusher حتى لا يحدث الخطأ
   if (!window.Pusher) {
     window.Pusher = Pusher;
   }
@@ -21,14 +22,15 @@ const getEchoInstance = () => {
   if (!window.Echo) {
     const token = Cookies.get("auth_user");
 
-    window.Echo = new Echo<any>({
-      broadcaster: "reverb",
+    window.Echo = new Echo({
+      broadcaster: "reverb", // ✅ استخدم "reverb" كـ broadcaster
       key: "ni31bwqnyb4g9pbkk7sn",
       wsHost: "reverb.tawsella.online",
-      wsPort: 8090,
+      wsPort: 6001, // تأكد من صحة المنفذ حسب إعدادات السيرفر
       wssPort: 443,
       forceTLS: true,
-      enabledTransports: ["ws", "wss"],
+      disableStats: true,
+      enabledTransports: ["ws", "wss"], // جرب ["polling", "websocket"] إذا استمر الفشل
       authEndpoint: "https://tawsella.online/broadcasting/auth",
       auth: {
         headers: {

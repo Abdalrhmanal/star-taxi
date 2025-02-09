@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-import Home from "./(star-taxi)/page";
 import { Grid } from "@mui/material";
 import Navbar from "@/components/layout/navbar";
 import Sidebar from "@/components/side-bar";
