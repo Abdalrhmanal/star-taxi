@@ -32,17 +32,7 @@ export default function RootLayout({
 
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Navbar />
-            </Grid>
-            <Grid item xs={9}>
-              {children}
-            </Grid>
-            <Grid item xs={3} >
-              <Sidebar />
-            </Grid>
-          </Grid>
+          {children}
         </AuthProvider>
       </body>
     </html>
