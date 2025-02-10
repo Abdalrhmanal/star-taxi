@@ -104,9 +104,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                                 <IconButton onClick={handleView}>
                                     <VisibilityIcon color="secondary" />
                                 </IconButton>
-                                <IconButton onClick={handleDelete}>
+                               {/*  <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
-                                </IconButton>
+                                </IconButton> */}
                             </>
                         );
                     case "/requests/done":
