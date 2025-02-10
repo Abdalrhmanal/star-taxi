@@ -88,7 +88,7 @@ function MovmentLive({ data }: any) {
         <Typography>👥 العميل: {data?.customer_name}</Typography>
         <Typography>📞 هاتف العميل: {data?.customer_phone}</Typography>
         <Typography>🚘 السيارة: {data?.car_name} ({data?.car_plate_number})</Typography>
-        <Typography>💰 السعر: {data?.price} دينار</Typography>
+        <Typography>💰 السعر: {data?.price} LTY</Typography>
         <Typography>📆 التاريخ: {new Date(data?.date).toLocaleString()}</Typography>
       </Grid>
 
