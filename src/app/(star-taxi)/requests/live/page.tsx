@@ -9,11 +9,15 @@ function RequestsLive() {
     const dataSourceName = "api/taxi-movement/current";
     const columns = [
         /* { headerName: "ID", field: "id", sortable: true }, */
-        { headerName: "الاسم", field: "name", sortable: false },
-        { headerName: "الايميل", field: "email", sortable: true },
-        { headerName: "الجنس", field: "gender", sortable: true },
-        { headerName: "رقم الجوال", field: "phone_number", sortable: true },
-        { headerName: " حالة السائق", field: "driver_state", sortable: true },
+        { headerName: "السائق", field: "driver_name", sortable: false },
+        { headerName: "جوال السائق", field: "driver_phone", sortable: false },
+        { headerName: "السيارة", field: "car_name", sortable: true },
+        { headerName: "لوحة/مصباح السيارة", field: "car_plate_number", sortable: true },
+        { headerName: "العميل", field: "customer_name", sortable: true },
+        { headerName: "جوال العميل", field: "customer_phone", sortable: true },
+        { headerName: "البداية", field: "start_address", sortable: true },
+        { headerName: "الوجهة", field: "destination_address", sortable: true },
+        { headerName: "التاريخ", field: "date", sortable: true },
 
     ];
     const handleActionClick = (row: any) => {

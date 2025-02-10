@@ -114,12 +114,12 @@ const StructureTable: React.FC<StructureTableProps> = ({
   const refreshData = async () => {
     onDataUpdated();
   }
-   const handlelocationDriversClick = () => {
+  const handlelocationDriversClick = () => {
     const currentPath = window.location.pathname;
     router.push(`${currentPath}/location-drivers`);
   };
-  
- 
+
+
   return (
     <Box p={1} sx={{ direction: "rtl" }}>
 
@@ -201,92 +201,92 @@ const StructureTable: React.FC<StructureTableProps> = ({
         </>}
 
       </Grid>
-
-      <Table>
-        {/* رأس الجدول */}
-        <TableHead sx={{ borderBottom: "2px solid" }}>
-          <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                indeterminate={
-                  selectedRows.length > 0 &&
-                  selectedRows.length < rows.length
-                }
-                checked={rows.length > 0 && selectedRows.length === rows.length}
-                onChange={handleSelectAll}
-              />
-            </TableCell>
-            {columns.map((column) => (
+      <Box sx={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          {/* رأس الجدول */}
+          <TableHead sx={{ borderBottom: "2px solid" }}>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={
+                    selectedRows.length > 0 &&
+                    selectedRows.length < rows.length
+                  }
+                  checked={rows.length > 0 && selectedRows.length === rows.length}
+                  onChange={handleSelectAll}
+                />
+              </TableCell>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.field}
+                  sx={{
+                    fontSize: "16px",
+                    color: "#2196F3",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  {column.sortable ? (
+                    <TableSortLabel
+                      active={orderBy === column.field}
+                      direction={orderDirection}
+                      onClick={() => handleSort(column.field)}
+                      sx={{ color: "#2196F3" }}
+                    >
+                      {column.headerName}
+                    </TableSortLabel>
+                  ) : (
+                    column.headerName
+                  )}
+                </TableCell>
+              ))}
               <TableCell
-                key={column.field}
+                align="center"
                 sx={{
                   fontSize: "16px",
                   color: "#2196F3",
                   fontWeight: "bold",
-                  textAlign: "right",
                 }}
               >
-                {column.sortable ? (
-                  <TableSortLabel
-                    active={orderBy === column.field}
-                    direction={orderDirection}
-                    onClick={() => handleSort(column.field)}
-                    sx={{ color: "#2196F3" }}
-                  >
-                    {column.headerName}
-                  </TableSortLabel>
-                ) : (
-                  column.headerName
-                )}
-              </TableCell>
-            ))}
-            <TableCell
-              align="center"
-              sx={{
-                fontSize: "16px",
-                color: "#2196F3",
-                fontWeight: "bold",
-              }}
-            >
-              العمليات
-            </TableCell>
-          </TableRow>
-        </TableHead>
-
-        {/* جسم الجدول */}
-        <TableBody sx={{ backgroundColor: "#fff", borderTop: 1 }}>
-          {paginatedRows.length > 0 ? (
-            paginatedRows.map((row, index) => (
-              <TableRow key={row.id || index}>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedRows.includes(row.id)}
-                    onChange={() => handleRowSelect(row.id)}
-                  />
-                </TableCell>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.field}
-                    sx={{ textAlign: "right" }}
-                  >
-                    {renderCell(column.field, row[column.field], row)}
-                  </TableCell>
-                ))}
-                <TableCell align="center">
-                  <ActionsCell row={row} onDataUpdated={refreshData} />
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length + 2} align="center">
-                <Typography variant="body1">لا توجد بيانات متاحة</Typography>
+                العمليات
               </TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHead>
 
+          {/* جسم الجدول */}
+          <TableBody sx={{ backgroundColor: "#fff", borderTop: 1 }}>
+            {paginatedRows.length > 0 ? (
+              paginatedRows.map((row, index) => (
+                <TableRow key={row.id || index}>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedRows.includes(row.id)}
+                      onChange={() => handleRowSelect(row.id)}
+                    />
+                  </TableCell>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.field}
+                      sx={{ textAlign: "right" }}
+                    >
+                      {renderCell(column.field, row[column.field], row)}
+                    </TableCell>
+                  ))}
+                  <TableCell align="center">
+                    <ActionsCell row={row} onDataUpdated={refreshData} />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length + 2} align="center">
+                  <Typography variant="body1">لا توجد بيانات متاحة</Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
       <TablePagination
         sx={{ backgroundColor: "#717680" }}
         rowsPerPageOptions={pageSizeOptions}

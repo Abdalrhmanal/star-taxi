@@ -67,8 +67,25 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
           alt="User Avatar"
           src={`https://tawsella.online/${row.image}`}
           sx={{ width: 100, height: 100 }}
-          variant="square" 
+          variant="square"
         />
+      );
+    case "car_plate_number":
+      return (
+        <Typography fontWeight="bold">{row.car_plate_number + '/' + row.car_lamp_number || ''}</Typography>
+      );
+    case "date":
+      const formattedDate = row.date ? new Intl.DateTimeFormat('en-GB', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).format(new Date(row.date)) : '';
+      return (
+        <Typography fontWeight="bold">{formattedDate}</Typography>
       );
     default:
       return value ?? "-";
