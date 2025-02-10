@@ -177,7 +177,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
             </Drawer>
 
             <Drawer anchor="right" open={isViewDrawerOpen} onClose={() => setIsViewDrawerOpen(false)}>
-                <Box sx={{ width: 500, padding: 3 }}>
+                <Box sx={{ width: 800, padding: 3 }}>
                     {currentPath === "/requests/live" && <MovmentLive data={row} />}
                     {currentPath === "/requests/done" && <MovmentDone data={row} />}
                 </Box>
