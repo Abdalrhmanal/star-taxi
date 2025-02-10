@@ -124,7 +124,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
     <Box p={1} sx={{ direction: "rtl" }}>
 
       <Grid container spacing={2} alignItems="center">
-        {currentPath === "/accounts" ? <>
+        {currentPath === "/accounts" || currentPath === "/requests/live" ||currentPath === "/requests/done" ? <>
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -159,7 +159,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
                 variant="contained"
                 endIcon={<AddIcon />}
                 fullWidth
-                onClick={handleAddClick} // استخدام الدالة المعدلة
+                onClick={handleAddClick} 
               >
                 اضافة
               </Button>
@@ -168,7 +168,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
               <Button
                 variant="contained"
                 fullWidth
-                onClick={handlelocationDriversClick} // استخدام الدالة المعدلة
+                onClick={handlelocationDriversClick} 
               >
                 مواقع السائقين
               </Button>

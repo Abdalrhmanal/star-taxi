@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box } from "@mui/material";
-import { GoogleMap, LoadScript, Marker, Polyline } from "@react-google-maps/api";
+import { Grid, Typography } from "@mui/material";
+import { GoogleMap, useLoadScript, Marker, Polyline } from "@react-google-maps/api";
 import getEchoInstance from "@/reverb";
 
 const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
@@ -12,19 +12,20 @@ const mapContainerStyle = {
   height: "100vh",
 };
 
-const defaultCenter = {
-  lat: 34.8021,
-  lng: 38.9968,
-};
-
 function MovmentLive({ data }: any) {
-  const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [pathCoordinates, setPathCoordinates] = useState<{ lat: number; lng: number }[]>([]);
   const [taxiLocation, setTaxiLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-  const driverId = data?.driver_id;
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: googleMapsApiKey,
+  });
 
-  // تحويل المسار المبدئي إلى مصفوفة نقاط
+  const driverId = data?.driver_id;
+  const startLocation = {
+    lat: data?.start_latitude,
+    lng: data?.start_longitude,
+  };
+
   useEffect(() => {
     if (data?.path?.length) {
       const formattedPath = data.path.map((point: { longitude: number; latitude: number }) => ({
@@ -32,16 +33,12 @@ function MovmentLive({ data }: any) {
         lng: point.longitude,
       }));
 
-      setPathCoordinates(formattedPath);
-
-      // تحديث مركز الخريطة إلى نقطة البداية
-      if (formattedPath.length > 0) {
-        setMapCenter(formattedPath[0]);
-      }
+      setPathCoordinates([startLocation, ...formattedPath]);
+    } else {
+      setPathCoordinates([startLocation]);
     }
   }, [data]);
 
-  // الاستماع إلى تحديثات موقع السائق عبر `Reverb`
   useEffect(() => {
     if (!driverId) return;
 
@@ -54,19 +51,14 @@ function MovmentLive({ data }: any) {
       channel.listen(".TaxiLocation", (event: any) => {
         console.log("🚖 موقع التاكسي تم تحديثه:", event);
 
-        if (event.longitude && event.latitude) {
-          const newTaxiLocation = {
-            lat: event.latitude,
-            lng: event.longitude,
+        if (event.lat && event.long) {
+          const newLocation = {
+            lat: event.lat,
+            lng: event.long,
           };
 
-          setTaxiLocation(newTaxiLocation);
-
-          // تحديث المسار بإضافة الموقع الجديد
-          setPathCoordinates((prevPath) => [...prevPath, newTaxiLocation]);
-
-          // تحديث مركز الخريطة لمتابعة التاكسي
-          setMapCenter(newTaxiLocation);
+          setTaxiLocation(newLocation);
+          setPathCoordinates((prevPath) => [...prevPath, newLocation]);
         }
       });
 
@@ -76,9 +68,18 @@ function MovmentLive({ data }: any) {
     }
   }, [driverId]);
 
+  const endLocation = pathCoordinates.length > 1 ? pathCoordinates[pathCoordinates.length - 1] : startLocation;
+
+  if (loadError) {
+    return <Typography variant="h6" color="error">❌ حدث خطأ أثناء تحميل الخريطة</Typography>;
+  }
+
+  if (!isLoaded) {
+    return <Typography variant="h6">⏳ جارٍ تحميل الخريطة...</Typography>;
+  }
+
   return (
     <Grid container spacing={2} sx={{ direction: "rtl", height: "100vh" }}>
-      {/* معلومات الرحلة */}
       <Grid item xs={3} sx={{ padding: 2, background: "#f5f5f5" }}>
         <Typography variant="h6">🚖 تفاصيل الرحلة</Typography>
         <Typography>📍 من: {data?.start_address}</Typography>
@@ -88,37 +89,26 @@ function MovmentLive({ data }: any) {
         <Typography>👥 العميل: {data?.customer_name}</Typography>
         <Typography>📞 هاتف العميل: {data?.customer_phone}</Typography>
         <Typography>🚘 السيارة: {data?.car_name} ({data?.car_plate_number})</Typography>
-        <Typography>💰 السعر: {data?.price} LTY</Typography>
+        <Typography>💰 السعر: {data?.price} دينار</Typography>
         <Typography>📆 التاريخ: {new Date(data?.date).toLocaleString()}</Typography>
       </Grid>
 
-      {/* خريطة جوجل */}
       <Grid item xs={9}>
-        <LoadScript googleMapsApiKey={googleMapsApiKey}>
-          <GoogleMap mapContainerStyle={mapContainerStyle} zoom={15} center={mapCenter}>
-            {/* مسار الحركة */}
-            {pathCoordinates.length > 1 && (
-              <Polyline
-                path={pathCoordinates}
-                options={{
-                  strokeColor: "#FF0000",
-                  strokeOpacity: 0.8,
-                  strokeWeight: 4,
-                }}
-              />
-            )}
+        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={15} center={endLocation}>
+          {pathCoordinates.length > 1 && (
+            <Polyline
+              path={pathCoordinates}
+              options={{
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 4,
+              }}
+            />
+          )}
 
-            {/* نقطة البداية */}
-            {pathCoordinates.length > 0 && (
-              <Marker position={pathCoordinates[0]} label="A" />
-            )}
-
-            {/* أحدث نقطة وصل إليها السائق */}
-            {taxiLocation && (
-              <Marker position={taxiLocation} label="🚖" />
-            )}
-          </GoogleMap>
-        </LoadScript>
+          <Marker position={startLocation} label="A" />
+          {taxiLocation && <Marker position={taxiLocation} label="🚖" />}
+        </GoogleMap>
       </Grid>
     </Grid>
   );
