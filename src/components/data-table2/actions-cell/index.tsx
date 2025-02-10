@@ -21,14 +21,18 @@ import useDeleteData from "@/hooks/delete-global";
 import EditCar from "@/app/(star-taxi)/taxis/edit/page";
 import EditOffer from "@/app/(star-taxi)/offers/edit/page";
 import EditMovementType from "@/app/(star-taxi)/movement-types/edit/page";
+
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import useCreateData from "@/hooks/post-global";
+import MovmentLive from "@/app/(star-taxi)/requests/live/movmentlive/page";
+import MovmentDone from "@/app/(star-taxi)/requests/done/movmentdone/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
-    const id = row.driver_id || row.id;
-    
+    const id = row.driver_id || row.id || row.movement_id;
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false); // للتحكم في درور العرض
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
     const [selectedDriver, setSelectedDriver] = useState<any>(null);
@@ -43,22 +47,18 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
 
     const router = useRouter();
 
-    // وظيفة عرض الصفحة
     const handleView = () => {
-        router.push(`${currentPath}/${id}`);
+        setIsViewDrawerOpen(true); // فتح درور العرض
     };
 
-    // وظيفة فتح درور التعديل
     const handleEdit = () => {
         setIsDrawerOpen(true);
     };
 
-    // وظيفة فتح نافذة التأكيد للحذف
     const handleDelete = () => {
         setIsDialogOpen(true);
     };
 
-    // تأكيد الحذف
     const confirmDelete = async () => {
         const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
         if (confirm) {
@@ -68,13 +68,11 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
         setIsDialogOpen(false);
     };
 
-    // فتح نافذة الدفع
     const handlePaymentClick = () => {
         setSelectedDriver(row);
         setOpenPaymentDialog(true);
     };
 
-    // تأكيد الدفع
     const confirmPayment = async () => {
         if (selectedDriver) {
             await createData(selectedDriver.driver_id);
@@ -84,29 +82,61 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-            {currentPath === "/accounts" ? (
-                <>
-                    <IconButton onClick={handlePaymentClick}>
-                        <AccountBalanceWalletIcon color="secondary" />
-                    </IconButton>
-                    <IconButton onClick={handleDelete}>
-                        <DeleteIcon color="error" />
-                    </IconButton>
-                </>
-            ) : (
-                <>
-                    {/* زر التعديل */}
-                    <IconButton onClick={handleEdit}>
-                        <EditIcon color="secondary" />
-                    </IconButton>
-                    {/* زر الحذف */}
-                    <IconButton onClick={handleDelete}>
-                        <DeleteIcon color="error" />
-                    </IconButton>
-                </>
-            )}
+            {(() => {
+                switch (currentPath) {
+                    case "/accounts":
+                        return (
+                            <>
+                                <IconButton onClick={handlePaymentClick}>
+                                    <AccountBalanceWalletIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
+                    case "/requests/live":
+                        return (
+                            <>
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleView}>
+                                    <VisibilityIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
+                    case "/requests/done":
+                        return (
+                            <>
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleView}>
+                                    <VisibilityIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
+                    default:
+                        return (
+                            <>
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon color="secondary" />
+                                </IconButton>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
+                }
+            })()}
 
-            {/* نافذة تأكيد الحذف */}
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
                 <DialogTitle>تأكيد الحذف</DialogTitle>
                 <DialogContent>
@@ -120,7 +150,6 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 </DialogActions>
             </Dialog>
 
-            {/* نافذة تأكيد الدفع */}
             <Dialog open={openPaymentDialog} onClose={() => setOpenPaymentDialog(false)}>
                 <DialogTitle>تأكيد الدفع</DialogTitle>
                 <DialogContent>
@@ -138,7 +167,6 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 </DialogActions>
             </Dialog>
 
-            {/* درور التعديل */}
             <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
                     {currentPath === "/drivers" && <EditDriver data={row} />}
@@ -148,7 +176,13 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                 </Box>
             </Drawer>
 
-            {/* عرض رسالة الخطأ أو النجاح */}
+            <Drawer anchor="right" open={isViewDrawerOpen} onClose={() => setIsViewDrawerOpen(false)}>
+                <Box sx={{ width: 500, padding: 3 }}>
+                    {currentPath === "/requests/live" && <MovmentLive data={row} />}
+                    {currentPath === "/requests/done" && <MovmentDone data={row} />}
+                </Box>
+            </Drawer>
+
             {(isError || success || createError || createSuccess) && (
                 <Alert
                     severity={isError || createError ? "error" : "success"}
