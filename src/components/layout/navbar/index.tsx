@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useState, MouseEvent, useEffect } from "react";
+import { useRouter } from "next/navigation"; // استيراد useRouter
 import {
   AppBar,
   Box,
@@ -11,14 +11,17 @@ import {
   Badge,
   MenuItem,
   Menu,
+  Button,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import HomeIcon from "@mui/icons-material/Home";
+import BusinessIcon from "@mui/icons-material/Business";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import getEchoInstance from "@/reverb";
 
 const Search = styled("div")(({ theme }) => ({
@@ -45,14 +48,14 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  left: 0, // لعكس الأيقونة للاتجاه العربي
+  left: 0,
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    paddingRight: `calc(1em + ${theme.spacing(4)})`, // تعديل للحقل في RTL
+    paddingRight: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
@@ -61,12 +64,27 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+export interface MenuItemType {
+  text: string;
+  href: string;
+  icon: React.ReactNode;
+  isActive: boolean;
+}
+
+export const menuItems: MenuItemType[] = [
+  { text: "الصفحة الرئيسية", href: "/", icon: <HomeIcon />, isActive: false },
+  { text: "الطلبات", href: "/requests/live", icon: <BusinessIcon />, isActive: false },
+  { text: "السائقين", href: "/drivers", icon: <PeopleAltIcon />, isActive: false },
+];
+
 const Navbar = () => {
+  const router = useRouter(); // استخدام useRouter
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
   useEffect(() => {
     const echo = getEchoInstance();
     if (!echo) return;
@@ -79,147 +97,53 @@ const Navbar = () => {
       echo.leaveChannel("chat");
     };
   }, []);
-  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+
+  const handleNavigation = (href: string) => {
+    router.push(href); // التنقل باستخدام router.push()
   };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>الملف الشخصي</MenuItem>
-      <MenuItem onClick={handleMenuClose}>حسابي</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="عرض 4 رسائل جديدة" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>الرسائل</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="عرض 17 إشعارًا جديدًا"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>الإشعارات</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="حساب المستخدم الحالي"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>الملف الشخصي</p>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <Box sx={{ flexGrow: 1, direction: "rtl" }}>
       <AppBar position="static">
         <Toolbar>
-          {/* أيقونة القائمة */}
-          {/*  <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="فتح القائمة"
-            sx={{ ml: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
-
-          {/* اسم الموقع */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: "none", sm: "block" } }}>
             StarTaxi
           </Typography>
 
-          {/* شريط البحث */}
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="بحث…"
-              inputProps={{ "aria-label": "بحث" }}
-            />
+            <StyledInputBase placeholder="بحث…" inputProps={{ "aria-label": "بحث" }} />
           </Search>
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* عناصر القائمة في العرض الكامل */}
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+            {menuItems.map((item, index) => (
+              <Button
+                key={index}
+                startIcon={item.icon}
+                color={item.isActive ? "primary" : "inherit"}
+                onClick={() => handleNavigation(item.href)}
+                sx={{ color: item.isActive ? "primary" : "inherit", p: 1 }}
+              >
+                <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" }, p: 1 }}>
+                  {item.text}
+                </Typography>
+              </Button>
+            ))}
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="عرض 4 رسائل جديدة" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
-            <IconButton
-              size="large"
-              aria-label="عرض 1 إشعارًا جديدًا"
-              color="inherit"
-            >
+            <IconButton size="large" aria-label="عرض 1 إشعارًا جديدًا" color="inherit">
               <Badge badgeContent={1} color="error">
                 <NotificationsIcon />
               </Badge>
@@ -228,32 +152,19 @@ const Navbar = () => {
               size="large"
               edge="end"
               aria-label="حساب المستخدم الحالي"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
               color="inherit"
             >
               <AccountCircle />
             </IconButton>
           </Box>
 
-          {/* القائمة المخفية على الشاشات الصغيرة */}
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="عرض المزيد"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
+            <IconButton size="large" aria-label="عرض المزيد" color="inherit">
               <MoreIcon />
             </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 };
