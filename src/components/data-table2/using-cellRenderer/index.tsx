@@ -52,12 +52,13 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
         </Typography>
       );
     case "logo":
+    case "icon":
       console.log(row.logo);
 
       return (
         <Avatar
           alt="User Avatar"
-          src={`https://tawsella.online/${row.logo}`}
+          src={`https://tawsella.online/${row.logo || row.icon}`}
           sx={{ width: 40, height: 40 }}
         />
       );

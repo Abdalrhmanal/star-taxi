@@ -138,11 +138,6 @@ const Navbar = () => {
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton size="large" aria-label="عرض 4 رسائل جديدة" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
             <IconButton size="large" aria-label="عرض 1 إشعارًا جديدًا" color="inherit">
               <Badge badgeContent={1} color="error">
                 <NotificationsIcon />

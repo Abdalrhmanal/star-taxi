@@ -49,6 +49,27 @@ const CreateAdvertisements = () => {
     const selectedImage = watch("image");
     const selectedLogo = watch("logo");
 
+    // **دالة التحقق من الملف**
+    const handleFileChange = (file: File, fieldName: "image" | "logo") => {
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (!allowedTypes.includes(file.type)) {
+            setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");
+            setAlertSeverity("error");
+            setOpenAlert(true);
+            return false;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
+            setAlertSeverity("error");
+            setOpenAlert(true);
+            return false;
+        }
+
+        setValue(fieldName, file, { shouldValidate: true });
+        return true;
+    };
+
     // **دالة معالجة الإرسال**
     const handleCreate = async (data: Advertisement) => {
         if (!data.title) {
@@ -81,15 +102,29 @@ const CreateAdvertisements = () => {
         if (data.image) formData.append("image", data.image);
         if (data.logo) formData.append("logo", data.logo);
 
-        await createData(formData);
+        try {
+            const response = await fetch("https://tawsella.online/api/advertisements", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer 17|c8mxBjLNEJwNn6XaACZ2EHWXrl5gujs517Zw8O4Ue3b7f312",
+                },
+            });
 
-        if (success) {
-            setAlertMessage("تمت إضافة الإعلان بنجاح!");
-            setAlertSeverity("success");
-            setOpenAlert(true);
-            router.back();
-        } else if (isError) {
-            setAlertMessage(`خطأ: ${isError}`);
+            const result = await response.json();
+            if (response.ok) {
+                setAlertMessage("تمت إضافة الإعلان بنجاح!");
+                setAlertSeverity("success");
+                setOpenAlert(true);
+                router.back();
+            } else {
+                setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء الإرسال"}`);
+                setAlertSeverity("error");
+                setOpenAlert(true);
+            }
+        } catch (error) {
+            setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
             setAlertSeverity("error");
             setOpenAlert(true);
         }
@@ -114,6 +149,7 @@ const CreateAdvertisements = () => {
                     <Controller
                         name="title"
                         control={control}
+                        rules={{ required: "عنوان الإعلان مطلوب" }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -121,7 +157,7 @@ const CreateAdvertisements = () => {
                                 variant="outlined"
                                 {...field}
                                 error={!!errors.title}
-                                helperText={errors.title ? "عنوان الإعلان مطلوب" : ""}
+                                helperText={errors.title ? errors.title.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}
@@ -133,6 +169,7 @@ const CreateAdvertisements = () => {
                     <Controller
                         name="description"
                         control={control}
+                        rules={{ required: "وصف الإعلان مطلوب" }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -142,7 +179,7 @@ const CreateAdvertisements = () => {
                                 rows={3}
                                 {...field}
                                 error={!!errors.description}
-                                helperText={errors.description ? "وصف الإعلان مطلوب" : ""}
+                                helperText={errors.description ? errors.description.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}
@@ -157,7 +194,7 @@ const CreateAdvertisements = () => {
                         accept="image/*"
                         onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                                setValue("image", e.target.files[0], { shouldValidate: true });
+                                handleFileChange(e.target.files[0], "image");
                             }
                         }}
                     />
@@ -172,7 +209,7 @@ const CreateAdvertisements = () => {
                         accept="image/*"
                         onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                                setValue("logo", e.target.files[0], { shouldValidate: true });
+                                handleFileChange(e.target.files[0], "logo");
                             }
                         }}
                     />
@@ -184,6 +221,7 @@ const CreateAdvertisements = () => {
                     <Controller
                         name="validity_date"
                         control={control}
+                        rules={{ required: "تاريخ الصلاحية مطلوب" }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -193,7 +231,7 @@ const CreateAdvertisements = () => {
                                 InputLabelProps={{ shrink: true }}
                                 {...field}
                                 error={!!errors.validity_date}
-                                helperText={errors.validity_date ? "يجب إدخال تاريخ الصلاحية" : ""}
+                                helperText={errors.validity_date ? errors.validity_date.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}

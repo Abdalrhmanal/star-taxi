@@ -26,6 +26,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import useCreateData from "@/hooks/post-global";
 import MovmentLive from "@/app/(star-taxi)/requests/live/movmentlive/page";
 import MovmentDone from "@/app/(star-taxi)/requests/done/movmentdone/page";
+import EditSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -173,6 +174,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                     {currentPath === "/taxis" && <EditCar data={row} />}
                     {currentPath === "/offers" && <EditOffer data={row} />}
                     {currentPath === "/movement-types" && <EditMovementType data={row} />}
+                    {currentPath === "/social-links" && <EditSocialLinks data={row} />}
                 </Box>
             </Drawer>
 

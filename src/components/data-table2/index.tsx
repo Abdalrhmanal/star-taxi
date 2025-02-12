@@ -7,7 +7,7 @@ import useGlobalData from "@/hooks/get-global";
 interface GridTableProps {
   dataSourceName: string;
   columns: any;
-  onActionClick: (row: any) => void;
+  onActionClick?: (row: any) => void;
 }
 
 const GridTable: React.FC<GridTableProps> = ({
@@ -17,6 +17,7 @@ const GridTable: React.FC<GridTableProps> = ({
 }) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
 
   interface GlobalDataType {
     data: any[];
@@ -34,16 +35,22 @@ const GridTable: React.FC<GridTableProps> = ({
     enabled: true,
     setOldDataAsPlaceholder: true,
   });
- 
+
 
   if (GlobalLoading) return <LoadingTable columnCount={10} rowCount={8} />;
   if (!GlobalData) return <p>No Data Available</p>;
   const refreshData = async () => {
     refetch()
   }
+
   return (
     <StructureTable
-      rows={GlobalData?.data.movements ? GlobalData?.data.movements :GlobalData?.data  || []}
+      rows={
+        currentPath === "/advertisements"
+          ? GlobalData?.data.validAdvertisements
+          : GlobalData?.data.movements ? GlobalData?.data.movements : GlobalData?.data || []
+
+      }
       columns={columns}
       totalCount={GlobalData.pagination?.totalCount || 0}
       pageNumber={pageNumber}
