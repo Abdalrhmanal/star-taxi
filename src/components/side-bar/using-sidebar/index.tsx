@@ -36,7 +36,7 @@ export const menuItems: MenuItem[] = [
   { text: "العروض", href: "/offers", icon: <FlightTakeoffIcon />, isActive: false },
   { text: "الحسابات", href: "/accounts", icon: <CalculateIcon />, isActive: false },
   { text: "الاعلانات", href: "/advertisements", icon: <CampaignIcon />, isActive: false },
-  { text: "التقارير", href: "/reports", icon: <AssessmentIcon />, isActive: false },
+/*   { text: "التقارير", href: "/reports", icon: <AssessmentIcon />, isActive: false }, */
   { text: "روابط صفحات التواصل", href: "/social-links", icon: <AssessmentIcon />, isActive: false },
   // { text: "الاعدادات", href: "/settings", icon: <SettingsIcon />, isActive: false },
 ];

@@ -1,7 +1,6 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
-import { Grid, Button, Typography, Box, Snackbar, Alert } from "@mui/material";
+import { Grid, Button, Typography, Box, Snackbar, Alert, Skeleton } from "@mui/material";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import getEchoInstance from "@/reverb";
@@ -10,14 +9,13 @@ import TabDynamis from "@/components/Dynamic-Tabs";
 import useGlobalData from "@/hooks/get-global";
 import Requests from "@/components/requests";
 
+// إعدادات الخريطة
 const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
-
 const mapContainerStyle = {
   width: "100%",
-  height: "60vh",
+  height: "70vh",
 };
-
-const center = {
+const defaultCenter = {
   lat: 34.8021,
   lng: 38.9968,
 };
@@ -26,7 +24,6 @@ export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedItemId = searchParams.get("selectedItemId");
-
   const [isLoading, setIsLoading] = useState(false);
   const [customerLocation, setCustomerLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [customerInfo, setCustomerInfo] = useState<{ address: string; destination: string } | null>(null);
@@ -34,7 +31,7 @@ export default function Home() {
   const [userId, setUserId] = useState<string | null>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
-  const [mapCenter, setMapCenter] = useState(center);
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
 
   // جلب بيانات الطلبات
   const dataSourceName = "api/taxi-movement";
@@ -60,12 +57,11 @@ export default function Home() {
   // الاستماع إلى القناة
   useEffect(() => {
     if (!userId) return;
-    console.log(`✅ الاشتراك في القناة TaxiMovement.${userId}`);
 
+    console.log(`✅ الاشتراك في القناة TaxiMovement.${userId}`);
     const echo = getEchoInstance();
     if (echo) {
       const channel = echo.channel(`TaxiMovement.${userId}`);
-
       channel.listen(".requestingTransportationService", (event: any) => {
         console.log("📌 طلب جديد وصل:", event);
 
@@ -74,7 +70,9 @@ export default function Home() {
         audio.play();
 
         // إظهار الإشعار
-        setNotificationMessage(`طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`);
+        setNotificationMessage(
+          `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`
+        );
         setNotificationOpen(true);
 
         // تحديث البيانات
@@ -85,7 +83,7 @@ export default function Home() {
         echo.leaveChannel(`TaxiMovement.${userId}`);
       };
     }
-  }, [userId]);
+  }, [userId, refetch]);
 
   // إغلاق الإشعار
   const handleCloseNotification = () => {
@@ -96,10 +94,8 @@ export default function Home() {
   useEffect(() => {
     if (selectedItemId && GlobalData?.data?.length) {
       const foundOrder = GlobalData.data.find((order: any) => order.id === selectedItemId);
-
       if (foundOrder) {
         console.log("✅ الطلب المحدد:", foundOrder);
-
         setSelectedOrder(foundOrder);
         setCustomerLocation({
           lat: parseFloat(foundOrder.start_latitude),
@@ -136,34 +132,43 @@ export default function Home() {
 
         {/* الخريطة */}
         <Grid item xs={9}>
-          <Grid item xs={12}>
-            <LoadScript googleMapsApiKey={googleMapsApiKey}>
-              <GoogleMap mapContainerStyle={mapContainerStyle} zoom={10} center={mapCenter}>
-                {customerLocation && (
-                  <Marker position={customerLocation}>
-                    {customerInfo && (
-                      <InfoWindow position={customerLocation}>
-                        <div style={{ fontSize: "14px", fontWeight: "bold", textAlign: "center" }}>
-                          📍 {customerInfo.address} → 🎯 {customerInfo.destination}
-                        </div>
-                      </InfoWindow>
-                    )}
-                  </Marker>
-                )}
-              </GoogleMap>
-            </LoadScript>
-          </Grid>
-          <Grid item xs={12}>
-            {selectedOrder /* && selectedOrder.customer && selectedOrder.customer_address */ ? (
-              <>
-                <Requests selectedOrder={selectedOrder} />
-              </>
-            ) : (<>
-              <Typography fontSize="16px">اذكر الله واستعن به على رزقك</Typography>
-            </>)}
-          </Grid>
-        </Grid>
+          <LoadScript googleMapsApiKey={googleMapsApiKey}>
+            <GoogleMap mapContainerStyle={mapContainerStyle} zoom={10} center={mapCenter}>
+              {customerLocation && (
+                <Marker position={customerLocation}>
+                  {customerInfo && (
+                    <InfoWindow position={customerLocation}>
+                      <div style={{ fontSize: "14px", fontWeight: "bold", textAlign: "center" }}>
+                        📍 {customerInfo.address} → 🎯 {customerInfo.destination}
+                      </div>
+                    </InfoWindow>
+                  )}
+                </Marker>
+              )}
+            </GoogleMap>
+          </LoadScript>
 
+          {selectedItemId ? (
+            <Grid item xs={12}>
+              <Requests selectedOrder={selectedOrder} />
+            </Grid>
+          ) : (
+            <>
+              <Box>
+                <Skeleton variant="text" height={40} width="50%" />
+                <Skeleton variant="text" height={20} width="80%" />
+                <Typography variant="h6" fontWeight="bold">
+                  اذكر الله واستعن به على رزقك , بانتظار طلبات الزبائن
+                </Typography>
+                <Skeleton variant="text" height={20} width="80%" />
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Skeleton variant="rectangular" width={120} height={40} />
+                  <Skeleton variant="rectangular" width={120} height={40} />
+                </Box>
+              </Box>
+            </>
+          )}
+        </Grid>
       </Grid>
     </>
   );
