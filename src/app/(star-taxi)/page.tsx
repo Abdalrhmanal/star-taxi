@@ -147,8 +147,8 @@ export default function Home() {
               )}
             </GoogleMap>
           </LoadScript>
-
-          {selectedItemId ? (
+          
+          {selectedOrder ? (
             <Grid item xs={12}>
               <Requests selectedOrder={selectedOrder} />
             </Grid>
