@@ -23,6 +23,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import getEchoInstance from "@/reverb";
+import Notifications from "@/components/Notifications"; // استيراد مكون Notifications
+import useGlobalData from "@/hooks/get-global";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -81,9 +83,11 @@ const Navbar = () => {
   const router = useRouter(); // استخدام useRouter
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null); // حالة قائمة الإشعارات
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isNotificationsMenuOpen = Boolean(notificationsAnchorEl); // حالة قائمة الإشعارات
 
   useEffect(() => {
     const echo = getEchoInstance();
@@ -102,6 +106,35 @@ const Navbar = () => {
     router.push(href); // التنقل باستخدام router.push()
   };
 
+  // جلب عدد الإشعارات غير المقروءة
+  const { data: UnreadData, isLoading: UnreadLoading } = useGlobalData<any>({
+    dataSourceName: "api/notifications/unread",
+    enabled: true,
+    setOldDataAsPlaceholder: true,
+  });
+
+  const unreadCount = UnreadData?.data?.length || 0;
+
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handleNotificationsMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setNotificationsAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsMenuClose = () => {
+    setNotificationsAnchorEl(null);
+  };
   return (
     <Box sx={{ flexGrow: 1, direction: "rtl" }}>
       <AppBar position="static">
@@ -138,8 +171,13 @@ const Navbar = () => {
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton size="large" aria-label="عرض 1 إشعارًا جديدًا" color="inherit">
-              <Badge badgeContent={1} color="error">
+            <IconButton
+              size="large"
+              aria-label={`عرض ${unreadCount} إشعارات جديدة`}
+              color="inherit"
+              onClick={handleNotificationsMenuOpen}
+            >
+              <Badge badgeContent={unreadCount} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -148,6 +186,7 @@ const Navbar = () => {
               edge="end"
               aria-label="حساب المستخدم الحالي"
               color="inherit"
+              onClick={handleProfileMenuOpen}
             >
               <AccountCircle />
             </IconButton>
@@ -160,6 +199,23 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Menu
+        anchorEl={notificationsAnchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isNotificationsMenuOpen}
+        onClose={handleNotificationsMenuClose}
+      >
+        <Notifications />
+      </Menu>
     </Box>
   );
 };
