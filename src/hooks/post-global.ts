@@ -10,7 +10,7 @@ type UseCreateDataResult<T> = {
     isLoading: boolean;
     isError: string | null;
     success: boolean;
-    createData?: (data: T) => Promise<void>;
+    createData: (data: T) => Promise<void>;
 };
 
 const BASE_URL = "https://tawsella.online";

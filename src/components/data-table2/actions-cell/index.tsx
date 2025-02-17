@@ -27,6 +27,11 @@ import useCreateData from "@/hooks/post-global";
 import MovmentLive from "@/app/(star-taxi)/requests/live/movmentlive/page";
 import MovmentDone from "@/app/(star-taxi)/requests/done/movmentdone/page";
 import EditSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
+import Page from "@/app/(star-taxi)/movement-types/edit/page";
+import PageEdetOffer from "@/app/(star-taxi)/offers/edit/page";
+import PageSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
+import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit/page";
+import PageEdetDriver from "@/app/(star-taxi)/drivers/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -76,7 +81,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
 
     const confirmPayment = async () => {
         if (selectedDriver) {
-            await createData(selectedDriver.driver_id);
+            if (createData) {
+                await createData(selectedDriver.driver_id);
+            }
             setOpenPaymentDialog(false);
         }
     };
@@ -170,11 +177,11 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
 
             <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
-                    {currentPath === "/drivers" && <EditDriver data={row} />}
-                    {currentPath === "/taxis" && <EditCar data={row} />}
-                    {currentPath === "/offers" && <EditOffer data={row} />}
-                    {currentPath === "/movement-types" && <EditMovementType data={row} />}
-                    {currentPath === "/social-links" && <EditSocialLinks data={row} />}
+                    {currentPath === "/drivers" && <PageEdetDriver data={row} />}
+                    {currentPath === "/taxis" && <PageTaxiEdit data={row} />}
+                    {currentPath === "/offers" && <PageEdetOffer data={row} />}
+                    {currentPath === "/movement-types" && <Page data={row} />}
+                    {currentPath === "/social-links" && <PageSocialLinks data={row} />}
                 </Box>
             </Drawer>
 
