@@ -32,7 +32,7 @@ interface Driver {
 // تعريف واجهة لجسم الإشعار
 interface NotificationBody {
   message: string;
-  driver?: Driver; // السائق اختياري
+  driver?: Driver;
 }
 
 // تعريف واجهة للإشعار
@@ -46,12 +46,15 @@ interface Notification {
 }
 
 function Notifications() {
-  // جلب جميع الإشعارات
+  // نقطة النهاية الموحدة لجميع الطلبات
   const notificationsApi = "api/notifications";
-  const { data: GlobalData, isLoading: GlobalLoading, refetch } = useGlobalData<{
-    message: string;
-    data: Notification[];
-  }>({
+
+  // جلب جميع الإشعارات
+  const {
+    data: GlobalData,
+    isLoading: GlobalLoading,
+    refetch,
+  } = useGlobalData<{ message: string; data: Notification[] }>({
     dataSourceName: notificationsApi,
     enabled: true,
     setOldDataAsPlaceholder: true,
@@ -59,27 +62,30 @@ function Notifications() {
 
   // جلب الإشعارات غير المقروءة فقط
   const unreadNotificationsApi = "api/notifications/unread";
-  const { data: UnreadData, isLoading: UnreadLoading, refetch: refetchUnread } = useGlobalData<{
-    message: string;
-    data: Notification[];
-  }>({
+  const {
+    data: UnreadData,
+    isLoading: UnreadLoading,
+    refetch: refetchUnread,
+  } = useGlobalData<{ message: string; data: Notification[] }>({
     dataSourceName: unreadNotificationsApi,
     enabled: true,
     setOldDataAsPlaceholder: true,
   });
 
-  // تمييز جميع الإشعارات كمقروءة
-  const { isLoading: markAllLoading, createData: markAllAsRead } = useCreateData<any>({
+  // hook لإرسال الطلب لتعليم إشعار أو مجموعة إشعارات كمقروءة
+  const {
+    isLoading: markingLoading,
+    createData: markAsReadRequest,
+  } = useCreateData<any>({
     dataSourceName: notificationsApi,
   });
 
-  // حالة البيانات المحلية
+  // الحالة المحلية للبيانات
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     if (GlobalData?.data) {
-      // التأكد من أن البيانات هي مصفوفة
       const parsedData = Array.isArray(GlobalData.data) ? GlobalData.data : [];
       setNotifications(parsedData);
     }
@@ -87,41 +93,36 @@ function Notifications() {
 
   useEffect(() => {
     if (UnreadData?.data) {
-      // التأكد من أن البيانات هي مصفوفة
       const parsedData = Array.isArray(UnreadData.data) ? UnreadData.data : [];
       setUnreadNotifications(parsedData);
     }
   }, [UnreadData]);
 
   // تقسيم الإشعارات إلى مقروءة وغير مقروءة
-  const readNotifications = Array.isArray(notifications)
-    ? notifications.filter((n) => !unreadNotifications.some((u) => u.id === n.id))
-    : [];
+  const readNotifications = notifications.filter(
+    (n) => !unreadNotifications.some((u) => u.id === n.id)
+  );
+  const unreadNotificationsFiltered = notifications.filter((n) =>
+    unreadNotifications.some((u) => u.id === n.id)
+  );
 
-  const unreadNotificationsFiltered = Array.isArray(notifications)
-    ? notifications.filter((n) => unreadNotifications.some((u) => u.id === n.id))
-    : [];
-
-  // استدعاء hook خارج الدالة
-  const { createData: markSingleAsRead } = useCreateData<any>({
-    dataSourceName: `api/notifications/`,
-  });
-
-  // تمييز إشعار محدد كمقروء
-  const markAsRead = async (notificationId: string) => {
+  // دالة لتعليم إشعار مفرد كمقروء بإرسال معرف الإشعار في جسم الطلب
+  const markSingleNotificationAsRead = async (notificationId: string) => {
     try {
-      // تحديث البيانات المحلية
-      const updatedUnread = unreadNotifications.filter((n) => n.id !== notificationId);
-      setUnreadNotifications(updatedUnread);
-      const updatedNotifications = notifications.map((n) =>
-        n.id === notificationId ? { ...n, data: { ...n.data, isRead: true } } : n
+      // تحديث الحالة المحلية
+      setUnreadNotifications((prev) =>
+        prev.filter((n) => n.id !== notificationId)
       );
-      setNotifications(updatedNotifications);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notificationId
+            ? { ...n, data: { ...n.data, isRead: true } }
+            : n
+        )
+      );
 
-      // إرسال طلب إلى الـ API لتمييز الإشعار كمقروء
-      await markSingleAsRead({
-        notificationId, // تمرير معرف الإشعار إلى الـ API
-      });
+      // إرسال الطلب مع تضمين معرف الإشعار في الجسم
+      await markAsReadRequest!({ data: { notificationId } });
 
       // إعادة جلب البيانات من الخادم
       refetch();
@@ -131,15 +132,17 @@ function Notifications() {
     }
   };
 
-  // تمييز جميع الإشعارات كمقروءة
+  // دالة لتعليم جميع الإشعارات كمقروءة بإرسال جسم الطلب المناسب
   const markAllAsReadHandler = async () => {
     try {
-      // تحديث البيانات المحلية
+      // تحديث الحالة المحلية
       setUnreadNotifications([]);
-      setNotifications(notifications.map((n) => ({ ...n, data: { ...n.data, isRead: true } })));
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
+      );
 
-      // إرسال طلب إلى الـ API لتمييز جميع الإشعارات كمقروءة
-      await markAllAsRead({});
+      // إرسال الطلب مع تحديد markAll في الجسم
+      await markAsReadRequest!({ data: { markAll: true } });
 
       // إعادة جلب البيانات من الخادم
       refetch();
@@ -155,78 +158,89 @@ function Notifications() {
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         الإشعارات
       </Typography>
-
       {/* زر تمييز الكل كمقروء */}
       <Box sx={{ mb: 3 }}>
         <Button
           variant="contained"
           color="primary"
           onClick={markAllAsReadHandler}
-          disabled={markAllLoading}
-          startIcon={markAllLoading && <CircularProgress size={20} />}
+          disabled={markingLoading}
+          startIcon={markingLoading && <CircularProgress size={20} />}
         >
-          {markAllLoading ? "جارٍ التحديث..." : "تمييز الكل كمقروء"}
+          {markingLoading ? "جارٍ التحديث..." : "تمييز الكل كمقروء"}
         </Button>
       </Box>
-
       {/* حالة التحميل */}
       {(GlobalLoading || UnreadLoading) && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
           <CircularProgress />
         </Box>
       )}
-
       {/* عرض الإشعارات غير المقروءة */}
-      {!GlobalLoading && !UnreadLoading && unreadNotificationsFiltered.length > 0 && (
-        <>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            الإشعارات غير المقروءة
-          </Typography>
-          <List>
-            {unreadNotificationsFiltered.map((notification) => (
-              <React.Fragment key={notification.id}>
-                <ListItem
-                  alignItems="flex-start"
-                  onClick={() => markAsRead(notification.id)}
-                  sx={{
-                    cursor: "pointer",
-                    backgroundColor: "#e3f2fd", // لون خلفية الإشعارات غير المقروءة
-                    "&:hover": { backgroundColor: "#bbdefb" },
-                  }}
-                >
-                  <ListItemAvatar>
-                    {/* التحقق من وجود body و driver باستخدام optional chaining */}
-                    <Avatar src={notification.data.body.driver?.avatar || "/images/default-avatar.png"} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {notification.data.title}
-                      </Typography>
+      {!GlobalLoading &&
+        !UnreadLoading &&
+        unreadNotificationsFiltered.length > 0 && (
+          <>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              الإشعارات غير المقروءة
+            </Typography>
+            <List>
+              {unreadNotificationsFiltered.map((notification) => (
+                <React.Fragment key={notification.id}>
+                  <ListItem
+                    alignItems="flex-start"
+                    onClick={() =>{}
+                     /*  markSingleNotificationAsRead(notification.id) */
                     }
-                    secondary={
-                      <React.Fragment>
-                        {/* التحقق من وجود body و message باستخدام optional chaining */}
-                        <Typography component="span" variant="body2" color="text.primary">
-                          {notification.data.body.message || "لا يوجد رسالة"}
+                    sx={{
+                      cursor: "pointer",
+                      backgroundColor: "#e3f2fd",
+                      "&:hover": { backgroundColor: "#bbdefb" },
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        src={
+                          notification.data.body.driver?.avatar ||
+                          "/images/default-avatar.png"
+                        }
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {notification.data.title}
                         </Typography>
-                        {/* التحقق من وجود body و driver باستخدام optional chaining */}
-                        {notification.data.body.driver && (
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            السائق: {notification.data.body.driver.name || "غير معروف"}
+                      }
+                      secondary={
+                        <>
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {notification.data.body.message || "لا يوجد رسالة"}
                           </Typography>
-                        )}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </React.Fragment>
-            ))}
-          </List>
-        </>
-      )}
-
+                          {notification.data.body.driver && (
+                            <Typography
+                              variant="caption"
+                              display="block"
+                              color="text.secondary"
+                            >
+                              السائق:{" "}
+                              {notification.data.body.driver.name || "غير معروف"}
+                            </Typography>
+                          )}
+                        </>
+                      }
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </React.Fragment>
+              ))}
+            </List>
+          </>
+        )}
       {/* عرض الإشعارات المقروءة */}
       {!GlobalLoading && !UnreadLoading && readNotifications.length > 0 && (
         <>
@@ -238,24 +252,35 @@ function Notifications() {
               <React.Fragment key={notification.id}>
                 <ListItem alignItems="flex-start">
                   <ListItemAvatar>
-                    {/* التحقق من وجود body و driver باستخدام optional chaining */}
-                    <Avatar src={notification.data.body.driver?.avatar || "/images/default-avatar.png"} />
+                    <Avatar
+                      src={
+                        notification.data.body.driver?.avatar ||
+                        "/images/default-avatar.png"
+                      }
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={notification.data.title}
                     secondary={
-                      <React.Fragment>
-                        {/* التحقق من وجود body و message باستخدام optional chaining */}
-                        <Typography component="span" variant="body2" color="text.primary">
+                      <>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
                           {notification.data.body.message || "لا يوجد رسالة"}
                         </Typography>
-                        {/* التحقق من وجود body و driver باستخدام optional chaining */}
                         {notification.data.body.driver && (
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            السائق: {notification.data.body.driver.name || "غير معروف"}
+                          <Typography
+                            variant="caption"
+                            display="block"
+                            color="text.secondary"
+                          >
+                            السائق:{" "}
+                            {notification.data.body.driver.name || "غير معروف"}
                           </Typography>
                         )}
-                      </React.Fragment>
+                      </>
                     }
                   />
                 </ListItem>
@@ -265,13 +290,18 @@ function Notifications() {
           </List>
         </>
       )}
-
-      {/* إذا لم تكن هناك إشعارات */}
-      {!GlobalLoading && !UnreadLoading && notifications.length === 0 && (
-        <Typography variant="subtitle1" color="text.secondary" textAlign="center">
-          لا توجد إشعارات حاليًا.
-        </Typography>
-      )}
+      {/* إذا لم توجد إشعارات */}
+      {!GlobalLoading &&
+        !UnreadLoading &&
+        notifications.length === 0 && (
+          <Typography
+            variant="subtitle1"
+            color="text.secondary"
+            textAlign="center"
+          >
+            لا توجد إشعارات حاليًا.
+          </Typography>
+        )}
     </Box>
   );
 }
