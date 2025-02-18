@@ -42,6 +42,7 @@ interface StructureTableProps {
   onPageChange?: (newPage: number, newPageSize: number) => void;
   onActionClick?: (row: RowData) => void;
   onDataUpdated: () => void;
+  onSuccess?: () => void
 }
 
 const StructureTable: React.FC<StructureTableProps> = ({
@@ -53,7 +54,8 @@ const StructureTable: React.FC<StructureTableProps> = ({
   pageSizeOptions = [5, 10, 25],
   onPageChange,
   onActionClick,
-  onDataUpdated
+  onDataUpdated,
+  onSuccess
 }) => {
   const [orderBy, setOrderBy] = useState<string | null>(null);
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc");
@@ -273,7 +275,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
                     </TableCell>
                   ))}
                   <TableCell align="center">
-                    <ActionsCell row={row} onDataUpdated={refreshData} />
+                    <ActionsCell row={row} onDataUpdated={refreshData} onSuccess={onSuccess}/>
                   </TableCell>
                 </TableRow>
               ))

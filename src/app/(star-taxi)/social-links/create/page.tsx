@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import useCreateData from "@/hooks/post-global";
 import { useForm, Controller, FieldValues } from "react-hook-form";
+import HeaderPageD from "@/components/header-page";
 
 type SocialLink = {
   id?: string;
@@ -113,6 +114,7 @@ const CreateSocialLinks = () => {
 
   return (
     <Box sx={{ width: "100%", maxWidth: 500, margin: "0 auto", padding: 3 }}>
+      <HeaderPageD pluralName="مواقع التواصل الاجتماعية"/>
       <Snackbar
         open={openAlert}
         autoHideDuration={6000}

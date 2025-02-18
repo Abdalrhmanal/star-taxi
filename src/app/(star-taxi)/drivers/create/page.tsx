@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -10,10 +10,14 @@ import {
   Autocomplete,
   Alert,
   Snackbar,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
+import HeaderPageD from "@/components/header-page";
 
 type User = {
   name: string;
@@ -74,6 +78,8 @@ const CreateDriver = () => {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState<boolean>(false);
 
   const { control, handleSubmit, setValue, formState: { errors } } = useForm<User>({
     defaultValues: {
@@ -118,21 +124,24 @@ const CreateDriver = () => {
       password: data.password,
       password_confirmation: data.password_confirmation,
     });
+  };
 
+  useEffect(() => {
     if (success) {
       setAlertMessage("تمت الإضافة بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-      router.back();
+      router.push('/drivers');
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
-  };
+  }, [success, isError, router]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+      <HeaderPageD pluralName="السائقين"/>
       {/* التنبيه أعلى الصفحة */}
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
         <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
@@ -255,11 +264,23 @@ const CreateDriver = () => {
                 fullWidth
                 label="كلمة المرور"
                 variant="outlined"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 {...field}
                 error={!!errors.password}
                 helperText={errors.password ? errors.password.message : ""}
                 sx={{ textAlign: "right" }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             )}
           />
@@ -274,11 +295,23 @@ const CreateDriver = () => {
                 fullWidth
                 label="تأكيد كلمة المرور"
                 variant="outlined"
-                type="password"
+                type={showPasswordConfirmation ? "text" : "password"}
                 {...field}
                 error={!!errors.password_confirmation}
                 helperText={errors.password_confirmation ? errors.password_confirmation.message : ""}
                 sx={{ textAlign: "right" }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                        edge="end"
+                      >
+                        {showPasswordConfirmation ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             )}
           />

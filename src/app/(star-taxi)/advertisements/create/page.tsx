@@ -13,6 +13,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
+import HeaderPageD from "@/components/header-page";
 
 // تعريف نوع البيانات
 type Advertisement = {
@@ -132,6 +133,7 @@ const CreateAdvertisements = () => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+            <HeaderPageD pluralName="الاعلانات"/>
             {/* التنبيه أعلى الصفحة */}
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>

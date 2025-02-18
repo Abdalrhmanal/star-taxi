@@ -15,6 +15,7 @@ import {
 import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
+import HeaderPageD from "@/components/header-page";
 
 // تعريف نوع البيانات
 type Movement = {
@@ -91,6 +92,7 @@ const CreateMovementType = () => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+            <HeaderPageD pluralName="الرحلات"/>
             {/* التنبيه أعلى الصفحة */}
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>

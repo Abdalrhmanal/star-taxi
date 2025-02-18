@@ -15,6 +15,7 @@ import useCreateData from "@/hooks/post-global";
 import useGlobalData from "@/hooks/get-global";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
+import HeaderPageD from "@/components/header-page";
 
 // تعريف نوع العرض
 type Offer = {
@@ -112,6 +113,7 @@ const CreateOffer = () => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+            <HeaderPageD pluralName="العروض"/>
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
                     {alertMessage}

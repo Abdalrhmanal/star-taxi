@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {  TextField,  Button,  Grid,  Typography,  Box,  CircularProgress,  Alert,  Snackbar,  Autocomplete,
+import {
+    TextField, Button, Grid, Typography, Box, CircularProgress, Alert, Snackbar, Autocomplete,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -24,7 +25,7 @@ type Driver = {
     has_taxi: boolean;
 };
 
-const EditCar = ({ data }: { data: Car }) => {
+const EditCar = ({ data, onSuccess }: { data: Car; onSuccess?: () => void }) => {
     // جلب قائمة السائقين الذين has_taxi === false
     const { data: GlobalData, isLoading: GlobalLoading } = useGlobalData<Driver | any>({
         dataSourceName: "api/drivers",
@@ -62,7 +63,8 @@ const EditCar = ({ data }: { data: Car }) => {
             setAlertMessage("تم تحديث بيانات السيارة بنجاح!");
             setAlertSeverity("success");
             setOpenAlert(true);
-            router.back();
+            router.push('taxis');
+            if (onSuccess) onSuccess();
         } else if (isError) {
             setAlertMessage(`خطأ: ${isError}`);
             setAlertSeverity("error");

@@ -61,6 +61,7 @@ const GridTable: React.FC<GridTableProps> = ({
       }}
       onActionClick={onActionClick}
       onDataUpdated={refreshData}
+      onSuccess={() => refetch()}
     />
   );
 };

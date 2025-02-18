@@ -33,7 +33,7 @@ import PageSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
 import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit/page";
 import PageEdetDriver from "@/app/(star-taxi)/drivers/edit/page";
 
-const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, onDataUpdated }) => {
+const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: () => void }> = ({ row, onDataUpdated, onSuccess }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
     const id = row.driver_id || row.id || row.movement_id;
 
@@ -112,7 +112,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
                                 <IconButton onClick={handleView}>
                                     <VisibilityIcon color="secondary" />
                                 </IconButton>
-                               {/*  <IconButton onClick={handleDelete}>
+                                {/*  <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
                                 </IconButton> */}
                             </>
@@ -178,7 +178,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void }> = ({ row, o
             <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
                     {currentPath === "/drivers" && <PageEdetDriver data={row} />}
-                    {currentPath === "/taxis" && <PageTaxiEdit data={row} />}
+                    {currentPath === "/taxis" && <PageTaxiEdit data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/offers" && <PageEdetOffer data={row} />}
                     {currentPath === "/movement-types" && <Page data={row} />}
                     {currentPath === "/social-links" && <PageSocialLinks data={row} />}

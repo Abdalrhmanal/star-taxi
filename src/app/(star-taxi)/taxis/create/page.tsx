@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import useCreateData from "@/hooks/post-global";
 import useGlobalData from "@/hooks/get-global";
+import HeaderPageD from "@/components/header-page";
 
 // تعريف نوع بيانات السيارة
 type Car = {
@@ -71,21 +72,24 @@ const CreateCarForm = () => {
 
     const handleCreate = async (data: Car) => {
         await createData(data);
+    };
 
+    useEffect(() => {
         if (success) {
             setAlertMessage("تمت إضافة السيارة بنجاح!");
             setAlertSeverity("success");
             setOpenAlert(true);
-            router.back();
+            router.push('/taxis');
         } else if (isError) {
             setAlertMessage(`خطأ: ${isError}`);
             setAlertSeverity("error");
             setOpenAlert(true);
         }
-    };
+    }, [success, isError, router]);
 
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
+            <HeaderPageD pluralName="السيارات"/>
             {/* التنبيه */}
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
