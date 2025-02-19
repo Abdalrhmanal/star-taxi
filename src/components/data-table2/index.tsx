@@ -15,9 +15,10 @@ const GridTable: React.FC<GridTableProps> = ({
   columns,
   onActionClick,
 }) => {
-  const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState( currentPath === "/advertisements" ? 5 : 9);
 
   interface GlobalDataType {
     data: any[];
