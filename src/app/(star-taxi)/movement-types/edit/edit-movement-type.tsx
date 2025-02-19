@@ -42,12 +42,9 @@ const validatePrice2 = (price2: number) =>
 const validatePayment2 = (payment2: string) =>
   !payment2 ? " نوع العملة " : "";
 // تعريف Props للمكون
-type Props = {
-  data: Movement;
-  onSuccess?: () => void;
-};
 
-const EditMovementType = ({ data ,onSuccess}: Props) => {
+
+const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () => void; }) => {
   const { isLoading, isError, success, updateData } =
     useUpdateData<Movement>({
       dataSourceName: `api/movement-types/${data.id}`,
@@ -220,7 +217,7 @@ const EditMovementType = ({ data ,onSuccess}: Props) => {
             )}
           />
         </Grid>
-        
+
         {/* طريقة الدفع */}
         <Grid item xs={12}>
           <Controller

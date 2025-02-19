@@ -49,7 +49,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
     });
 
     const { isLoading: isCreating, isError: createError, success: createSuccess, createData } = useCreateData({
-        dataSourceName: "api/drivers",
+        dataSourceName: `api/calculations/bring/${id}`,
     });
 
     const router = useRouter();
@@ -160,10 +160,10 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
             </Dialog>
 
             <Dialog open={openPaymentDialog} onClose={() => setOpenPaymentDialog(false)}>
-                <DialogTitle>تأكيد الدفع</DialogTitle>
+                <DialogTitle>تأكيد السحب</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        هل أنت متأكد أنك تريد إجراء الدفع لـ {selectedDriver?.name}؟
+                        هل أنت متأكد أنك تريد إجراء سحب الاموال من محفظة لـ {selectedDriver?.name}؟
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -171,7 +171,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                         إلغاء
                     </Button>
                     <Button onClick={confirmPayment} color="primary" disabled={isCreating}>
-                        {isCreating ? "جاري الدفع..." : "تأكيد الدفع"}
+                        {isCreating ? "جاري السحب..." : "تأكيد السحب"}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -205,7 +205,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                         zIndex: 9999,
                     }}
                 >
-                    {isError ? `خطأ: ${isError}` : success ? "تم الحذف بنجاح!" : createError ? `خطأ: ${createError}` : "تم الدفع بنجاح!"}
+                    {isError ? `خطأ: ${isError}` : success ? "تم الحذف بنجاح!" : createError ? `خطأ: ${createError}` : "تم السحب بنجاح!"}
                 </Alert>
             )}
         </Box>
