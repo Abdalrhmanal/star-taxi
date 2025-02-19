@@ -16,23 +16,23 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useRouter } from 'next/navigation';
-import EditDriver from "@/app/(star-taxi)/drivers/edit/page";
+import EditDriver from "@/app/(star-taxi)/drivers/edit";
 import useDeleteData from "@/hooks/delete-global";
-import EditCar from "@/app/(star-taxi)/taxis/edit/page";
-import EditOffer from "@/app/(star-taxi)/offers/edit/page";
-import EditMovementType from "@/app/(star-taxi)/movement-types/edit/page";
+import EditCar from "@/app/(star-taxi)/taxis/edit";
+import EditOffer from "@/app/(star-taxi)/offers/edit";
+import EditMovementType from "@/app/(star-taxi)/movement-types/edit";
 
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import useCreateData from "@/hooks/post-global";
 import MovmentLive from "@/app/(star-taxi)/requests/live/movmentlive/page";
 import MovmentDone from "@/app/(star-taxi)/requests/done/movmentdone/page";
-import EditSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
-import Page from "@/app/(star-taxi)/movement-types/edit/page";
-import PageEdetOffer from "@/app/(star-taxi)/offers/edit/page";
-import PageSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
-import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit/page";
-import PageEdetDriver from "@/app/(star-taxi)/drivers/edit/page";
-import PageMovment from "@/app/(star-taxi)/movement-types/edit/page";
+import EditSocialLinks from "@/app/(star-taxi)/social-links/edit";
+import Page from "@/app/(star-taxi)/movement-types/edit";
+import PageEdetOffer from "@/app/(star-taxi)/offers/edit";
+import PageSocialLinks from "@/app/(star-taxi)/social-links/edit";
+import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit";
+import PageEdetDriver from "@/app/(star-taxi)/drivers/edit";
+import PageMovment from "@/app/(star-taxi)/movement-types/edit";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: () => void }> = ({ row, onDataUpdated, onSuccess }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -186,7 +186,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
 
             <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
-                    {currentPath === "/drivers" && <PageEdetDriver data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
+                    {currentPath === "/drivers" && <PageEdetDriver driver_id={row.driver_id} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/taxis" && <PageTaxiEdit data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/offers" && <PageEdetOffer data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/movement-types" && <PageMovment data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}

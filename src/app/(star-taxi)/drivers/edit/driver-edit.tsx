@@ -24,7 +24,7 @@ type User = {
   password_confirmation?: string;
 };
 
-const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) => {
+const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | undefined;}) => {
   const { control, handleSubmit, formState: { errors }, setValue, getValues } = useForm<User>({
     defaultValues: {
       id: "",
@@ -40,7 +40,7 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
   // محاكاة تحميل البيانات (يمكنك استبدال هذا بـ API أو بيانات حقيقية)
   useEffect(() => {
     if (data) {
-      setValue('id', data.id);
+      setValue('id', data.driver_id);
       setValue('name', data.name);
       setValue('email', data.email);
       setValue('gender', data.gender);
