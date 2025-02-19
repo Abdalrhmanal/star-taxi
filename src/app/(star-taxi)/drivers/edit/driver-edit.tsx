@@ -20,11 +20,11 @@ type User = {
   gender: "male" | "female" | null;
   phone_number: string;
   birth_date: Date;
-  password: string;
-  password_confirmation: string;
+  password?: string;
+  password_confirmation?: string;
 };
 
-const EditDriver = ({ data }: any) => {
+const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) => {
   const { control, handleSubmit, formState: { errors }, setValue, getValues } = useForm<User>({
     defaultValues: {
       id: "",
@@ -32,7 +32,6 @@ const EditDriver = ({ data }: any) => {
       email: "",
       gender: null,
       phone_number: "",
-      birth_date: new Date(),
       password: "",
       password_confirmation: "",
     },
@@ -46,7 +45,6 @@ const EditDriver = ({ data }: any) => {
       setValue('email', data.email);
       setValue('gender', data.gender);
       setValue('phone_number', data.phone_number);
-      setValue('birth_date', data.birth_date);
     }
   }, [data, setValue]);
 console.log(data);
@@ -54,6 +52,9 @@ console.log(data);
   const { isLoading, isError, success, updateData } = useUpdateData<User>({
     dataSourceName: `api/drivers/${data.driver_id}`, // مسار API لتحديث المستخدم
   });
+  if (success) {
+    if (onSuccess) onSuccess();
+  }
 
   const handleUpdate = async (updatedData: User) => {
     await updateData(updatedData);
@@ -135,8 +136,8 @@ console.log(data);
             render={({ field }) => (
               <Autocomplete
                 {...field}
-                options={["male", "female"]}
-                getOptionLabel={(option) => (option === "male" ? "ذكر" : "أنثى")}
+                options={["Male", "Female"]}
+                getOptionLabel={(option) => (option === "Male" ? "ذكر" : "أنثى")}
                 onChange={(_, value) => field.onChange(value)}
                 value={field.value || ""}
                 renderInput={(params) => (
@@ -174,34 +175,12 @@ console.log(data);
           />
         </Grid>
 
-        {/* حقل تاريخ الميلاد */}
-        <Grid item xs={12}>
-          <Controller
-            name="birth_date"
-            control={control}
-            rules={{ required: "تاريخ الميلاد مطلوب" }}
-            render={({ field }) => (
-              <TextField
-                fullWidth
-                label="تاريخ الميلاد"
-                variant="outlined"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                {...field}
-                error={!!errors.birth_date}
-                helperText={errors.birth_date ? errors.birth_date.message : ""}
-                sx={{ textAlign: "right" }}
-              />
-            )}
-          />
-        </Grid>
-
         {/* حقل كلمة المرور */}
         <Grid item xs={12}>
           <Controller
             name="password"
             control={control}
-            rules={{ required: "كلمة المرور مطلوبة" }}
+            // rules={{ required: "كلمة المرور مطلوبة" }}
             render={({ field }) => (
               <TextField
                 fullWidth
@@ -222,10 +201,10 @@ console.log(data);
           <Controller
             name="password_confirmation"
             control={control}
-            rules={{
-              required: "تأكيد كلمة المرور مطلوب",
-              validate: (value) => value === getValues("password") || "كلمة المرور وتأكيد كلمة المرور غير متطابقين",
-            }}
+           // rules={{
+           //   required: "تأكيد كلمة المرور مطلوب",
+           //   validate: (value) => value === getValues("password") || "كلمة المرور وتأكيد كلمة المرور غير متطابقين",
+           // }}
             render={({ field }) => (
               <TextField
                 fullWidth

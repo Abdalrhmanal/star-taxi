@@ -75,6 +75,15 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       return (
         <Typography fontWeight="bold">{row.car_plate_number + '/' + row.car_lamp_number || ''}</Typography>
       );
+
+    case "price1":
+      return (
+        <Typography fontWeight="bold">{row.price1 + ' ' + row.payment1 || ''}</Typography>
+      );
+    case "price2":
+      return (
+        <Typography fontWeight="bold">{row.price2 + ' ' + row.payment2 || ''}</Typography>
+      );
     case "date":
       const formattedDate = row.date ? new Intl.DateTimeFormat('en-GB', {
         year: 'numeric',

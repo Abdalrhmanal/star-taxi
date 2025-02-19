@@ -14,7 +14,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import useCreateData from "@/hooks/post-global";
+import useUpdateData from "@/hooks/put-global";
 
 type SocialLink = {
   id: string;
@@ -23,7 +23,7 @@ type SocialLink = {
   icon: File | null; // تغيير النوع إلى File
 };
 
-const EditSocialLinks = ({ data }: { data: SocialLink }) => {
+const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: () => void }) => {
   const {
     control,
     handleSubmit,
@@ -53,7 +53,7 @@ const EditSocialLinks = ({ data }: { data: SocialLink }) => {
     }
   }, [data, setValue]);
 
-  const { isLoading, isError, success, createData } = useCreateData<FormData>({
+  const { isLoading, isError, success, updateData } = useUpdateData<FormData>({
     dataSourceName: `api/social-links/${data.id}`, // مسار API لتحديث الرابط
   });
 
@@ -71,31 +71,18 @@ const EditSocialLinks = ({ data }: { data: SocialLink }) => {
     formData.append("title", updatedData.title);
     formData.append("link", updatedData.link);
     if (selectedFile) {
-      formData.append("icon", selectedFile); // إضافة الملف إذا تم اختياره
+      formData.append("icon", selectedFile);
     }
 
-    try {
-      const response = await fetch(`https://tawsella.online/api/social-links/${data.id}`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer 17|c8mxBjLNEJwNn6XaACZ2EHWXrl5gujs517Zw8O4Ue3b7f312",
-        },
-      });
+    await updateData(formData);
 
-      const result = await response.json();
-      if (response.ok) {
-        setAlertMessage("تم التحديث بنجاح!");
-        setAlertSeverity("success");
-        setOpenAlert(true);
-      } else {
-        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء التحديث"}`);
-        setAlertSeverity("error");
-        setOpenAlert(true);
-      }
-    } catch (error) {
-      setAlertMessage("حدث خطأ أثناء التحديث، يرجى المحاولة مرة أخرى.");
+    if (success) {
+      setAlertMessage("تم التحديث بنجاح!");
+      setAlertSeverity("success");
+      setOpenAlert(true);
+      if (onSuccess) onSuccess();
+    } else if (isError) {
+      setAlertMessage(`خطأ: ${isError || "حدث خطأ أثناء التحديث"}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
@@ -104,7 +91,7 @@ const EditSocialLinks = ({ data }: { data: SocialLink }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-      
+
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
       if (!allowedTypes.includes(selectedFile.type)) {
         setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");

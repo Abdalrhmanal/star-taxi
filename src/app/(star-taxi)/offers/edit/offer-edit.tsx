@@ -38,9 +38,8 @@ interface GlobalDataType {
     movementTypes: MovementType[];
   };
 }
-
 // مكون تعديل العرض
-const EditOffer = ({ data }: { data: Offer & { id: string } }) => {
+const EditOffer = ({ data ,onSuccess}: { data: Offer & { id: string } ;onSuccess?: () => void }) => {
   const { isLoading, isError, success, updateData } = useUpdateData<Offer>({
     dataSourceName: `api/offers/${data.id}`, // مسار API لتحديث العرض
   });
@@ -120,7 +119,7 @@ const EditOffer = ({ data }: { data: Offer & { id: string } }) => {
       setAlertMessage("تم تعديل العرض بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-      router.back();
+      if (onSuccess) onSuccess();
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");

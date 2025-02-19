@@ -3,6 +3,6 @@ import React from "react";
 import EditMovementType from "./edit-movement-type";
 
 // نستخدم Server Component لجلب البيانات
-export default async function Page({ data }: any) {
-  return <EditMovementType data={data} />;
+export default function PageMovment({ data, onSuccess }: { data: any; onSuccess?: () => void }) {
+  return <EditMovementType data={data} onSuccess={onSuccess} />;
 }

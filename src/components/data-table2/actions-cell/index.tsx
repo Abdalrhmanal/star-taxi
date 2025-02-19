@@ -32,6 +32,7 @@ import PageEdetOffer from "@/app/(star-taxi)/offers/edit/page";
 import PageSocialLinks from "@/app/(star-taxi)/social-links/edit/page";
 import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit/page";
 import PageEdetDriver from "@/app/(star-taxi)/drivers/edit/page";
+import PageMovment from "@/app/(star-taxi)/movement-types/edit/page";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: () => void }> = ({ row, onDataUpdated, onSuccess }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -177,11 +178,11 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
 
             <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <Box sx={{ width: 500, padding: 3 }}>
-                    {currentPath === "/drivers" && <PageEdetDriver data={row} />}
+                    {currentPath === "/drivers" && <PageEdetDriver data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/taxis" && <PageTaxiEdit data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
-                    {currentPath === "/offers" && <PageEdetOffer data={row} />}
-                    {currentPath === "/movement-types" && <Page data={row} />}
-                    {currentPath === "/social-links" && <PageSocialLinks data={row} />}
+                    {currentPath === "/offers" && <PageEdetOffer data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
+                    {currentPath === "/movement-types" && <PageMovment data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
+                    {currentPath === "/social-links" && <PageSocialLinks data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }}/>}
                 </Box>
             </Drawer>
 

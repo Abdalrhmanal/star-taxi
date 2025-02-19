@@ -9,7 +9,8 @@ function Trips() {
         /* { headerName: "ID", field: "id", sortable: true }, */
         { headerName: "العنوان", field: "type", sortable: false },
         { headerName: "الوصف", field: "description", sortable: true },
-        { headerName: "السعر", field: "price", sortable: true },
+        { headerName: "السعر الاول", field: "price1", sortable: true },
+        { headerName: "السعر الثاني", field: "price2", sortable: true },
        
 
     ];
