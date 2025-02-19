@@ -136,7 +136,7 @@ const Navbar = () => {
     setNotificationsAnchorEl(null);
   };
   return (
-    <Box sx={{ flexGrow: 1, direction: "rtl" }}>
+    <Box sx={{  direction: "rtl" }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ display: { xs: "none", sm: "block" } }}>

@@ -132,6 +132,14 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 </IconButton>
                             </>
                         );
+                    case "/advertisements":
+                        return (
+                            <>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
                     default:
                         return (
                             <>
@@ -182,7 +190,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     {currentPath === "/taxis" && <PageTaxiEdit data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/offers" && <PageEdetOffer data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/movement-types" && <PageMovment data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
-                    {currentPath === "/social-links" && <PageSocialLinks data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }}/>}
+                    {currentPath === "/social-links" && <PageSocialLinks data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                 </Box>
             </Drawer>
 

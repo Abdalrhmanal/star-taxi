@@ -1,10 +1,9 @@
 // components/Home.tsx
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Grid,
-    Button,
     Typography,
     Box,
     Snackbar,
@@ -34,6 +33,7 @@ export default function Home() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const selectedItemId = searchParams.get("selectedItemId");
+
     const [isLoading, setIsLoading] = useState(false);
     const [customerLocation, setCustomerLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [customerInfo, setCustomerInfo] = useState<{ address: string; destination: string } | null>(null);
@@ -133,14 +133,15 @@ export default function Home() {
                 </Alert>
             </Snackbar>
 
-            <Grid container spacing={2} sx={{ direction: "rtl", height: "100vh" }}>
+            {/* تخطيط متجاوب باستخدام Grid */}
+            <Grid container spacing={2} sx={{ direction: "rtl" }}>
                 {/* قسم الطلبات */}
-                <Grid item xs={3}>
+                <Grid item xs={12} md={3}>
                     <TabDynamis routesData={GlobalData?.data ?? []} isLoading={isLoading} higthTab={79} />
                 </Grid>
 
                 {/* الخريطة */}
-                <Grid item xs={9}>
+                <Grid xs={12} md={9}>
                     <LoadScript googleMapsApiKey={googleMapsApiKey}>
                         <GoogleMap mapContainerStyle={mapContainerStyle} zoom={10} center={mapCenter}>
                             {customerLocation && (
@@ -157,13 +158,13 @@ export default function Home() {
                         </GoogleMap>
                     </LoadScript>
 
-                    {selectedOrder ? (
-                        <Grid item xs={12}>
+
+                    {/* معالجة الطلب (قبول/رفض) أو عرض المحتوى أثناء التحميل */}
+                    <Grid xs={12} md={9}>
+                        {selectedOrder ? (
                             <Requests selectedOrder={selectedOrder} />
-                        </Grid>
-                    ) : (
-                        <>
-                            <Box>
+                        ) : (
+                            <Box p={2}>
                                 <Skeleton variant="text" height={40} width="50%" />
                                 <Skeleton variant="text" height={20} width="80%" />
                                 <Typography variant="h6" fontWeight="bold">
@@ -175,8 +176,8 @@ export default function Home() {
                                     <Skeleton variant="rectangular" width={120} height={40} />
                                 </Box>
                             </Box>
-                        </>
-                    )}
+                        )}
+                    </Grid>
                 </Grid>
             </Grid>
         </>

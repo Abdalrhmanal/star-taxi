@@ -155,7 +155,7 @@ const Sidebar: FC = () => {
         boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.08)",
       }}
     >
-      <Box sx={{ overflowY: "auto", maxHeight: "80%" }}>
+      <Box sx={{ overflowY: "auto", maxHeight: "90%" }}>
         <Box>
           <List>{renderMenuItems(items)}</List>
         </Box>
