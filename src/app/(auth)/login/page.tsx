@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, Alert } from "@mui/material";
+import { TextField, Button, Box, Typography, Alert, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useLogin from "../hooks/useLogin";
 
 function LogInPage() {
   const { login, loading, error, success } = useLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,14 +25,14 @@ function LogInPage() {
         justifyContent: "center",
         minHeight: "100vh",
         padding: 2,
+        direction: "rtl",
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
-        Log In
+        تسجيل الدخول
       </Typography>
 
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <Box
@@ -45,7 +47,7 @@ function LogInPage() {
         }}
       >
         <TextField
-          label="Email"
+          label="البريد الإلكتروني"
           type="email"
           fullWidth
           required
@@ -53,12 +55,21 @@ function LogInPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
-          label="Password"
-          type="password"
+          label="كلمة المرور"
+          type={showPassword ? "text" : "password"}
           fullWidth
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Button
           type="submit"
@@ -67,7 +78,7 @@ function LogInPage() {
           fullWidth
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Log In"}
+          {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
         </Button>
       </Box>
     </Box>

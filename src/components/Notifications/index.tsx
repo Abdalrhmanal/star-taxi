@@ -14,7 +14,6 @@ import {
 import useGlobalData from "@/hooks/get-global";
 import useCreateData from "@/hooks/post-global";
 
-// تعريف واجهة لبيانات السائق
 interface Driver {
   id: string;
   user_id: string;
@@ -29,13 +28,11 @@ interface Driver {
   deleted_at: string | null;
 }
 
-// تعريف واجهة لجسم الإشعار
 interface NotificationBody {
   message: string;
   driver?: Driver;
 }
 
-// تعريف واجهة للإشعار
 interface Notification {
   id: string;
   data: {
@@ -46,10 +43,7 @@ interface Notification {
 }
 
 function Notifications() {
-  // نقطة النهاية الموحدة لجميع الطلبات
   const notificationsApi = "api/notifications";
-
-  // جلب جميع الإشعارات
   const {
     data: GlobalData,
     isLoading: GlobalLoading,
@@ -60,7 +54,6 @@ function Notifications() {
     setOldDataAsPlaceholder: true,
   });
 
-  // جلب الإشعارات غير المقروءة فقط
   const unreadNotificationsApi = "api/notifications/unread";
   const {
     data: UnreadData,
@@ -72,7 +65,6 @@ function Notifications() {
     setOldDataAsPlaceholder: true,
   });
 
-  // hook لإرسال الطلب لتعليم إشعار أو مجموعة إشعارات كمقروءة
   const {
     isLoading: markingLoading,
     createData: markAsReadRequest,
@@ -80,7 +72,6 @@ function Notifications() {
     dataSourceName: notificationsApi,
   });
 
-  // الحالة المحلية للبيانات
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
 
@@ -98,7 +89,6 @@ function Notifications() {
     }
   }, [UnreadData]);
 
-  // تقسيم الإشعارات إلى مقروءة وغير مقروءة
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
   );
@@ -106,45 +96,15 @@ function Notifications() {
     unreadNotifications.some((u) => u.id === n.id)
   );
 
-  // دالة لتعليم إشعار مفرد كمقروء بإرسال معرف الإشعار في جسم الطلب
-  const markSingleNotificationAsRead = async (notificationId: string) => {
-    try {
-      // تحديث الحالة المحلية
-      setUnreadNotifications((prev) =>
-        prev.filter((n) => n.id !== notificationId)
-      );
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === notificationId
-            ? { ...n, data: { ...n.data, isRead: true } }
-            : n
-        )
-      );
-
-      // إرسال الطلب مع تضمين معرف الإشعار في الجسم
-      await markAsReadRequest!({ data: { notificationId } });
-
-      // إعادة جلب البيانات من الخادم
-      refetch();
-      refetchUnread();
-    } catch (error) {
-      console.error("❌ حدث خطأ أثناء تمييز الإشعار كمقروء:", error);
-    }
-  };
-
-  // دالة لتعليم جميع الإشعارات كمقروءة بإرسال جسم الطلب المناسب
   const markAllAsReadHandler = async () => {
     try {
-      // تحديث الحالة المحلية
       setUnreadNotifications([]);
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
       );
 
-      // إرسال الطلب مع تحديد markAll في الجسم
       await markAsReadRequest!({ data: { markAll: true } });
 
-      // إعادة جلب البيانات من الخادم
       refetch();
       refetchUnread();
     } catch (error) {
@@ -153,12 +113,11 @@ function Notifications() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* عنوان الصفحة */}
+    <Box sx={{ p: 3, direction: "rtl", textAlign: "right" }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         الإشعارات
       </Typography>
-      {/* زر تمييز الكل كمقروء */}
+
       <Box sx={{ mb: 3 }}>
         <Button
           variant="contained"
@@ -170,13 +129,13 @@ function Notifications() {
           {markingLoading ? "جارٍ التحديث..." : "تمييز الكل كمقروء"}
         </Button>
       </Box>
-      {/* حالة التحميل */}
+
       {(GlobalLoading || UnreadLoading) && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
           <CircularProgress />
         </Box>
       )}
-      {/* عرض الإشعارات غير المقروءة */}
+
       {!GlobalLoading &&
         !UnreadLoading &&
         unreadNotificationsFiltered.length > 0 && (
@@ -189,21 +148,15 @@ function Notifications() {
                 <React.Fragment key={notification.id}>
                   <ListItem
                     alignItems="flex-start"
-                    onClick={() =>{}
-                     /*  markSingleNotificationAsRead(notification.id) */
-                    }
                     sx={{
                       cursor: "pointer",
                       backgroundColor: "#e3f2fd",
                       "&:hover": { backgroundColor: "#bbdefb" },
                     }}
                   >
-                    <ListItemAvatar>
+                    <ListItemAvatar sx={{ mr: 2 }}>
                       <Avatar
-                        src={
-                          notification.data.body.driver?.avatar ||
-                          "/images/default-avatar.png"
-                        }
+                        src={`https://tawsella.online${notification.data.body.driver?.avatar}`}
                       />
                     </ListItemAvatar>
                     <ListItemText
@@ -233,7 +186,9 @@ function Notifications() {
                           )}
                         </>
                       }
+                      sx={{ textAlign: "right" }}
                     />
+
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </React.Fragment>
@@ -241,7 +196,7 @@ function Notifications() {
             </List>
           </>
         )}
-      {/* عرض الإشعارات المقروءة */}
+
       {!GlobalLoading && !UnreadLoading && readNotifications.length > 0 && (
         <>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -251,12 +206,9 @@ function Notifications() {
             {readNotifications.map((notification) => (
               <React.Fragment key={notification.id}>
                 <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
+                  <ListItemAvatar sx={{ mr: 2 }}>
                     <Avatar
-                      src={
-                        notification.data.body.driver?.avatar ||
-                        "/images/default-avatar.png"
-                      }
+                      src={`https://tawsella.online${notification.data.body.driver?.avatar}`}
                     />
                   </ListItemAvatar>
                   <ListItemText
@@ -282,7 +234,9 @@ function Notifications() {
                         )}
                       </>
                     }
+                    sx={{ textAlign: "right" }}
                   />
+
                 </ListItem>
                 <Divider variant="inset" component="li" />
               </React.Fragment>
@@ -290,15 +244,11 @@ function Notifications() {
           </List>
         </>
       )}
-      {/* إذا لم توجد إشعارات */}
+
       {!GlobalLoading &&
         !UnreadLoading &&
         notifications.length === 0 && (
-          <Typography
-            variant="subtitle1"
-            color="text.secondary"
-            textAlign="center"
-          >
+          <Typography variant="subtitle1" color="text.secondary" textAlign="center">
             لا توجد إشعارات حاليًا.
           </Typography>
         )}
