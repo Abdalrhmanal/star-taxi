@@ -188,7 +188,6 @@ function Notifications() {
                       }
                       sx={{ textAlign: "right" }}
                     />
-
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </React.Fragment>
@@ -236,7 +235,6 @@ function Notifications() {
                     }
                     sx={{ textAlign: "right" }}
                   />
-
                 </ListItem>
                 <Divider variant="inset" component="li" />
               </React.Fragment>
