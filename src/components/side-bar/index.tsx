@@ -176,6 +176,7 @@ const Sidebar: FC = () => {
           fullWidth
           sx={{
             borderRadius: "12px",
+            ml:5,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
