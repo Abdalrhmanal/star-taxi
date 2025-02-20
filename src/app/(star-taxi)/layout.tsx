@@ -35,7 +35,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         <Navbar />
       </Box>
 
-      <Box sx={{ display: "flex", flex: 1, overflow: "hidden", pt: "80px" }}>
+      <Box sx={{ display: "flex", flex: 1, overflow: "hidden", pt: "60px" }}>
         <Box
           sx={{
             display: { xs: "none", md: "block" },

@@ -1,14 +1,8 @@
-// components/Home.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
-    Grid,
-    Typography,
-    Box,
-    Snackbar,
-    Alert,
-    Skeleton,
+    Grid, Typography, Box, Snackbar, Alert, Skeleton,
 } from "@mui/material";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,166 +12,136 @@ import TabDynamis from "@/components/Dynamic-Tabs";
 import useGlobalData from "@/hooks/get-global";
 import Requests from "@/components/requests";
 
-// إعدادات الخريطة
-const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
-const mapContainerStyle = {
-    width: "100%",
-    height: "70vh",
-};
-const defaultCenter = {
-    lat: 34.8021,
-    lng: 38.9968,
-};
+const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0" ;
+const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
+const DEFAULT_CENTER = { lat: 34.8021, lng: 38.9968 };
 
 export default function Home() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const selectedItemId = searchParams.get("selectedItemId");
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [customerLocation, setCustomerLocation] = useState<{ lat: number; lng: number } | null>(null);
-    const [customerInfo, setCustomerInfo] = useState<{ address: string; destination: string } | null>(null);
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [userId, setUserId] = useState<string | null>(null);
-    const [notificationOpen, setNotificationOpen] = useState(false);
-    const [notificationMessage, setNotificationMessage] = useState("");
-    const [mapCenter, setMapCenter] = useState(defaultCenter);
-
+    const [notification, setNotification] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
+    const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    
     // جلب بيانات الطلبات
-    const dataSourceName = "api/taxi-movement";
     const { data: GlobalData, isLoading: GlobalLoading, refetch } = useGlobalData<any>({
-        dataSourceName,
+        dataSourceName: "api/taxi-movement",
         enabled: true,
         setOldDataAsPlaceholder: true,
     });
 
-    // جلب userId من الكوكيز
+    // استخراج userId من الكوكيز
     useEffect(() => {
-        const userDataString = Cookies.get("user_data");
-        if (userDataString) {
-            try {
-                const userData = JSON.parse(decodeURIComponent(userDataString));
-                setUserId(userData.id);
-            } catch (error) {
-                console.error("❌ خطأ في تحليل بيانات user_data:", error);
-            }
+        try {
+            const userData = Cookies.get("user_data");
+            if (userData) setUserId(JSON.parse(decodeURIComponent(userData)).id);
+        } catch (error) {
+            console.error("❌ خطأ في تحليل بيانات user_data:", error);
         }
     }, []);
 
-    // الاستماع للقناة الخاصة بالإشعارات
+    // دالة لتشغيل صوت الإشعار
+    const playNotificationSound = useCallback(() => {
+        new Audio("/notification.mp3").play();
+    }, []);
+
+    // دالة الاشتراك في قنوات Reverb
+    const subscribeToChannel = useCallback((channelName: string, eventName: string, callback: (event: any) => void) => {
+        if (!userId) return;
+
+        const echo = getEchoInstance();
+        if (!echo) return;
+
+        console.log(`✅ الاشتراك في القناة ${channelName}.${userId}`);
+        const channel = echo.channel(`${channelName}.${userId}`);
+        channel.listen(eventName, (event: any) => {
+            console.log(`📌 حدث جديد (${eventName}):`, event);
+            playNotificationSound();
+            callback(event);
+        });
+
+        return () => {
+            echo.leaveChannel(`${channelName}.${userId}`);
+        };
+    }, [userId, playNotificationSound]);
+
+    // إعدادات القنوات والإشعارات
     useEffect(() => {
         if (!userId) return;
 
-        console.log(`✅ الاشتراك في القناة TaxiMovement.${userId}`);
-        const echo = getEchoInstance();
-        if (echo) {
-            const channel = echo.channel(`TaxiMovement.${userId}`);
-            channel.listen(".requestingTransportationService", (event: any) => {
-                console.log("📌 طلب جديد وصل:", event);
-
-                // تشغيل صوت الإشعار
-                const audio = new Audio("/notification.mp3");
-                audio.play();
-
-                // إظهار الإشعار
-                setNotificationMessage(
-                    `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`
-                );
-                setNotificationOpen(true);
-
-                // تحديث البيانات
+        const unsubscribers = [
+            subscribeToChannel("TaxiMovement", ".requestingTransportationService", (event) => {
+                setNotification({ open: true, message: `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}` });
                 refetch();
-            });
+            }),
+            subscribeToChannel("foundCustomer", ".foundCustomer", (event) => {
+                setNotification({ open: true, message: `السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}` });
+                refetch();
+            }),
+            subscribeToChannel("movementCompleted", ".movementCompleted", (event) => {
+                setNotification({ open: true, message: `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}` });
+                refetch();
+            }),
+            subscribeToChannel("customerCancelMovement", ".customerCancelMovement", (event) => {
+                setNotification({ open: true, message: `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}` });
+                refetch();
+            }),
+        ];
 
-            return () => {
-                echo.leaveChannel(`TaxiMovement.${userId}`);
-            };
-        }
-    }, [userId, refetch]);
-
-    // إغلاق الإشعار
-    const handleCloseNotification = () => {
-        setNotificationOpen(false);
-    };
+        return () => unsubscribers.forEach((unsubscribe) => unsubscribe && unsubscribe());
+    }, [userId, refetch, subscribeToChannel]);
 
     // عند تحديد طلب معين من الـ URL
     useEffect(() => {
         if (selectedItemId && GlobalData?.data?.length) {
             const foundOrder = GlobalData.data.find((order: any) => order.id === selectedItemId);
             if (foundOrder) {
-                console.log("✅ الطلب المحدد:", foundOrder);
                 setSelectedOrder(foundOrder);
-                setCustomerLocation({
-                    lat: parseFloat(foundOrder.start_latitude),
-                    lng: parseFloat(foundOrder.start_longitude),
-                });
-                setCustomerInfo({
-                    address: foundOrder.customer_address,
-                    destination: foundOrder.destination_address,
-                });
-                setMapCenter({
-                    lat: parseFloat(foundOrder.start_latitude),
-                    lng: parseFloat(foundOrder.start_longitude),
-                });
-            } else {
-                console.warn("🚨 لم يتم العثور على الطلب المحدد في البيانات.");
+                setMapCenter({ lat: parseFloat(foundOrder.start_latitude), lng: parseFloat(foundOrder.start_longitude) });
             }
         }
     }, [selectedItemId, GlobalData]);
 
     return (
         <>
-            <Snackbar open={notificationOpen} autoHideDuration={6000} onClose={handleCloseNotification}>
-                <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
-                    {notificationMessage}
-                </Alert>
+            <Snackbar open={notification.open} autoHideDuration={6000} onClose={() => setNotification({ ...notification, open: false })}>
+                <Alert severity="info" sx={{ width: "100%" }}>{notification.message}</Alert>
             </Snackbar>
 
-            {/* تخطيط متجاوب باستخدام Grid */}
             <Grid container spacing={2} sx={{ direction: "rtl" }}>
-                {/* قسم الطلبات */}
                 <Grid item xs={12} md={3}>
-                    <TabDynamis routesData={GlobalData?.data ?? []} isLoading={isLoading} higthTab={79} />
+                    <TabDynamis routesData={GlobalData?.data ?? []} isLoading={GlobalLoading} higthTab={79} />
                 </Grid>
 
-                {/* الخريطة */}
-                <Grid xs={12} md={9}>
-                    <LoadScript googleMapsApiKey={googleMapsApiKey}>
-                        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={10} center={mapCenter}>
-                            {customerLocation && (
-                                <Marker position={customerLocation}>
-                                    {customerInfo && (
-                                        <InfoWindow position={customerLocation}>
-                                            <div style={{ fontSize: "14px", fontWeight: "bold", textAlign: "center" }}>
-                                                📍 {customerInfo.address} → 🎯 {customerInfo.destination}
-                                            </div>
-                                        </InfoWindow>
-                                    )}
+                <Grid item xs={12} md={9}>
+                    <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+                        <GoogleMap mapContainerStyle={MAP_CONTAINER_STYLE} zoom={10} center={mapCenter}>
+                            {selectedOrder && (
+                                <Marker position={{ lat: parseFloat(selectedOrder.start_latitude), lng: parseFloat(selectedOrder.start_longitude) }}>
+                                    <InfoWindow>
+                                        <div style={{ fontSize: "14px", fontWeight: "bold", textAlign: "center" }}>
+                                            📍 {selectedOrder.customer_address} → 🎯 {selectedOrder.destination_address}
+                                        </div>
+                                    </InfoWindow>
                                 </Marker>
                             )}
                         </GoogleMap>
                     </LoadScript>
 
-
-                    {/* معالجة الطلب (قبول/رفض) أو عرض المحتوى أثناء التحميل */}
-                    <Grid xs={12} md={9}>
+                    <Box p={2}>
                         {selectedOrder ? (
                             <Requests selectedOrder={selectedOrder} />
                         ) : (
-                            <Box p={2}>
+                            <>
                                 <Skeleton variant="text" height={40} width="50%" />
+                                <Typography variant="h6" fontWeight="bold">اذكر الله واستعن به على رزقك , بانتظار طلبات الزبائن</Typography>
                                 <Skeleton variant="text" height={20} width="80%" />
-                                <Typography variant="h6" fontWeight="bold">
-                                    اذكر الله واستعن به على رزقك , بانتظار طلبات الزبائن
-                                </Typography>
-                                <Skeleton variant="text" height={20} width="80%" />
-                                <Box display="flex" justifyContent="space-between" mt={2}>
-                                    <Skeleton variant="rectangular" width={120} height={40} />
-                                    <Skeleton variant="rectangular" width={120} height={40} />
-                                </Box>
-                            </Box>
+                            </>
                         )}
-                    </Grid>
+                    </Box>
                 </Grid>
             </Grid>
         </>
