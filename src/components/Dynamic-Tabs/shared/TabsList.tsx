@@ -69,6 +69,7 @@ function TabsList({ item, selectedId, setSelectedId }: TabsListProps) {
           </Avatar>
         )}
 
+
         <Box display="flex" flexDirection="column">
           <Typography fontWeight="500">
             {item?.customer || "زبون مجهول"} - {item?.gender || "غير محدد"}

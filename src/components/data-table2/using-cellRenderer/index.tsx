@@ -6,8 +6,8 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
     case "driver_state":
       return (
         <Chip
-          label={row.driver_state === "Ready" ? "نشط" : "غير نشط"}
-          color={row.driver_state === "Ready" ? "success" : "error"}
+          label={row.driver_state === "Ready" || row.driver_state === 0 ? "نشط" : "غير نشط"}
+          color={row.driver_state === "Ready" || row.driver_state === 0 ? "success" : "error"}
         />
       );
 

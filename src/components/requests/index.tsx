@@ -27,7 +27,7 @@ function Requests({ selectedOrder }: any) {
   const [availableDrivers, setAvailableDrivers] = useState<Driver[]>([]);
   useEffect(() => {
     if (GlobalData?.data) {
-      const filteredDrivers = GlobalData?.data.filter((driver: any) => driver.driver_state === "Ready");
+      const filteredDrivers = GlobalData?.data.filter((driver: any) => driver.driver_state === "Ready" || driver.driver_state === 0);
       setAvailableDrivers(filteredDrivers);
     }
   }, [GlobalData]);
