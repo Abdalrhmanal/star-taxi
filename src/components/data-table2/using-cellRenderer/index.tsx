@@ -1,14 +1,12 @@
 import React from "react";
 import { Typography, Chip, Grid, Avatar } from "@mui/material";
+import { getStatusStyle } from "@/components/helper/style-status";
 
 export const renderCell = (field: string, value: any, row: any): React.ReactNode => {
   switch (field) {
     case "driver_state":
       return (
-        <Chip
-          label={row.driver_state === "Ready" || row.driver_state === 0 ? "نشط" : "غير نشط"}
-          color={row.driver_state === "Ready" || row.driver_state === 0 ? "success" : "error"}
-        />
+        <Chip label={row.driver_state} sx={getStatusStyle(row.driver_state)} />
       );
 
     case "age":

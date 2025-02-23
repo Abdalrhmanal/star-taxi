@@ -38,6 +38,8 @@ function Home() {
   }>({ open: false, message: "" });
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   // جلب بيانات الطلبات
   const { data: GlobalData, isLoading: GlobalLoading, refetch } =
@@ -157,17 +159,20 @@ function Home() {
     }
   }, [selectedItemId, GlobalData]);
 
+  // إغلاق الإشعار
+  const handleCloseNotification = () => {
+    setNotificationOpen(false);
+  };
+
   return (
     <>
       <Snackbar
-        open={notification.open}
+        open={notificationOpen}
         autoHideDuration={6000}
-        onClose={() =>
-          setNotification({ ...notification, open: false })
-        }
+        onClose={handleCloseNotification}
       >
-        <Alert severity="info" sx={{ width: "100%" }}>
-          {notification.message}
+        <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
+          {notificationMessage || notification.message}
         </Alert>
       </Snackbar>
 
