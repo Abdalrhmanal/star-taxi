@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, Drawer, Grid, TextField, Snackbar, Alert } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -12,7 +13,7 @@ interface Driver {
   has_taxi: boolean;
 }
 
-function Requests({ selectedOrder }: any) {
+function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?: () => void }) {
   // حالات فتح/إغلاق Drawers
   const [openAcceptDrawer, setOpenAcceptDrawer] = useState(false);
   const [openRejectDrawer, setOpenRejectDrawer] = useState(false);
@@ -59,6 +60,7 @@ function Requests({ selectedOrder }: any) {
       setNotificationMessage(`✅ تم قبول الطلب وتم تعيين السائق ${availableDrivers.find((d) => d.driver_id === selectedDriverId)?.name}!`);
       setNotificationSeverity("success");
       setNotificationOpen(true);
+      if (onSuccess) onSuccess();
     } else if (acceptError) {
       setNotificationMessage("❌ حدث خطأ أثناء قبول الطلب. الرجاء المحاولة مجددًا.");
       setNotificationSeverity("error");
@@ -89,6 +91,7 @@ function Requests({ selectedOrder }: any) {
       setNotificationMessage("❌ تم رفض الطلب بنجاح.");
       setNotificationSeverity("success");
       setNotificationOpen(true);
+      if (onSuccess) onSuccess();
     } else if (rejectError) {
       setNotificationMessage("❌ حدث خطأ أثناء رفض الطلب. الرجاء المحاولة مجددًا.");
       setNotificationSeverity("error");
