@@ -93,15 +93,7 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     }
   }, [UnreadData]);
 
-  useEffect(() => {
-    if (success) {
-      if (onSuccess) onSuccess();
-      refetch();
-      refetchUnread();
-    } else if (isError) {
-      console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", isError);
-    }
-  }, [success, isError, onSuccess, refetch, refetchUnread]);
+    
 
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
@@ -112,6 +104,13 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
 
   const markAllAsReadHandler = async () => {
     try {
+      if (success) {
+        if (onSuccess) onSuccess();
+        refetch();
+        refetchUnread();
+      } else if (isError) {
+        console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", isError);
+      }
       setUnreadNotifications([]);
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
