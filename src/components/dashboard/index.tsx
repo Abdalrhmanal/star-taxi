@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Grid,
   Typography,
@@ -26,12 +26,13 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
 const DEFAULT_CENTER = { lat: 34.8021, lng: 38.9968 };
 
-function Home() {
+function Home({adminId, onSuccess }: {adminId:string; onSuccess?: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedItemId = searchParams.get("selectedItemId");
+  
+  console.log("adminId : ", adminId);
 
-  const [userId, setUserId] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -49,17 +50,6 @@ function Home() {
       setOldDataAsPlaceholder: true,
     });
 
-  // استخراج userId من الكوكيز
-  useEffect(() => {
-    try {
-      const userData = Cookies.get("user_data");
-      if (userData)
-        setUserId(JSON.parse(decodeURIComponent(userData)).id);
-    } catch (error) {
-      console.error("❌ خطأ في تحليل بيانات user_data:", error);
-    }
-  }, []);
-
   // دالة لتشغيل صوت الإشعار
   const playNotificationSound = useCallback(() => {
     new Audio("/notification.mp3").play();
@@ -72,13 +62,13 @@ function Home() {
       eventName: string,
       callback: (event: any) => void
     ) => {
-      if (!userId) return;
+      if (!adminId) return;
 
       const echo = getEchoInstance();
       if (!echo) return;
 
-      console.log(`✅ الاشتراك في القناة ${channelName}.${userId}`);
-      const channel = echo.channel(`${channelName}.${userId}`);
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
       channel.listen(eventName, (event: any) => {
         console.log(`📌 حدث جديد (${eventName}):`, event);
         playNotificationSound();
@@ -86,15 +76,15 @@ function Home() {
       });
 
       return () => {
-        echo.leaveChannel(`${channelName}.${userId}`);
+        echo.leaveChannel(`${channelName}.${adminId}`);
       };
     },
-    [userId, playNotificationSound]
+    [adminId, playNotificationSound]
   );
 
   // إعدادات القنوات والإشعارات
   useEffect(() => {
-    if (!userId) return;
+    if (!adminId) return;
 
     const unsubscribers = [
       subscribeToChannel(
@@ -105,6 +95,8 @@ function Home() {
             open: true,
             message: `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`,
           });
+          setNotificationMessage(
+            `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`)
           refetch();
         }
       ),
@@ -113,6 +105,7 @@ function Home() {
           open: true,
           message: `السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}`,
         });
+        setNotificationMessage(`السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}`)
         refetch();
       }),
       subscribeToChannel(
@@ -123,6 +116,7 @@ function Home() {
             open: true,
             message: `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`,
           });
+          setNotificationMessage(`السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`)
           refetch();
         }
       ),
@@ -134,6 +128,7 @@ function Home() {
             open: true,
             message: `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`,
           });
+          setNotificationMessage(`الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`)
           refetch();
         }
       ),
@@ -141,7 +136,7 @@ function Home() {
 
     return () =>
       unsubscribers.forEach((unsubscribe) => unsubscribe && unsubscribe());
-  }, [userId, refetch, subscribeToChannel]);
+  }, [adminId, refetch, subscribeToChannel]);
 
   // عند تحديد طلب معين من الـ URL
   useEffect(() => {
@@ -222,7 +217,7 @@ function Home() {
 
           <Box p={2}>
             {selectedOrder ? (
-              <Requests selectedOrder={selectedOrder} onSuccess={refetch} />
+              <Requests selectedOrder={selectedOrder} onSuccess={() => { refetch(); if (onSuccess) onSuccess(); }} />
             ) : (
               <>
                 <Skeleton variant="text" height={40} width="50%" />
