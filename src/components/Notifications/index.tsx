@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -42,7 +44,7 @@ interface Notification {
   };
 }
 
-function Notifications() {
+function Notifications({ onSuccess }: { onSuccess?: () => void }) {
   const notificationsApi = "api/notifications";
   const {
     data: GlobalData,
@@ -68,6 +70,8 @@ function Notifications() {
   const {
     isLoading: markingLoading,
     createData: markAsReadRequest,
+    success,
+    isError
   } = useCreateData<any>({
     dataSourceName: notificationsApi,
   });
@@ -89,6 +93,16 @@ function Notifications() {
     }
   }, [UnreadData]);
 
+  useEffect(() => {
+    if (success) {
+      if (onSuccess) onSuccess();
+      refetch();
+      refetchUnread();
+    } else if (isError) {
+      console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", isError);
+    }
+  }, [success, isError, onSuccess, refetch, refetchUnread]);
+
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
   );
@@ -103,10 +117,7 @@ function Notifications() {
         prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
       );
 
-      await markAsReadRequest!({ data: { markAll: true } });
-
-      refetch();
-      refetchUnread();
+      await markAsReadRequest({ data: { markAll: true } });
     } catch (error) {
       console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", error);
     }

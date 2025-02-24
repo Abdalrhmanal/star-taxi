@@ -79,7 +79,7 @@ export const menuItems: MenuItemType[] = [
   { text: "السائقين", href: "/drivers", icon: <PeopleAltIcon />, isActive: false },
 ];
 
-const Navbar = () => {
+const Navbar = ({ onSuccess }: { onSuccess?: () => void }) => {
   const router = useRouter(); // استخدام useRouter
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -107,7 +107,7 @@ const Navbar = () => {
   };
 
   // جلب عدد الإشعارات غير المقروءة
-  const { data: UnreadData, isLoading: UnreadLoading } = useGlobalData<any>({
+  const { data: UnreadData, isLoading: UnreadLoading, refetch } = useGlobalData<any>({
     dataSourceName: "api/notifications/unread",
     enabled: true,
     setOldDataAsPlaceholder: true,
@@ -136,7 +136,7 @@ const Navbar = () => {
     setNotificationsAnchorEl(null);
   };
   return (
-    <Box sx={{  direction: "rtl" }}>
+    <Box sx={{ direction: "rtl" }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ display: { xs: "none", sm: "block" } }}>
@@ -214,7 +214,7 @@ const Navbar = () => {
         open={isNotificationsMenuOpen}
         onClose={handleNotificationsMenuClose}
       >
-        <Notifications />
+        <Notifications onSuccess={() => { refetch(); if (onSuccess) onSuccess(); }} />
       </Menu>
     </Box>
   );
