@@ -26,11 +26,11 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
 const DEFAULT_CENTER = { lat: 34.8021, lng: 38.9968 };
 
-function Home({adminId, onSuccess }: {adminId:string; onSuccess?: () => void }) {
+function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedItemId = searchParams.get("selectedItemId");
-  
+
   console.log("adminId : ", adminId);
 
   const [notification, setNotification] = useState<{
@@ -165,11 +165,14 @@ function Home({adminId, onSuccess }: {adminId:string; onSuccess?: () => void }) 
         open={notificationOpen}
         autoHideDuration={6000}
         onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // تحديد الموقع في الأعلى بالوسط
+        sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1301 }}
       >
         <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
           {notificationMessage || notification.message}
         </Alert>
       </Snackbar>
+
 
       <Grid container spacing={2} sx={{ direction: "rtl" }}>
         <Grid item xs={12} md={3}>

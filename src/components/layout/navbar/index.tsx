@@ -214,7 +214,7 @@ const Navbar = ({ onSuccess }: { onSuccess?: () => void }) => {
         open={isNotificationsMenuOpen}
         onClose={handleNotificationsMenuClose}
       >
-        <Notifications onSuccess={() => { refetch() }} />
+        <Notifications onSuccess={() => { refetch(); if (onSuccess) onSuccess(); }} />
       </Menu>
     </Box>
   );
