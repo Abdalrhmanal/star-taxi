@@ -216,7 +216,7 @@ function Home({adminId, onSuccess }: {adminId:string; onSuccess?: () => void }) 
           </LoadScript>
 
           <Box p={2}>
-            {selectedOrder ? (
+            {selectedItemId && selectedOrder ? (
               <Requests selectedOrder={selectedOrder} onSuccess={() => { refetch(); if (onSuccess) onSuccess(); }} />
             ) : (
               <>

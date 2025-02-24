@@ -6,6 +6,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import useGlobalData from "@/hooks/get-global";
 import { useForm, Controller } from "react-hook-form";
 import useCreateData from "@/hooks/post-global";
+import { useRouter } from "next/navigation";
 
 interface Driver {
   driver_id: string;
@@ -14,6 +15,8 @@ interface Driver {
 }
 
 function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?: () => void }) {
+  const router = useRouter();
+
   // حالات فتح/إغلاق Drawers
   const [openAcceptDrawer, setOpenAcceptDrawer] = useState(false);
   const [openRejectDrawer, setOpenRejectDrawer] = useState(false);
@@ -85,19 +88,26 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
 
   const handleReject = async (data: { message: string }) => {
     await rejectData(data);
+  };
 
+  useEffect(() => {
     if (rejectSuccess) {
       setOpenRejectDrawer(false);
       setNotificationMessage("❌ تم رفض الطلب بنجاح.");
       setNotificationSeverity("success");
       setNotificationOpen(true);
       if (onSuccess) onSuccess();
+
+      // إزالة selectedItemId من الـ URL
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("selectedItemId");
+      router.push(newUrl.toString());
     } else if (rejectError) {
       setNotificationMessage("❌ حدث خطأ أثناء رفض الطلب. الرجاء المحاولة مجددًا.");
       setNotificationSeverity("error");
       setNotificationOpen(true);
     }
-  };
+  }, [rejectSuccess, rejectError, onSuccess, router]);
 
   // حالة الإشعار عند نجاح العملية أو فشلها
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -108,6 +118,23 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
     setNotificationOpen(false);
   };
 
+  const handleCopyPhoneNumber = () => {
+    if (selectedOrder?.customer_phone) {
+      navigator.clipboard.writeText(selectedOrder.customer_phone);
+      alert("تم نسخ رقم الهاتف إلى الحافظة");
+    }
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'مساءً' : 'صباحًا';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  };
+
   return (
     <>
       {/* صندوق الطلب */}
@@ -115,10 +142,20 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
         <Typography variant="h6" fontWeight="bold">
           تفاصيل الطلب
         </Typography>
-        <Typography fontSize="16px">🚖 العميل: {selectedOrder.customer}</Typography>
-        <Typography fontSize="16px">📍 العنوان الحالي: {selectedOrder.customer_address}</Typography>
+        <Typography fontSize="16px">🚖 العميل: {selectedOrder.customer_name}</Typography>
+        <Button
+          variant="text"
+          onClick={handleCopyPhoneNumber}
+          sx={{ textAlign: "right", padding: 0, minWidth: 0 }}
+        >
+          رقم الجوال {selectedOrder?.customer_phone || "رقم الهاتف غير متوفر"}
+        </Button>
+        <Typography fontSize="16px">📍 العنوان: {selectedOrder.customer_email}</Typography>
+        <Typography fontSize="16px">📍 العنوان الحالي: {selectedOrder.start_address}</Typography>
         <Typography fontSize="16px">🎯 الوجهة: {selectedOrder.destination_address}</Typography>
-        <Typography fontSize="16px">⏰ وقت الطلب: {selectedOrder.time}</Typography>
+        <Typography fontSize="12px" color="text.secondary">
+          وقت الطلب : {selectedOrder?.date ? formatTime(selectedOrder.date) : "توقيت غير متوفر"}
+        </Typography>
 
         <Box display="flex" justifyContent="space-between" mt={2}>
           <Button variant="contained" color="success" size="large" onClick={() => setOpenAcceptDrawer(true)}>

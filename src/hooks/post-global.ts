@@ -15,7 +15,7 @@ type UseCreateDataResult<T> = {
 
 const BASE_URL = "https://tawsella.online";
 
-const useCreateData = function <T>({
+/* const useCreateData = function <T>({
     dataSourceName,
 }: UseCreateDataOptions<T>): UseCreateDataResult<T> {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,4 +57,50 @@ const useCreateData = function <T>({
     return { isLoading, isError, success, createData };
 };
 
+export default useCreateData; */
+const useCreateData = function <T>({
+    dataSourceName,
+}: UseCreateDataOptions<T>): UseCreateDataResult<T> {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
+
+    const createData = async (data: T): Promise<void> => {
+        setIsLoading(true);
+        setIsError(null);
+        setSuccess(false);
+
+        try {
+            const token = Cookies.get("auth_user");
+            if (!token) {
+                throw new Error("Authentication token is missing.");
+            }
+
+            const headers = {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+
+            const url = `${BASE_URL}/${dataSourceName}`;
+            const response = await axios.post(url, data, { headers });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccess(true); // تأكد من نجاح الطلب
+            } else {
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setIsError(error.message);
+            } else {
+                setIsError("An unknown error occurred.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return { isLoading, isError, success, createData };
+};
 export default useCreateData;
