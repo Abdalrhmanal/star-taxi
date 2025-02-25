@@ -1,11 +1,13 @@
 "use client";
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Navbar from "@/components/layout/navbar";
 import Sidebar from "@/components/side-bar";
 import Drawer from "@mui/material/Drawer";
 import Fab from "@mui/material/Fab";
 import MenuIcon from "@mui/icons-material/Menu";
+import getEchoInstance from "@/reverb";
+import { useAuth } from "@/context/AuthContext";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -13,10 +15,81 @@ interface MainLayoutProps {
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const { user } = useAuth();
+  const adminId = user?.id || "";
   const handleDrawerToggle = () => {
     setDrawerOpen((prev) => !prev);
   };
+  // دالة لتشغيل صوت الإشعار
+  const playNotificationSound = useCallback(() => {
+    new Audio("/notification.mp3").play();
+  }, []);
+
+  // دالة الاشتراك في قنوات Reverb
+  const subscribeToChannel = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
+
+  // إعدادات القنوات والإشعارات
+  useEffect(() => {
+    if (!adminId) return;
+
+    const unsubscribers = [
+      subscribeToChannel(
+        "TaxiMovement",
+        ".requestingTransportationService",
+        (event) => {
+          console.log("TaxiMovement event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "foundCustomer",
+        ".foundCustomer",
+        (event) => {
+          console.log("foundCustomer event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "movementCompleted",
+        ".movementCompleted",
+        (event) => {
+          console.log("movementCompleted event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "customerCancelMovement",
+        ".customerCancelMovement",
+        (event) => {
+          console.log("customerCancelMovement event:", event);
+        }
+      ),
+    ];
+
+    return () =>
+      unsubscribers.forEach((unsubscribe) => unsubscribe && unsubscribe());
+  }, [adminId, subscribeToChannel]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#DDECFF99" }}>
