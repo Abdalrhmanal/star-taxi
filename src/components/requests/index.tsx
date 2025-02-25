@@ -57,20 +57,25 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
   const handleAccept = async () => {
     if (!selectedDriverId) return;
     await acceptData({ driver_id: selectedDriverId });
-
-    if (acceptSuccess) {
-      setOpenAcceptDrawer(false);
-      setNotificationMessage(`✅ تم قبول الطلب وتم تعيين السائق ${availableDrivers.find((d) => d.driver_id === selectedDriverId)?.name}!`);
-      setNotificationSeverity("success");
-      setNotificationOpen(true);
-      if (onSuccess) onSuccess();
-    } else if (acceptError) {
-      setNotificationMessage("❌ حدث خطأ أثناء قبول الطلب. الرجاء المحاولة مجددًا.");
-      setNotificationSeverity("error");
-      setNotificationOpen(true);
-    }
   };
+ useEffect(() => {
+      if (acceptSuccess) {
+        setOpenAcceptDrawer(false);
+        setNotificationMessage(`✅ تم قبول الطلب وتم تعيين السائق ${availableDrivers.find((d) => d.driver_id === selectedDriverId)?.name}!`);
+        setNotificationSeverity("success");
+        setNotificationOpen(true);
+        if (onSuccess) onSuccess();
 
+        // إزالة selectedItemId من الـ URL
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("selectedItemId");
+        router.push(newUrl.toString());
+      } else if (acceptError) {
+        setNotificationMessage("❌ حدث خطأ أثناء قبول الطلب. الرجاء المحاولة مجددًا.");
+        setNotificationSeverity("error");
+        setNotificationOpen(true);
+      }
+    }, [acceptSuccess, acceptError, onSuccess, router]);
   // **📌 رفض الطلب**
   const {
     control: rejectControl,
@@ -141,7 +146,7 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
         open={notificationOpen}
         autoHideDuration={6000}
         onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1301 }}
       >
         <Alert onClose={handleCloseNotification} severity={notificationSeverity} sx={{ width: "100%" }}>
