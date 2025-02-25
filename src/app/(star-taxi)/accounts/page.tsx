@@ -10,8 +10,8 @@ function Accounts() {
         /* { headerName: "ID", field: "id", sortable: true }, */
         { headerName: "الاسم", field: "name", sortable: false },
         { headerName: "لوحة السيارة", field: "plate_number", sortable: true },
-        { headerName: "الحساب اليومي", field: "today_account", sortable: true },
-        { headerName: "جميع الحسابات", field: "all_account", sortable: true },
+        { headerName: "الحساب اليومي", field: "today_accounted", sortable: true },
+        { headerName: "جميع الحسابات", field: "all_accounted", sortable: true },
 
     ];
     const handleActionClick = (row: any) => {

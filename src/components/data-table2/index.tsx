@@ -18,7 +18,7 @@ const GridTable: React.FC<GridTableProps> = ({
   const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
 
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState( currentPath === "/advertisements" ? 5 : 9);
+  const [pageSize, setPageSize] = useState(currentPath === "/advertisements" ? 5 : 9);
 
   interface GlobalDataType {
     data: any[];
@@ -27,11 +27,7 @@ const GridTable: React.FC<GridTableProps> = ({
     };
   }
 
-  const {
-    data: GlobalData,
-    isLoading: GlobalLoading,
-    refetch
-  } = useGlobalData<GlobalDataType | any>({
+  const { data: GlobalData, isLoading: GlobalLoading, refetch } = useGlobalData<GlobalDataType | any>({
     dataSourceName,
     enabled: true,
     setOldDataAsPlaceholder: true,

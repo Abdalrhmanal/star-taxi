@@ -31,9 +31,7 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
               <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender || ''}</Typography>
             </Grid>
           </Grid>
-
         </Grid>
-
       </>;
 
     case "actions":
@@ -51,8 +49,6 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       );
     case "logo":
     case "icon":
-      console.log(row.logo);
-
       return (
         <Avatar
           alt="User Avatar"
@@ -94,6 +90,22 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       }).format(new Date(row.date)) : '';
       return (
         <Typography fontWeight="bold">{formattedDate}</Typography>
+      );
+    case "today_accounted":
+      return (
+        <Typography fontWeight="bold">
+          {Array.isArray(row.today_account) && row.today_account.length > 0
+            ? `${row.today_account[0].coin} ${row.today_account[0].total_amount}`
+            : '00'}
+        </Typography>
+      );
+    case "all_accounted":
+      return (
+        <Typography fontWeight="bold">
+          {Array.isArray(row.all_account) && row.all_account.length > 0
+            ? `${row.all_account[0].coin} ${row.all_account[0].total_amount}`
+            : '00'}
+        </Typography>
       );
     default:
       return value ?? "-";

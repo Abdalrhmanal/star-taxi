@@ -51,7 +51,6 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
     const { isLoading: isCreating, isError: createError, success: createSuccess, createData } = useCreateData({
         dataSourceName: `api/calculations/bring/${id}`,
     });
-
     const router = useRouter();
 
     const handleView = () => {
@@ -84,6 +83,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
         if (selectedDriver) {
             if (createData) {
                 await createData(selectedDriver.driver_id);
+                onDataUpdated(); // إعادة جلب البيانات بعد إتمام عملية الدفع بنجاح
             }
             setOpenPaymentDialog(false);
         }
