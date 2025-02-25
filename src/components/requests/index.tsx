@@ -58,24 +58,24 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
     if (!selectedDriverId) return;
     await acceptData({ driver_id: selectedDriverId });
   };
- useEffect(() => {
-      if (acceptSuccess) {
-        setOpenAcceptDrawer(false);
-        setNotificationMessage(`✅ تم قبول الطلب وتم تعيين السائق ${availableDrivers.find((d) => d.driver_id === selectedDriverId)?.name}!`);
-        setNotificationSeverity("success");
-        setNotificationOpen(true);
-        if (onSuccess) onSuccess();
+  useEffect(() => {
+    if (acceptSuccess) {
+      setOpenAcceptDrawer(false);
+      setNotificationMessage(`✅ تم قبول الطلب وتم تعيين السائق ${availableDrivers.find((d) => d.driver_id === selectedDriverId)?.name}!`);
+      setNotificationSeverity("success");
+      setNotificationOpen(true);
+      if (onSuccess) onSuccess();
 
-        // إزالة selectedItemId من الـ URL
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete("selectedItemId");
-        router.push(newUrl.toString());
-      } else if (acceptError) {
-        setNotificationMessage("❌ حدث خطأ أثناء قبول الطلب. الرجاء المحاولة مجددًا.");
-        setNotificationSeverity("error");
-        setNotificationOpen(true);
-      }
-    }, [acceptSuccess, acceptError, onSuccess, router]);
+      // إزالة selectedItemId من الـ URL
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("selectedItemId");
+      router.push(newUrl.toString());
+    } else if (acceptError) {
+      setNotificationMessage("❌ حدث خطأ أثناء قبول الطلب. الرجاء المحاولة مجددًا.");
+      setNotificationSeverity("error");
+      setNotificationOpen(true);
+    }
+  }, [acceptSuccess, acceptError, onSuccess, router]);
   // **📌 رفض الطلب**
   const {
     control: rejectControl,

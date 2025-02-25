@@ -93,10 +93,11 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         (event) => {
           setNotification({
             open: true,
-            message: `طلب جديد من ${event.customer}:الموقع الحالي : ${event.customer_address} الوجهة الى → ${event.destination_address}`,
+            message: `طلب جديد من ${event.customer}: الموقع الحالي: ${event.customer_address} الوجهة إلى → ${event.destination_address}`,
           });
           setNotificationMessage(
-            `طلب جديد من الزبون${event.customer}: الموقع الحالي ${event.customer_address} الوجهة الى → ${event.destination_address}`)
+            `طلب جديد من الزبون ${event.customer}: الموقع الحالي ${event.customer_address} الوجهة إلى → ${event.destination_address}`
+          );
           setNotificationOpen(true);
           refetch();
         }
@@ -106,7 +107,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           open: true,
           message: `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`,
         });
-        setNotificationMessage(`السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}`)
+        setNotificationMessage(`السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`);
         setNotificationOpen(true);
         refetch();
       }),
@@ -118,7 +119,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
             open: true,
             message: `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`,
           });
-          setNotificationMessage(`السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`)
+          setNotificationMessage(`السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`);
           setNotificationOpen(true);
           refetch();
         }
@@ -131,7 +132,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
             open: true,
             message: `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`,
           });
-          setNotificationMessage(`الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`)
+          setNotificationMessage(`الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`);
           setNotificationOpen(true);
           refetch();
         }
@@ -169,10 +170,10 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         open={notificationOpen}
         autoHideDuration={6000}
         onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1301 }}
       >
-        <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
+        <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%", direction: "rtl" }}>
           {notificationMessage || notification.message}
         </Alert>
       </Snackbar>
