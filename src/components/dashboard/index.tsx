@@ -93,19 +93,21 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         (event) => {
           setNotification({
             open: true,
-            message: `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`,
+            message: `طلب جديد من ${event.customer}:الموقع الحالي : ${event.customer_address} الوجهة الى → ${event.destination_address}`,
           });
           setNotificationMessage(
-            `طلب جديد من ${event.customer}: ${event.customer_address} → ${event.destination_address}`)
+            `طلب جديد من الزبون${event.customer}: الموقع الحالي ${event.customer_address} الوجهة الى → ${event.destination_address}`)
+          setNotificationOpen(true);
           refetch();
         }
       ),
       subscribeToChannel("foundCustomer", ".foundCustomer", (event) => {
         setNotification({
           open: true,
-          message: `السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}`,
+          message: `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`,
         });
         setNotificationMessage(`السائق ${event.driverName} والزبون ${event.customerName} → ${event.message}`)
+        setNotificationOpen(true);
         refetch();
       }),
       subscribeToChannel(
@@ -117,6 +119,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
             message: `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`,
           });
           setNotificationMessage(`السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`)
+          setNotificationOpen(true);
           refetch();
         }
       ),
@@ -129,6 +132,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
             message: `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`,
           });
           setNotificationMessage(`الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`)
+          setNotificationOpen(true);
           refetch();
         }
       ),
@@ -165,14 +169,13 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         open={notificationOpen}
         autoHideDuration={6000}
         onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // تحديد الموقع في الأعلى بالوسط
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
         sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1301 }}
       >
         <Alert onClose={handleCloseNotification} severity="info" sx={{ width: "100%" }}>
           {notificationMessage || notification.message}
         </Alert>
       </Snackbar>
-
 
       <Grid container spacing={2} sx={{ direction: "rtl" }}>
         <Grid item xs={12} md={3}>

@@ -137,6 +137,18 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
 
   return (
     <>
+      <Snackbar
+        open={notificationOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} 
+        sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1301 }}
+      >
+        <Alert onClose={handleCloseNotification} severity={notificationSeverity} sx={{ width: "100%" }}>
+          {notificationMessage}
+        </Alert>
+      </Snackbar>
+
       {/* صندوق الطلب */}
       <Box sx={{ backgroundColor: "white", padding: "20px" }}>
         <Typography variant="h6" fontWeight="bold">
@@ -222,13 +234,6 @@ function Requests({ selectedOrder, onSuccess }: { selectedOrder: any; onSuccess?
           </Button>
         </Box>
       </Drawer>
-
-      {/* إشعار تأكيد القبول أو الرفض أو الفشل */}
-      <Snackbar open={notificationOpen} autoHideDuration={6000} onClose={handleCloseNotification}>
-        <Alert onClose={handleCloseNotification} severity={notificationSeverity} sx={{ width: "100%" }}>
-          {notificationMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

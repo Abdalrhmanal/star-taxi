@@ -12,6 +12,8 @@ import {
   Button,
   Divider,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import useGlobalData from "@/hooks/get-global";
 import useCreateData from "@/hooks/post-global";
@@ -78,6 +80,8 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   useEffect(() => {
     if (GlobalData?.data) {
@@ -93,7 +97,18 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     }
   }, [UnreadData]);
 
-    
+  useEffect(() => {
+    if (success) {
+      setNotificationMessage("تم تمييز جميع الإشعارات كمقروءة بنجاح.");
+      setNotificationOpen(true);
+      if (onSuccess) onSuccess();
+      refetch();
+      refetchUnread();
+    } else if (isError) {
+      setNotificationMessage(`❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة: ${isError}`);
+      setNotificationOpen(true);
+    }
+  }, [success, isError, onSuccess, refetch, refetchUnread]);
 
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
@@ -104,13 +119,6 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
 
   const markAllAsReadHandler = async () => {
     try {
-      if (success) {
-        if (onSuccess) onSuccess();
-        refetch();
-        refetchUnread();
-      } else if (isError) {
-        console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", isError);
-      }
       setUnreadNotifications([]);
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
@@ -122,8 +130,22 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     }
   };
 
+  const handleCloseNotification = () => {
+    setNotificationOpen(false);
+  };
+
   return (
     <Box sx={{ p: 3, direction: "rtl", textAlign: "right" }}>
+      <Snackbar
+        open={notificationOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+      >
+        <Alert onClose={handleCloseNotification} severity={success ? "success" : "error"} sx={{ width: "100%" }}>
+          {notificationMessage}
+        </Alert>
+      </Snackbar>
+
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         الإشعارات
       </Typography>
