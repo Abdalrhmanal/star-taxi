@@ -8,16 +8,13 @@ interface DriverData {
   driver_id: number;
   driver_name: string;
   driver_avatar: string;
-  lat: number | string; // ✅ السماح بأن يكون `lat` و `long` نصوص لتجنب الأخطاء الأولية
+  lat: number | string;
   long: number | string;
-  path?: string;
+  path?: string; // 🔹 `path` تحتوي على الإحداثيات السابقة للسائق
 }
 
 interface GlobalDataType {
   data: DriverData[];
-  pagination?: {
-    totalCount: number;
-  };
 }
 
 const LoctionDrivers = () => {
@@ -29,42 +26,38 @@ const LoctionDrivers = () => {
   };
 
   const center = {
-    lat: 34.8021, // مركز الخريطة في سوريا
+    lat: 34.8021,
     lng: 38.9968,
   };
 
-  // ✅ حالة لحفظ بيانات السائقين وتحديث مواقعهم ديناميكيًا
   const [drivers, setDrivers] = useState<DriverData[]>([]);
 
-  const GoogleMapComponent = () => {
-    return (
-      <LoadScript googleMapsApiKey={googleMapsApiKey}>
-        <GoogleMap mapContainerStyle={mapContainerStyle} zoom={6} center={center}>
-          {drivers.map((driver) => {
-            // ✅ التحقق من صحة البيانات قبل عرض الـ Marker
-            const lat = parseFloat(String(driver.lat));
-            const lng = parseFloat(String(driver.long));
+  const GoogleMapComponent = () => (
+    <LoadScript googleMapsApiKey={googleMapsApiKey}>
+      <GoogleMap mapContainerStyle={mapContainerStyle} zoom={6} center={center}>
+        {drivers.map((driver) => {
+          const lat = parseFloat(String(driver.lat));
+          const lng = parseFloat(String(driver.long));
 
-            if (isNaN(lat) || isNaN(lng)) {
-              console.warn(`🚨 بيانات غير صالحة لموقع السائق:`, driver);
-              return null;
-            }
+          if (isNaN(lat) || isNaN(lng)) {
+            console.warn(`🚨 بيانات غير صالحة لموقع السائق:`, driver);
+            return null;
+          }
 
-            return (
-              <Marker
-                key={driver.driver_id}
-                position={{ lat, lng }}
-                title={driver.driver_name}
-              />
-            );
-          })}
-        </GoogleMap>
-      </LoadScript>
-    );
-  };
+          return (
+            <Marker
+              key={driver.driver_id}
+              position={{ lat, lng }}
+              title={driver.driver_name}
+            />
+          );
+        })}
+      </GoogleMap>
+    </LoadScript>
+  );
 
   const dataSourceName = "api/drivers";
-  const { data: GlobalData } = useGlobalData<GlobalDataType | any>({
+  const { data: GlobalData } = useGlobalData<GlobalDataType>({
     dataSourceName,
     enabled: true,
     setOldDataAsPlaceholder: true,
@@ -73,17 +66,33 @@ const LoctionDrivers = () => {
   useEffect(() => {
     if (!GlobalData?.data) return;
 
+    const extractLatestLocation = (driver: DriverData) => {
+      let lat = parseFloat(String(driver.lat));
+      let long = parseFloat(String(driver.long));
+
+      if (driver.path) {
+        try {
+          const pathArray = JSON.parse(driver.path);
+          if (Array.isArray(pathArray) && pathArray.length > 0) {
+            const latestPoint = pathArray[pathArray.length - 1]; // 🔹 أحدث نقطة في المسار
+            lat = parseFloat(String(latestPoint.lat)) || lat;
+            long = parseFloat(String(latestPoint.long)) || long;
+          }
+        } catch (error) {
+          console.error("❌ فشل تحليل مسار السائق:", driver.path);
+        }
+      }
+
+      return { ...driver, lat, long };
+    };
+
     const validDrivers = GlobalData.data
-      .map((driver: DriverData) => ({
-        ...driver,
-        lat: parseFloat(String(driver.lat)),
-        long: parseFloat(String(driver.long)),
-      }))
-      .filter((driver: DriverData) => !isNaN(parseFloat(String(driver.lat))) && !isNaN(parseFloat(String(driver.long))));
+      .map(extractLatestLocation)
+      .filter((driver) => !isNaN(driver.lat) && !isNaN(driver.long));
 
     setDrivers(validDrivers);
 
-    const echo = getEchoInstance(); 
+    const echo = getEchoInstance();
 
     GlobalData?.data.forEach((driver: DriverData) => {
       if (echo) {
@@ -101,9 +110,7 @@ const LoctionDrivers = () => {
 
             setDrivers((prevDrivers) =>
               prevDrivers.map((d) =>
-                d.driver_id === event.driver_id
-                  ? { ...d, lat, long } 
-                  : d
+                d.driver_id === event.driver_id ? { ...d, lat, long } : d
               )
             );
           })
@@ -124,11 +131,7 @@ const LoctionDrivers = () => {
     };
   }, [GlobalData]);
 
-  return (
-    <>
-      <GoogleMapComponent />
-    </>
-  );
+  return <GoogleMapComponent />;
 };
 
 export default LoctionDrivers;
