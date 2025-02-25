@@ -33,21 +33,29 @@ const GridTable: React.FC<GridTableProps> = ({
     setOldDataAsPlaceholder: true,
   });
 
-
   if (GlobalLoading) return <LoadingTable columnCount={10} rowCount={8} />;
   if (!GlobalData) return <p>No Data Available</p>;
+
   const refreshData = async () => {
-    refetch()
-  }
+    refetch();
+  };
+
+  const getRows = () => {
+    switch (currentPath) {
+      case "/advertisements":
+        return GlobalData?.data.validAdvertisements || [];
+      case "/movement-types/m-out":
+        return GlobalData?.data.movementTypes || [];
+      case "/movement-types/m-inside":
+        return GlobalData?.data.movements || [];
+      default:
+        return GlobalData?.data || [];
+    }
+  };
 
   return (
     <StructureTable
-      rows={
-        currentPath === "/advertisements"
-          ? GlobalData?.data.validAdvertisements
-          : GlobalData?.data.movements ? GlobalData?.data.movements : GlobalData?.data || []
-
-      }
+      rows={getRows()}
       columns={columns}
       totalCount={GlobalData.pagination?.totalCount || 0}
       pageNumber={pageNumber}

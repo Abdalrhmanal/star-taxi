@@ -107,6 +107,12 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
             : '00'}
         </Typography>
       );
+    case "is_onKM":
+      return (
+        <Typography fontWeight="bold">
+          {row.is_onKM ? "نعم يعتمد على المسافة" : "لا يعتمد على المسافة"}
+        </Typography>
+      );
     default:
       return value ?? "-";
   }
