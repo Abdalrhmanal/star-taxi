@@ -83,33 +83,49 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
 
-  useEffect(() => {
-    if (GlobalData?.data) {
-      const parsedData = Array.isArray(GlobalData.data) ? GlobalData.data : [];
-      setNotifications(parsedData);
+  const markAllAsReadHandler = async () => {
+    try {
+      await markAsReadRequest({ data: { markAll: true } });
+    } catch (error) {
+      console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", error);
     }
-  }, [GlobalData]);
-
-  useEffect(() => {
-    if (UnreadData?.data) {
-      const parsedData = Array.isArray(UnreadData.data) ? UnreadData.data : [];
-      setUnreadNotifications(parsedData);
-    }
-  }, [UnreadData]);
-
+  };
+  
   useEffect(() => {
     if (success) {
       setNotificationMessage("تم تمييز جميع الإشعارات كمقروءة بنجاح.");
       setNotificationOpen(true);
       if (onSuccess) onSuccess();
-      refetch();
-      refetchUnread();
+      
+      // تأخير تحديث البيانات لمنع التكرار
+      setTimeout(() => {
+        refetch();
+        refetchUnread();
+      }, 500);
     } else if (isError) {
       setNotificationMessage(`❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة: ${isError}`);
       setNotificationOpen(true);
     }
-  }, [success, isError, onSuccess, refetch, refetchUnread]);
-
+  }, [success, isError]);
+  
+  useEffect(() => {
+    if (!GlobalLoading && GlobalData?.data) {
+      const parsedData = Array.isArray(GlobalData.data) ? GlobalData.data : [];
+      if (JSON.stringify(parsedData) !== JSON.stringify(notifications)) {
+        setNotifications(parsedData);
+      }
+    }
+  }, [GlobalLoading, GlobalData, notifications]);
+  
+  useEffect(() => {
+    if (!UnreadLoading && UnreadData?.data) {
+      const parsedData = Array.isArray(UnreadData.data) ? UnreadData.data : [];
+      if (JSON.stringify(parsedData) !== JSON.stringify(unreadNotifications)) {
+        setUnreadNotifications(parsedData);
+      }
+    }
+  }, [UnreadLoading, UnreadData, unreadNotifications]);
+  
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
   );
@@ -117,18 +133,6 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     unreadNotifications.some((u) => u.id === n.id)
   );
 
-  const markAllAsReadHandler = async () => {
-    try {
-      setUnreadNotifications([]);
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, data: { ...n.data, isRead: true } }))
-      );
-
-      await markAsReadRequest({ data: { markAll: true } });
-    } catch (error) {
-      console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", error);
-    }
-  };
 
   const handleCloseNotification = () => {
     setNotificationOpen(false);
