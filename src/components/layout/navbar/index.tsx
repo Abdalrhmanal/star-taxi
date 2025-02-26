@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, MouseEvent, useEffect } from "react";
+import React, { useState, MouseEvent, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation"; // استيراد useRouter
 import {
   AppBar,
@@ -25,6 +25,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import getEchoInstance from "@/reverb";
 import Notifications from "@/components/Notifications"; // استيراد مكون Notifications
 import useGlobalData from "@/hooks/get-global";
+import { useAuth } from "@/context/AuthContext";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -135,6 +136,79 @@ const Navbar = ({ onSuccess }: { onSuccess?: () => void }) => {
   const handleNotificationsMenuClose = () => {
     setNotificationsAnchorEl(null);
   };
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { user } = useAuth();
+  const adminId = user?.id || "";
+  const handleDrawerToggle = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+
+  // دالة الاشتراك في قنوات Reverb
+  const subscribeToChannel = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        callback(event);
+        refetch(); // جلب الإشعارات الجديدة عند وصول حدث جديد
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, refetch]
+  );
+
+  // إعدادات القنوات والإشعارات
+  useEffect(() => {
+    if (!adminId) return;
+
+    const unsubscribers = [
+      subscribeToChannel(
+        "TaxiMovement",
+        ".requestingTransportationService",
+        (event) => {
+          console.log("TaxiMovement event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "foundCustomer",
+        ".foundCustomer",
+        (event) => {
+          console.log("foundCustomer event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "movementCompleted",
+        ".movementCompleted",
+        (event) => {
+          console.log("movementCompleted event:", event);
+        }
+      ),
+      subscribeToChannel(
+        "customerCancelMovement",
+        ".customerCancelMovement",
+        (event) => {
+          console.log("customerCancelMovement event:", event);
+        }
+      ),
+    ];
+
+    return () =>
+      unsubscribers.forEach((unsubscribe) => unsubscribe && unsubscribe());
+  }, [adminId, subscribeToChannel]);
+
   return (
     <Box sx={{ direction: "rtl" }}>
       <AppBar position="static">

@@ -24,7 +24,7 @@ type User = {
   email: string;
   gender: "male" | "female" | null;
   phone_number: string;
-  birth_date: Date;
+  birthdate: Date;
   password: string;
   password_confirmation: string;
 };
@@ -52,8 +52,8 @@ const validatePhoneNumber = (phone_number: string) => {
   return "";
 };
 
-const validateBirthDate = (birth_date: Date) => {
-  if (!birth_date) return "تاريخ الميلاد مطلوب";
+const validateBirthDate = (birthdate: Date) => {
+  if (!birthdate) return "تاريخ الميلاد مطلوب";
   return "";
 };
 
@@ -87,7 +87,7 @@ const CreateDriver = () => {
       email: "",
       gender: null,
       phone_number: "",
-      birth_date: new Date(),
+      birthdate: new Date(),
       password: "",
       password_confirmation: "",
     },
@@ -99,7 +99,7 @@ const CreateDriver = () => {
     const emailError = validateEmail(data.email);
     const genderError = validateGender(data.gender);
     const phoneError = validatePhoneNumber(data.phone_number);
-    const birthDateError = validateBirthDate(data.birth_date);
+    const birthDateError = validateBirthDate(data.birthdate);
     const passwordError = validatePassword(data.password);
     const passwordConfirmationError = validatePasswordConfirmation(data.password_confirmation, data.password);
 
@@ -109,7 +109,7 @@ const CreateDriver = () => {
       setValue('email', data.email);
       setValue('gender', data.gender);
       setValue('phone_number', data.phone_number);
-      setValue('birth_date', data.birth_date);
+      setValue('birthdate', data.birthdate);
       setValue('password', data.password);
       setValue('password_confirmation', data.password_confirmation);
       return;
@@ -120,7 +120,7 @@ const CreateDriver = () => {
       email: data.email,
       gender: data.gender,
       phone_number: data.phone_number,
-      birth_date: data.birth_date,
+      birthdate: data.birthdate,
       password: data.password,
       password_confirmation: data.password_confirmation,
     });
@@ -237,7 +237,7 @@ const CreateDriver = () => {
 
         <Grid item xs={12}>
           <Controller
-            name="birth_date"
+            name="birthdate"
             control={control}
             render={({ field }: { field: FieldValues }) => (
               <TextField
@@ -247,8 +247,8 @@ const CreateDriver = () => {
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 {...field}
-                error={!!errors.birth_date}
-                helperText={errors.birth_date ? errors.birth_date.message : ""}
+                error={!!errors.birthdate}
+                helperText={errors.birthdate ? errors.birthdate.message : ""}
                 sx={{ textAlign: "right" }}
               />
             )}
