@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
   // Case 1: If the user is authenticated and tries to access a public route (like login, register)
   // if (isAuthenticated && publicRoutes.includes(path)) {
   //   // Redirect to the dashboard because the user is already logged in
-  //   return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+  //   return NextResponse.redirect(new URL("/", request.nextUrl));
   // }
 
   // Case 2: If the user is not authenticated and tries to access a protected route
