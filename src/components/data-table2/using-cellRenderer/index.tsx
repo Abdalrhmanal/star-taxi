@@ -5,12 +5,16 @@ import { getStatusStyle } from "@/components/helper/style-status";
 export const renderCell = (field: string, value: any, row: any): React.ReactNode => {
   switch (field) {
     case "driver_state":
-      return (
-        <Chip label={row.driver_state} sx={getStatusStyle(row.driver_state)} />
-      );
+      if (row.driver_state === "Ready") {
+        return <Chip label={"مستعد"} sx={getStatusStyle(row.driver_state)} />;
+      } else if (row.driver_state === "Reserved") {
+        return <Chip label={"في رحلة"} sx={getStatusStyle(row.driver_state)} />;
+      } else if (row.driver_state === "InBreak") {
+        return <Chip label={"في استراحة"} sx={getStatusStyle(row.driver_state)} />;
+      }
 
     case "age":
-      return <Typography color="primary" sx={{ color: "red" }}>{row.age} سنة</Typography>;
+      return <Typography color="primary" sx={{ color: "red" }}>{row.age} </Typography>;
 
     case "name":
     case "driverName":

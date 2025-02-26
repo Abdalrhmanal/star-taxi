@@ -11,6 +11,7 @@ function Drivers() {
         { headerName: "الايميل", field: "email", sortable: true },
         { headerName: "الجنس", field: "gender", sortable: true },
         { headerName: "رقم الجوال", field: "phone_number", sortable: true },
+        { headerName: "العمر", field: "age", sortable: true },
         { headerName: " حالة السائق", field: "driver_state", sortable: true },
 
     ];
