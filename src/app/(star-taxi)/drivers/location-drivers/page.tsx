@@ -1,7 +1,7 @@
 "use client";
 import useGlobalData from "@/hooks/get-global";
 import React, { useEffect, useState } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import getEchoInstance from "@/reverb";
 
 interface DriverData {
@@ -10,15 +10,16 @@ interface DriverData {
   driver_avatar: string;
   lat: number | string;
   long: number | string;
-  path?: string; // 🔹 `path` تحتوي على الإحداثيات السابقة للسائق
+  path?: string; 
 }
 
 interface GlobalDataType {
   data: DriverData[];
+  name?: string; // اسم السائق من GlobalData
 }
 
 const LoctionDrivers = () => {
-  const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
   const mapContainerStyle = {
     width: "100%",
@@ -31,34 +32,10 @@ const LoctionDrivers = () => {
   };
 
   const [drivers, setDrivers] = useState<DriverData[]>([]);
+  const [selectedDriver, setSelectedDriver] = useState<DriverData | null>(null);
 
-  const GoogleMapComponent = () => (
-    <LoadScript googleMapsApiKey={googleMapsApiKey}>
-      <GoogleMap mapContainerStyle={mapContainerStyle} zoom={6} center={center}>
-        {drivers.map((driver) => {
-          const lat = parseFloat(String(driver.lat));
-          const lng = parseFloat(String(driver.long));
-
-          if (isNaN(lat) || isNaN(lng)) {
-            console.warn(`🚨 بيانات غير صالحة لموقع السائق:`, driver);
-            return null;
-          }
-
-          return (
-            <Marker
-              key={driver.driver_id}
-              position={{ lat, lng }}
-              title={driver.driver_name}
-            />
-          );
-        })}
-      </GoogleMap>
-    </LoadScript>
-  );
-
-  const dataSourceName = "api/drivers";
   const { data: GlobalData } = useGlobalData<GlobalDataType>({
-    dataSourceName,
+    dataSourceName: "api/drivers",
     enabled: true,
     setOldDataAsPlaceholder: true,
   });
@@ -74,7 +51,7 @@ const LoctionDrivers = () => {
         try {
           const pathArray = JSON.parse(driver.path);
           if (Array.isArray(pathArray) && pathArray.length > 0) {
-            const latestPoint = pathArray[pathArray.length - 1]; // 🔹 أحدث نقطة في المسار
+            const latestPoint = pathArray[pathArray.length - 1];
             lat = parseFloat(String(latestPoint.lat)) || lat;
             long = parseFloat(String(latestPoint.long)) || long;
           }
@@ -98,15 +75,10 @@ const LoctionDrivers = () => {
       if (echo) {
         echo.channel(`TaxiLocation.${driver.driver_id}`)
           .listen(".TaxiLocation", (event: DriverData) => {
-            console.log("📌 Location updated:", event);
-
             const lat = parseFloat(String(event.lat));
             const long = parseFloat(String(event.long));
 
-            if (isNaN(lat) || isNaN(long)) {
-              console.warn(`🚨 إحداثيات غير صالحة لتحديث السائق:`, event);
-              return;
-            }
+            if (isNaN(lat) || isNaN(long)) return;
 
             setDrivers((prevDrivers) =>
               prevDrivers.map((d) =>
@@ -117,8 +89,6 @@ const LoctionDrivers = () => {
           .error((error: any) => {
             console.error("❌ Error listening to channel:", error);
           });
-      } else {
-        console.error("❌ Echo is not defined on window");
       }
     });
 
@@ -131,7 +101,34 @@ const LoctionDrivers = () => {
     };
   }, [GlobalData]);
 
-  return <GoogleMapComponent />;
+  return (
+    <LoadScript googleMapsApiKey={googleMapsApiKey}>
+      <GoogleMap mapContainerStyle={mapContainerStyle} zoom={6} center={center}>
+        {drivers.map((driver) => (
+          <Marker
+            key={driver.driver_id}
+            position={{ lat: parseFloat(String(driver.lat)), lng: parseFloat(String(driver.long)) }}
+            title={driver.driver_name}
+            onClick={() => setSelectedDriver(driver)}
+          />
+        ))}
+
+        {selectedDriver && (
+          <InfoWindow
+            position={{
+              lat: parseFloat(String(selectedDriver.lat)),
+              lng: parseFloat(String(selectedDriver.long)),
+            }}
+            onCloseClick={() => setSelectedDriver(null)}
+          >
+            <div>
+              <h3>{selectedDriver.driver_name}</h3>
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+    </LoadScript>
+  );
 };
 
 export default LoctionDrivers;
