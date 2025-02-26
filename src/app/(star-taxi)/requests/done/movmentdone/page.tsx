@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box, Card, CardContent, CardHeader, Divider } from "@mui/material";
 import { GoogleMap, LoadScript, Marker, Polyline } from "@react-google-maps/api";
 
 const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
@@ -41,16 +41,28 @@ function MovmentDone({ data }: any) {
     <Grid container spacing={2} sx={{ direction: "rtl", height: "100vh" }}>
       {/* معلومات الرحلة */}
       <Grid item xs={3} sx={{ padding: 2, background: "#f5f5f5" }}>
-        <Typography variant="h6">🚖 تفاصيل الرحلة</Typography>
-        <Typography>📍 من: {data?.start_address}</Typography>
-        <Typography>🎯 إلى: {data?.destination_address}</Typography>
-        <Typography>👤 السائق: {data?.driver_name}</Typography>
-        <Typography>📞 هاتف السائق: {data?.driver_phone}</Typography>
-        <Typography>👥 العميل: {data?.customer_name}</Typography>
-        <Typography>📞 هاتف العميل: {data?.customer_phone}</Typography>
-        <Typography>🚘 السيارة: {data?.car_name} ({data?.car_plate_number})</Typography>
-        <Typography>💰 السعر: {data?.price} دينار</Typography>
-        <Typography>📆 التاريخ: {new Date(data?.date).toLocaleString()}</Typography>
+        <Card>
+          <CardHeader title="🚖 تفاصيل الرحلة" />
+          <CardContent>
+            <Typography variant="body1"><strong>📍 من:</strong> {data?.start_address}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>🎯 إلى:</strong> {data?.destination_address}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>👤 السائق:</strong> {data?.driver_name}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>📞 هاتف السائق:</strong> {data?.driver_phone}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>👥 العميل:</strong> {data?.customer_name}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>📞 هاتف العميل:</strong> {data?.customer_phone}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>🚘 السيارة:</strong> {data?.car_name} ({data?.car_plate_number})</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>💰 السعر:</strong> {data?.price} {data?.coin}</Typography>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1"><strong>📆 التاريخ:</strong> {new Date(data?.date).toLocaleString()}</Typography>
+          </CardContent>
+        </Card>
       </Grid>
 
       {/* خريطة جوجل */}

@@ -51,6 +51,81 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     },
     [adminId, playNotificationSound]
   );
+  const subscribeToChannel1 = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
+  const subscribeToChannel2 = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
+  const subscribeToChannel3 = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
 
   // إعدادات القنوات والإشعارات
   useEffect(() => {
@@ -64,21 +139,21 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
           console.log("TaxiMovement event:", event);
         }
       ),
-      subscribeToChannel(
+      subscribeToChannel1(
         "foundCustomer",
         ".foundCustomer",
         (event) => {
           console.log("foundCustomer event:", event);
         }
       ),
-      subscribeToChannel(
+      subscribeToChannel2(
         "movementCompleted",
         ".movementCompleted",
         (event) => {
           console.log("movementCompleted event:", event);
         }
       ),
-      subscribeToChannel(
+      subscribeToChannel3(
         "customerCancelMovement",
         ".customerCancelMovement",
         (event) => {

@@ -81,7 +81,81 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
     },
     [adminId, playNotificationSound]
   );
+  const subscribeToChannel_found = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
 
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
+  const subscribeToChannel_movement = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
+  const subscribeToChannel_Cancel = useCallback(
+    (
+      channelName: string,
+      eventName: string,
+      callback: (event: any) => void
+    ) => {
+      if (!adminId) return;
+
+      const echo = getEchoInstance();
+      if (!echo) return;
+
+      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
+      const channel = echo.channel(`${channelName}.${adminId}`);
+      channel.listen(eventName, (event: any) => {
+        console.log(`📌 حدث جديد (${eventName}):`, event);
+        playNotificationSound();
+        callback(event);
+      });
+
+      return () => {
+        echo.leaveChannel(`${channelName}.${adminId}`);
+      };
+    },
+    [adminId, playNotificationSound]
+  );
   // إعدادات القنوات والإشعارات
   useEffect(() => {
     if (!adminId) return;
@@ -102,7 +176,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           refetch();
         }
       ),
-      subscribeToChannel("foundCustomer", ".foundCustomer", (event) => {
+      subscribeToChannel_found("foundCustomer", ".foundCustomer", (event) => {
         setNotification({
           open: true,
           message: `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`,
@@ -111,7 +185,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         setNotificationOpen(true);
         refetch();
       }),
-      subscribeToChannel(
+      subscribeToChannel_movement(
         "movementCompleted",
         ".movementCompleted",
         (event) => {
@@ -124,7 +198,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           refetch();
         }
       ),
-      subscribeToChannel(
+      subscribeToChannel_Cancel(
         "customerCancelMovement",
         ".customerCancelMovement",
         (event) => {
