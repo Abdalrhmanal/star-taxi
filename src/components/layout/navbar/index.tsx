@@ -118,6 +118,7 @@ const Navbar = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    router.push("/prof")
   };
 
   const handleMobileMenuClose = () => {
