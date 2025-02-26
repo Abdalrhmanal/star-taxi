@@ -19,7 +19,7 @@ interface GlobalDataType {
 }
 
 const LoctionDrivers = () => {
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0" ;
 
   const mapContainerStyle = {
     width: "100%",
