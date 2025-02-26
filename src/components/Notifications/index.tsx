@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -17,8 +17,6 @@ import {
 } from "@mui/material";
 import useGlobalData from "@/hooks/get-global";
 import useCreateData from "@/hooks/post-global";
-import getEchoInstance from "@/reverb";
-import { useAuth } from "@/context/AuthContext";
 
 interface Driver {
   id: string;
@@ -108,7 +106,7 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
       setNotificationMessage(`❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة: ${isError}`);
       setNotificationOpen(true);
     }
-  }, [success, isError, onSuccess, refetch, refetchUnread]);
+  }, [success, isError]);
   
   useEffect(() => {
     if (!GlobalLoading && GlobalData?.data) {
@@ -135,79 +133,10 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     unreadNotifications.some((u) => u.id === n.id)
   );
 
+
   const handleCloseNotification = () => {
     setNotificationOpen(false);
   };
-
-  const { user } = useAuth();
-  const adminId = user?.id || "";
-
-  // دالة الاشتراك في قنوات Reverb
-  const subscribeToChannel = useCallback(
-    (
-      channelName: string,
-      eventName: string,
-      callback: (event: any) => void
-    ) => {
-      if (!adminId) return;
-
-      const echo = getEchoInstance();
-      if (!echo) return;
-
-      console.log(`✅ الاشتراك في القناة ${channelName}.${adminId}`);
-      const channel = echo.channel(`${channelName}.${adminId}`);
-      channel.listen(eventName, (event: any) => {
-        console.log(`📌 حدث جديد (${eventName}):`, event);
-        callback(event);
-        refetch(); // جلب الإشعارات الجديدة عند وصول حدث جديد
-        refetchUnread(); // جلب الإشعارات غير المقروءة الجديدة عند وصول حدث جديد
-      });
-
-      return () => {
-        echo.leaveChannel(`${channelName}.${adminId}`);
-      };
-    },
-    [adminId, refetch, refetchUnread]
-  );
-
-  // إعدادات القنوات والإشعارات
-  useEffect(() => {
-    if (!adminId) return;
-
-    const unsubscribers = [
-      subscribeToChannel(
-        "TaxiMovement",
-        ".requestingTransportationService",
-        (event) => {
-          console.log("TaxiMovement event:", event);
-        }
-      ),
-      subscribeToChannel(
-        "foundCustomer",
-        ".foundCustomer",
-        (event) => {
-          console.log("foundCustomer event:", event);
-        }
-      ),
-      subscribeToChannel(
-        "movementCompleted",
-        ".movementCompleted",
-        (event) => {
-          console.log("movementCompleted event:", event);
-        }
-      ),
-      subscribeToChannel(
-        "customerCancelMovement",
-        ".customerCancelMovement",
-        (event) => {
-          console.log("customerCancelMovement event:", event);
-        }
-      ),
-    ];
-
-    return () =>
-      unsubscribers.forEach((unsubscribe) => unsubscribe && unsubscribe());
-  }, [adminId, subscribeToChannel]);
 
   return (
     <Box sx={{ p: 3, direction: "rtl", textAlign: "right" }}>
