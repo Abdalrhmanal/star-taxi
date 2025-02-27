@@ -142,7 +142,7 @@ const StructureTable: React.FC<StructureTableProps> = ({
           </Grid>
         </> : <>
           {currentPath === "/drivers" ? (<>
-            <Grid item xs={8}>
+            <Grid item xs={10}>
               <TextField
                 fullWidth
                 size="small"

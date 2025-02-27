@@ -32,7 +32,7 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
               <Typography fontWeight="bold" sx={{ color: "red" }}>{row.name || row.driverName || ''}</Typography>
             </Grid>
             <Grid item xs={12} >
-              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender || ''}</Typography>
+              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender == "male" ? <>ذكر</> : <>انثى</> || ''}</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -72,6 +72,10 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
     case "car_plate_number":
       return (
         <Typography fontWeight="bold">{row.car_plate_number + '/' + row.car_lamp_number || ''}</Typography>
+      );
+    case "gender":
+      return (
+        <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender == "male" ? <>ذكر</> : <>انثى</> || ''}</Typography>
       );
 
     case "price1":
