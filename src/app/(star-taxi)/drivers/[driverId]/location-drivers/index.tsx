@@ -83,7 +83,7 @@ const MapComponent = ({ data }: any) => {
               }}
             >
               <InfoWindow position={{ lat: driverMarker.lat, lng: driverMarker.long }}>
-                <div style={{ marginTop: 10 }}>
+                <div>
                   <h3>{driverMarker.driver_name}</h3>
                   <p>Phone: {data.phone_number}</p>
                   <p>Plate Number: {data.plate_number}</p>
