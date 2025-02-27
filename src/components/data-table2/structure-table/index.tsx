@@ -166,15 +166,6 @@ const StructureTable: React.FC<StructureTableProps> = ({
                 اضافة
               </Button>
             </Grid>
-            <Grid item xs={2} textAlign="center">
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handlelocationDriversClick} 
-              >
-                مواقع السائقين
-              </Button>
-            </Grid>
           </>) : (<>
             <Grid item xs={10}>
               <TextField
