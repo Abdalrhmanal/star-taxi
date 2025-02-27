@@ -25,6 +25,8 @@ type User = {
 };
 
 const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | undefined;}) => {
+  console.log(data);
+  
   const { control, handleSubmit, formState: { errors }, setValue, getValues } = useForm<User>({
     defaultValues: {
       id: "",
@@ -43,18 +45,20 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | u
       setValue('id', data.driver_id);
       setValue('name', data.name);
       setValue('email', data.email);
-      setValue('gender', data.gender);
+      setValue('gender', data.gender === 0 ? "male" : "female");
       setValue('phone_number', data.phone_number);
     }
   }, [data, setValue]);
-console.log(data);
 
   const { isLoading, isError, success, updateData } = useUpdateData<User>({
     dataSourceName: `api/drivers/${data.driver_id}`, // مسار API لتحديث المستخدم
   });
-  if (success) {
-    if (onSuccess) onSuccess();
-  }
+
+  useEffect(() => {
+    if (success && onSuccess) {
+      onSuccess();
+    }
+  }, [success, onSuccess]);
 
   const handleUpdate = async (updatedData: User) => {
     await updateData(updatedData);
@@ -136,8 +140,8 @@ console.log(data);
             render={({ field }) => (
               <Autocomplete
                 {...field}
-                options={["Male", "Female"]}
-                getOptionLabel={(option) => (option === "Male" ? "ذكر" : "أنثى")}
+                options={["male", "female"]}
+                getOptionLabel={(option) => (option === "male" ? "ذكر" : "أنثى")}
                 onChange={(_, value) => field.onChange(value)}
                 value={field.value || ""}
                 renderInput={(params) => (

@@ -18,27 +18,13 @@ export interface DriverData {
 }
 
 type PageEdetDriverProps = {
-  driver_id: string;
+  datas: any;
   onSuccess?: () => void;
 };
 
-const PageEdetDriver = ({ driver_id, onSuccess }: PageEdetDriverProps) => {
-  console.log(driver_id);
+const PageEdetDriver = ({ datas, onSuccess }: PageEdetDriverProps) => {
 
-  const dataSourceName = `api/drivers/${driver_id}`;
-  const {
-    data: GlobalData,
-    isLoading: GlobalLoading,
-  } = useGlobalData<DriverData | any>({
-    dataSourceName,
-    enabled: true,
-    setOldDataAsPlaceholder: true,
-  });
-
-  const data = GlobalData || {};
-  console.log(data);
-
-  return <EditDriver data={data} onSuccess={onSuccess} />;
+  return <EditDriver data={datas} onSuccess={onSuccess} />;
 };
 
 export default PageEdetDriver;
