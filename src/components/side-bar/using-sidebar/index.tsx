@@ -34,8 +34,8 @@ export const menuItems: MenuItem[] = [
   { text: "السيارات", href: "/taxis", icon: <DirectionsCarIcon />, isActive: false },
   { text: "الرحلات", href: "", icon: <FlightTakeoffIcon />, isActive: false, isExpanded: false,
     children: [
-      { text: "الرحلات الداخلية", href: "/movement-types/m-inside", icon: <FlightTakeoffIcon />, isActive: false },
-      { text: "الرحلات الخارجية", href: "/movement-types/m-out", icon: <FlightTakeoffIcon />, isActive: false },
+      { text: "اسعار الرحلات", href: "/movement-types/m-inside", icon: <FlightTakeoffIcon />, isActive: false },
+      { text: "الرحلات الاساسية", href: "/movement-types/m-out", icon: <FlightTakeoffIcon />, isActive: false },
     ], },
   { text: "العروض", href: "/offers", icon: <FlightTakeoffIcon />, isActive: false },
   { text: "الحسابات", href: "/accounts", icon: <CalculateIcon />, isActive: false },
