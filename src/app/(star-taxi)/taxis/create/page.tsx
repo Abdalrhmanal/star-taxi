@@ -107,6 +107,7 @@ const CreateCarForm = () => {
                     <Controller
                         name="driver_id"
                         control={control}
+                        rules={{ required: "يجب اختيار سائق" }}
                         render={({ field }) => (
                             <Autocomplete
                                 value={availableDrivers.find((driver) => driver.driver_id === field.value) || null}
@@ -119,7 +120,7 @@ const CreateCarForm = () => {
                                         label="السائق"
                                         variant="outlined"
                                         error={!!errors.driver_id}
-                                        helperText={errors.driver_id ? "يجب اختيار سائق" : ""}
+                                        helperText={errors.driver_id ? errors.driver_id.message : ""}
                                         fullWidth
                                     />
                                 )}
@@ -133,6 +134,7 @@ const CreateCarForm = () => {
                     <Controller
                         name="car_name"
                         control={control}
+                        rules={{ required: "اسم السيارة مطلوب" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -140,7 +142,7 @@ const CreateCarForm = () => {
                                 variant="outlined"
                                 {...field}
                                 error={!!errors.car_name}
-                                helperText={errors.car_name ? "اسم السيارة مطلوب" : ""}
+                                helperText={errors.car_name ? errors.car_name.message : ""}
                             />
                         )}
                     />
@@ -151,6 +153,7 @@ const CreateCarForm = () => {
                     <Controller
                         name="lamp_number"
                         control={control}
+                        rules={{ required: "رقم اللمبة مطلوب" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -158,7 +161,7 @@ const CreateCarForm = () => {
                                 variant="outlined"
                                 {...field}
                                 error={!!errors.lamp_number}
-                                helperText={errors.lamp_number ? "رقم اللمبة مطلوب" : ""}
+                                helperText={errors.lamp_number ? errors.lamp_number.message : ""}
                             />
                         )}
                     />
@@ -169,6 +172,7 @@ const CreateCarForm = () => {
                     <Controller
                         name="plate_number"
                         control={control}
+                        rules={{ required: "رقم اللوحة مطلوب" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -176,7 +180,7 @@ const CreateCarForm = () => {
                                 variant="outlined"
                                 {...field}
                                 error={!!errors.plate_number}
-                                helperText={errors.plate_number ? "رقم اللوحة مطلوب" : ""}
+                                helperText={errors.plate_number ? errors.plate_number.message : ""}
                             />
                         )}
                     />
@@ -187,6 +191,7 @@ const CreateCarForm = () => {
                     <Controller
                         name="car_details"
                         control={control}
+                        rules={{ required: "تفاصيل السيارة مطلوبة" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -196,7 +201,7 @@ const CreateCarForm = () => {
                                 rows={3}
                                 {...field}
                                 error={!!errors.car_details}
-                                helperText={errors.car_details ? "تفاصيل السيارة مطلوبة" : ""}
+                                helperText={errors.car_details ? errors.car_details.message : ""}
                             />
                         )}
                     />
