@@ -33,6 +33,7 @@ import PageSocialLinks from "@/app/(star-taxi)/social-links/edit";
 import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit";
 import PageEdetDriver from "@/app/(star-taxi)/drivers/edit";
 import PageMovment from "@/app/(star-taxi)/movement-types/edit";
+import MapComponent from "@/app/(star-taxi)/drivers/[driverId]/location-drivers";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: () => void }> = ({ row, onDataUpdated, onSuccess }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -113,11 +114,21 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 <IconButton onClick={handleView}>
                                     <VisibilityIcon color="secondary" />
                                 </IconButton>
-                                {/*  <IconButton onClick={handleDelete}>
-                                    <DeleteIcon color="error" />
-                                </IconButton> */}
+
                             </>
                         );
+                    case "/drivers":
+                        return (<>
+                            <IconButton onClick={handleEdit}>
+                                <EditIcon color="secondary" />
+                            </IconButton>
+                            <IconButton onClick={handleView}>
+                                <VisibilityIcon color="secondary" />
+                            </IconButton>
+                            <IconButton onClick={handleDelete}>
+                                <DeleteIcon color="error" />
+                            </IconButton>
+                        </>);
                     case "/requests/done":
                         return (
                             <>
@@ -198,6 +209,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                 <Box sx={{ width: 800, padding: 3 }}>
                     {currentPath === "/requests/live" && <MovmentLive data={row} />}
                     {currentPath === "/requests/done" && <MovmentDone data={row} />}
+                    {currentPath === "/drivers" && <MapComponent data={row} />}
                 </Box>
             </Drawer>
 
