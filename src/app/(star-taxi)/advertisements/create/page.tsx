@@ -52,14 +52,6 @@ const CreateAdvertisements = () => {
 
     // **دالة التحقق من الملف**
     const handleFileChange = (file: File, fieldName: "image" | "logo") => {
-        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-        if (!allowedTypes.includes(file.type)) {
-            setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");
-            setAlertSeverity("error");
-            setOpenAlert(true);
-            return false;
-        }
-
         if (file.size > 5 * 1024 * 1024) {
             setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
             setAlertSeverity("error");
