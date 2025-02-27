@@ -72,48 +72,23 @@ const CreateOffer = () => {
 
     // دالة معالجة الإرسال
     const handleCreate = async (data: Offer) => {
-        if (!data.movement_type_id) {
-            setAlertMessage("الرجاء اختيار نوع الحركة");
-            setAlertSeverity("error");
-            setOpenAlert(true);
-            return;
-        }
-        if (!data.offer) {
-            setAlertMessage("العرض مطلوب");
-            setAlertSeverity("error");
-            setOpenAlert(true);
-            return;
-        }
-        if (data.value_of_discount <= 0) {
-            setAlertMessage("قيمة الخصم يجب أن تكون أكبر من 0");
-            setAlertSeverity("error");
-            setOpenAlert(true);
-            return;
-        }
-        if (!data.valid_date) {
-            setAlertMessage("تاريخ الصلاحية مطلوب");
-            setAlertSeverity("error");
-            setOpenAlert(true);
-            return;
-        }
-
         await createData(data);
-
+    };
+    useEffect(() => {
         if (success) {
             setAlertMessage("تمت إضافة العرض بنجاح!");
             setAlertSeverity("success");
             setOpenAlert(true);
-            router.back();
+            router.push('/offers');
         } else if (isError) {
             setAlertMessage(`خطأ: ${isError}`);
             setAlertSeverity("error");
             setOpenAlert(true);
         }
-    };
-
+    }, [success, isError, router]);
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
-            <HeaderPageD pluralName="العروض"/>
+            <HeaderPageD pluralName="العروض" />
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
                     {alertMessage}
@@ -130,6 +105,7 @@ const CreateOffer = () => {
                     <Controller
                         name="movement_type_id"
                         control={control}
+                        rules={{ required: "الرجاء اختيار نوع الحركة" }}
                         render={({ field }) => (
                             <Autocomplete
                                 options={GlobalData?.data?.movementTypes || []}
@@ -147,7 +123,7 @@ const CreateOffer = () => {
                                         label="نوع الحركة"
                                         variant="outlined"
                                         error={!!errors.movement_type_id}
-                                        helperText={errors.movement_type_id ? "الرجاء اختيار نوع الحركة" : ""}
+                                        helperText={errors.movement_type_id ? errors.movement_type_id.message : ""}
                                         sx={{ textAlign: "right" }}
                                     />
                                 )}
@@ -161,6 +137,7 @@ const CreateOffer = () => {
                     <Controller
                         name="offer"
                         control={control}
+                        rules={{ required: "العرض مطلوب" }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -168,7 +145,7 @@ const CreateOffer = () => {
                                 variant="outlined"
                                 {...field}
                                 error={!!errors.offer}
-                                helperText={errors.offer ? "العرض مطلوب" : ""}
+                                helperText={errors.offer ? errors.offer.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}
@@ -180,6 +157,10 @@ const CreateOffer = () => {
                     <Controller
                         name="value_of_discount"
                         control={control}
+                        rules={{
+                            required: "قيمة الخصم مطلوبة",
+                            min: { value: 1, message: "قيمة الخصم يجب أن تكون أكبر من 0" },
+                        }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -188,7 +169,7 @@ const CreateOffer = () => {
                                 type="number"
                                 {...field}
                                 error={!!errors.value_of_discount}
-                                helperText={errors.value_of_discount ? "قيمة الخصم يجب أن تكون أكبر من 0" : ""}
+                                helperText={errors.value_of_discount ? errors.value_of_discount.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}
@@ -200,6 +181,7 @@ const CreateOffer = () => {
                     <Controller
                         name="valid_date"
                         control={control}
+                        rules={{ required: "تاريخ الصلاحية مطلوب" }}
                         render={({ field }) => (
                             <TextField
                                 fullWidth
@@ -209,7 +191,7 @@ const CreateOffer = () => {
                                 InputLabelProps={{ shrink: true }}
                                 {...field}
                                 error={!!errors.valid_date}
-                                helperText={errors.valid_date ? "تاريخ الصلاحية مطلوب" : ""}
+                                helperText={errors.valid_date ? errors.valid_date.message : ""}
                                 sx={{ textAlign: "right" }}
                             />
                         )}
