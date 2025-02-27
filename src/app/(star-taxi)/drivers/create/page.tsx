@@ -29,46 +29,6 @@ type User = {
   password_confirmation: string;
 };
 
-// دوال التحقق من القيم:
-const validateName = (name: string) => {
-  if (!name) return "الاسم مطلوب";
-  return "";
-};
-
-const validateEmail = (email: string) => {
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!email) return "البريد الإلكتروني مطلوب";
-  if (!emailRegex.test(email)) return "البريد الإلكتروني غير صحيح";
-  return "";
-};
-
-const validateGender = (gender: "male" | "female" | null) => {
-  if (!gender) return "الرجاء اختيار الجنس";
-  return "";
-};
-
-const validatePhoneNumber = (phone_number: string) => {
-  if (!phone_number) return "رقم الهاتف مطلوب";
-  return "";
-};
-
-const validateBirthDate = (birthdate: Date) => {
-  if (!birthdate) return "تاريخ الميلاد مطلوب";
-  return "";
-};
-
-const validatePassword = (password: string) => {
-  if (!password) return "كلمة المرور مطلوبة";
-  if (password.length < 6) return "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل";
-  return "";
-};
-
-const validatePasswordConfirmation = (password_confirmation: string, password: string) => {
-  if (!password_confirmation) return "تأكيد كلمة المرور مطلوب";
-  if (password_confirmation !== password) return "كلمة المرور وتأكيد كلمة المرور غير متطابقين";
-  return "";
-};
-
 const CreateDriver = () => {
   const { isLoading, isError, success, createData } = useCreateData<User>({
     dataSourceName: "api/drivers",
@@ -81,7 +41,7 @@ const CreateDriver = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState<boolean>(false);
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<User>({
+  const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<User>({
     defaultValues: {
       name: "",
       email: "",
@@ -94,27 +54,6 @@ const CreateDriver = () => {
   });
 
   const handleCreate = async (data: User) => {
-    // تحقق من الحقول قبل الإرسال
-    const nameError = validateName(data.name);
-    const emailError = validateEmail(data.email);
-    const genderError = validateGender(data.gender);
-    const phoneError = validatePhoneNumber(data.phone_number);
-    const birthDateError = validateBirthDate(data.birthdate);
-    const passwordError = validatePassword(data.password);
-    const passwordConfirmationError = validatePasswordConfirmation(data.password_confirmation, data.password);
-
-    // إذا كان هناك أخطاء، نعرضها ولن نرسل البيانات
-    if (nameError || emailError || genderError || phoneError || birthDateError || passwordError || passwordConfirmationError) {
-      setValue('name', data.name);
-      setValue('email', data.email);
-      setValue('gender', data.gender);
-      setValue('phone_number', data.phone_number);
-      setValue('birthdate', data.birthdate);
-      setValue('password', data.password);
-      setValue('password_confirmation', data.password_confirmation);
-      return;
-    }
-
     await createData({
       name: data.name,
       email: data.email,
@@ -158,6 +97,7 @@ const CreateDriver = () => {
           <Controller
             name="name"
             control={control}
+            rules={{ required: "الاسم مطلوب" }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
@@ -176,6 +116,13 @@ const CreateDriver = () => {
           <Controller
             name="email"
             control={control}
+            rules={{
+              required: "البريد الإلكتروني مطلوب",
+              pattern: {
+                value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "البريد الإلكتروني غير صحيح",
+              },
+            }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
@@ -195,6 +142,7 @@ const CreateDriver = () => {
           <Controller
             name="gender"
             control={control}
+            rules={{ required: "الرجاء اختيار الجنس" }}
             render={({ field }: { field: FieldValues }) => (
               <Autocomplete
                 {...field}
@@ -221,6 +169,7 @@ const CreateDriver = () => {
           <Controller
             name="phone_number"
             control={control}
+            rules={{ required: "رقم الهاتف مطلوب" }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
@@ -239,6 +188,7 @@ const CreateDriver = () => {
           <Controller
             name="birthdate"
             control={control}
+            rules={{ required: "تاريخ الميلاد مطلوب" }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
@@ -259,6 +209,10 @@ const CreateDriver = () => {
           <Controller
             name="password"
             control={control}
+            rules={{
+              required: "كلمة المرور مطلوبة",
+              minLength: { value: 6, message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل" },
+            }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
@@ -290,6 +244,10 @@ const CreateDriver = () => {
           <Controller
             name="password_confirmation"
             control={control}
+            rules={{
+              required: "تأكيد كلمة المرور مطلوب",
+              validate: (value) => value === getValues("password") || "كلمة المرور وتأكيد كلمة المرور غير متطابقين",
+            }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
