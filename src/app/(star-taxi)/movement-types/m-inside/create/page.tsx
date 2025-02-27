@@ -27,11 +27,6 @@ type Movement = {
     is_general: boolean;
 };
 
-// دالة التحقق من القيم:
-const validateType = (type: string) => (!type ? "نوع الحركة مطلوب" : "");
-const validatePrice = (price: number) => (price <= 0 ? "السعر يجب أن يكون أكبر من 0" : "");
-const validatePayment = (payment: string) => (!payment ? "طريقة الدفع مطلوبة" : "");
-
 const CreateMovementType = () => {
     const { isLoading, isError, success, createData } = useCreateData<Movement>({
         dataSourceName: "api/movement-types",
@@ -54,29 +49,7 @@ const CreateMovementType = () => {
     });
 
     const handleCreate = async (data: Movement) => {
-        // تحقق من الحقول قبل الإرسال
-        const typeError = validateType(data.type);
-        const priceError = validatePrice(data.price);
-        const paymentError = validatePayment(data.payment);
-
-        if (typeError || priceError || paymentError) {
-            setValue("type", data.type);
-            setValue("price", data.price);
-            setValue("description", data.description);
-            setValue("is_onKM", data.is_onKM);
-            setValue("payment", data.payment);
-            setValue("is_general", data.is_general);
-            return;
-        }
-
-        await createData({
-            type: data.type,
-            price: data.price,
-            description: data.description,
-            is_onKM: data.is_onKM,
-            payment: data.payment,
-            is_general: data.is_general,
-        });
+        await createData(data);
 
         if (success) {
             setAlertMessage("تمت الإضافة بنجاح!");
@@ -110,6 +83,7 @@ const CreateMovementType = () => {
                     <Controller
                         name="type"
                         control={control}
+                        rules={{ required: "نوع الحركة مطلوب" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -129,6 +103,10 @@ const CreateMovementType = () => {
                     <Controller
                         name="price"
                         control={control}
+                        rules={{
+                            required: "السعر مطلوب",
+                            min: { value: 1, message: "السعر يجب أن يكون أكبر من 0" },
+                        }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
@@ -180,6 +158,7 @@ const CreateMovementType = () => {
                     <Controller
                         name="payment"
                         control={control}
+                        rules={{ required: "طريقة الدفع مطلوبة" }}
                         render={({ field }: { field: FieldValues }) => (
                             <TextField
                                 fullWidth
