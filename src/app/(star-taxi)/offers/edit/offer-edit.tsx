@@ -119,14 +119,18 @@ const EditOffer = ({ data ,onSuccess}: { data: Offer & { id: string } ;onSuccess
       setAlertMessage("تم تعديل العرض بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-      if (onSuccess) onSuccess();
+     // if (onSuccess) onSuccess();
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
   };
-
+  useEffect(() => {
+    if (success && onSuccess) {
+      onSuccess();
+    }
+  }, [success, onSuccess]);
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>

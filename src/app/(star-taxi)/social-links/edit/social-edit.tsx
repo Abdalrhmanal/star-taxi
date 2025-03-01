@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import useUpdateData from "@/hooks/put-global";
+import useCreateData from "@/hooks/post-global";
 
 type SocialLink = {
   id: string;
@@ -53,10 +54,12 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
     }
   }, [data, setValue]);
 
-  const { isLoading, isError, success, updateData } = useUpdateData<FormData>({
+  const { isLoading, isError, success, createData: updateData } = useCreateData<FormData>({
     dataSourceName: `api/social-links/${data.id}`, // مسار API لتحديث الرابط
   });
-
+  /* const { isLoading, isError, success, createData } = useCreateData<FormData>({
+    dataSourceName: "api/social-links",
+  }); */
   const handleUpdate = async (updatedData: SocialLink) => {
     if (!updatedData.title || !updatedData.link) {
       setAlertMessage("يرجى ملء جميع الحقول المطلوبة!");

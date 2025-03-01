@@ -46,7 +46,7 @@ const CreateCarForm = () => {
 
     useEffect(() => {
         if (GlobalData) {
-            const filteredDrivers = GlobalData?.data.filter((driver: any) => !driver.has_taxi);
+            const filteredDrivers = GlobalData?.data.filter((driver: any) => driver.has_taxi === false);
             setAvailableDrivers(filteredDrivers);
         }
     }, [GlobalData]);

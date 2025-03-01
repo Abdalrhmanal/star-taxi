@@ -83,30 +83,16 @@ const CreateSocialLinks = () => {
     formData.append("link", data.link);
     formData.append("icon", file);
 
-    try {
-      const response = await fetch("https://tawsella.online/api/social-links", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Accept": "application/json",
-          "Authorization": "Bearer 17|c8mxBjLNEJwNn6XaACZ2EHWXrl5gujs517Zw8O4Ue3b7f312",
-        },
-      });
+    await createData(formData);
 
-      const result = await response.json();
-      if (response.ok) {
-        setAlertMessage("تمت إضافة الرابط بنجاح!");
-        setAlertSeverity("success");
-        setOpenAlert(true);
-        reset();
-        setFile(null);
-      } else {
-        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء الإرسال"}`);
-        setAlertSeverity("error");
-        setOpenAlert(true);
-      }
-    } catch (error) {
-      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
+    if (success) {
+      setAlertMessage("تمت إضافة الرابط بنجاح!");
+      setAlertSeverity("success");
+      setOpenAlert(true);
+      reset();
+      setFile(null);
+    } else if (isError) {
+      setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
@@ -153,7 +139,9 @@ const CreateSocialLinks = () => {
           <Controller
             name="link"
             control={control}
-            rules={{ required: "الرابط مطلوب" }}
+            rules={{ 
+              required: "الرابط مطلوب",
+            }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth
