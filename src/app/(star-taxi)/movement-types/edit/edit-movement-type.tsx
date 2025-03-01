@@ -111,14 +111,18 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
       setAlertMessage("تم تعديل البيانات بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-      if (onSuccess) onSuccess();
+     // if (onSuccess) onSuccess();
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
   };
-
+  useEffect(() => {
+    if (success && onSuccess) {
+      onSuccess();
+    }
+  }, [success, onSuccess]);
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
       {/* التنبيه أعلى الصفحة */}

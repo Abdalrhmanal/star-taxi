@@ -41,7 +41,12 @@ const useLogout = (): UseLogoutResult => {
 
           setSuccess("Successfully logged out!");
             router.push("/login");
-        } else {
+        } else if (response.status === 401) {
+          Cookies.remove("auth_user");
+          Cookies.remove("user_data");
+
+        } 
+        else {
           throw new Error("Failed to logout from the server.");
         }
       } else {
