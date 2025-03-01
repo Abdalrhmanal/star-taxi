@@ -169,7 +169,13 @@ const CreateDriver = () => {
           <Controller
             name="phone_number"
             control={control}
-            rules={{ required: "رقم الهاتف مطلوب" }}
+            rules={{
+              required: "رقم الهاتف مطلوب",
+              pattern: {
+                value: /^(?:\+|00)[0-9]{10,}$/,
+                message: "رقم الهاتف يجب أن يبدأ بـ + أو 00 ويكون لا يقل عن 12 رقمًا",
+              },
+            }}
             render={({ field }: { field: FieldValues }) => (
               <TextField
                 fullWidth

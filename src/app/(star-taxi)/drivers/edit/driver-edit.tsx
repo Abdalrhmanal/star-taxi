@@ -164,7 +164,13 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | u
           <Controller
             name="phone_number"
             control={control}
-            rules={{ required: "رقم الهاتف مطلوب" }}
+            rules={{
+              required: "رقم الهاتف مطلوب",
+              pattern: {
+                value: /^(?:\+|00)[0-9]{10,}$/,
+                message: "رقم الهاتف يجب أن يبدأ بـ + أو 00 ويكون لا يقل عن 12 رقمًا",
+              },
+            }}
             render={({ field }) => (
               <TextField
                 fullWidth
@@ -184,7 +190,9 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | u
           <Controller
             name="password"
             control={control}
-            // rules={{ required: "كلمة المرور مطلوبة" }}
+            rules={{
+              minLength: { value: 6, message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل" },
+            }}
             render={({ field }) => (
               <TextField
                 fullWidth
@@ -205,10 +213,9 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void | u
           <Controller
             name="password_confirmation"
             control={control}
-           // rules={{
-           //   required: "تأكيد كلمة المرور مطلوب",
-           //   validate: (value) => value === getValues("password") || "كلمة المرور وتأكيد كلمة المرور غير متطابقين",
-           // }}
+            rules={{
+              validate: (value) => value === getValues("password") || "كلمة المرور وتأكيد كلمة المرور غير متطابقين",
+            }}
             render={({ field }) => (
               <TextField
                 fullWidth
