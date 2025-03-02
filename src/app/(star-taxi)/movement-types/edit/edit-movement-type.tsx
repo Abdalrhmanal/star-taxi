@@ -171,8 +171,8 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
               <Autocomplete
                 options={paymentOptions}
                 getOptionLabel={(option) => option}
-                onChange={(_, value) => field.onChange(value)}
-                value={field.value}
+                onChange={(_, value) => field.onChange(value ?? "TL")}
+                value={field.value ?? "TL"} // Ensure it's not null
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -181,12 +181,12 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
                     variant="outlined"
                     error={!!errors.payment1}
                     helperText={errors.payment1 ? errors.payment1.message : ""}
-                    sx={{ textAlign: "right" }}
                   />
                 )}
               />
             )}
           />
+
         </Grid>
 
         {/* السعر الثاني */}
@@ -223,8 +223,8 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
               <Autocomplete
                 options={paymentOptions}
                 getOptionLabel={(option) => option}
-                onChange={(_, value) => field.onChange(value)}
-                value={field.value}
+                onChange={(_, value) => field.onChange(value ?? "LT")}
+                value={field.value ?? "LT"}
                 renderInput={(params) => (
                   <TextField
                     {...params}
