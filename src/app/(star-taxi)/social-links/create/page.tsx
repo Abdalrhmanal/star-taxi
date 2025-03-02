@@ -51,7 +51,7 @@ const CreateSocialLinks = () => {
         return;
       }
 
-      if (selectedFile.size > 5 * 1024 * 1024) {
+      if (selectedFile.size > 15 * 1024 * 1024) {
         setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
         setAlertSeverity("error");
         setOpenAlert(true);

@@ -15,49 +15,6 @@ type UseCreateDataResult<T> = {
 
 const BASE_URL = "https://tawsella.online";
 
-/* const useCreateData = function <T>({
-    dataSourceName,
-}: UseCreateDataOptions<T>): UseCreateDataResult<T> {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isError, setIsError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<boolean>(false);
-
-    const createData = async (data: T): Promise<void> => {
-        setIsLoading(true);
-        setIsError(null);
-        setSuccess(false);
-
-        try {
-            const token = Cookies.get("auth_user");
-            if (!token) {
-                throw new Error("Authentication token is missing.");
-            }
-
-            const headers = {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${token}`,
-            };
-
-            const url = `${BASE_URL}/${dataSourceName}`;
-            await axios.post(url, data, { headers }); 
-
-            setSuccess(true);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setIsError(error.message);
-            } else {
-                setIsError("An unknown error occurred.");
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return { isLoading, isError, success, createData };
-};
-
-export default useCreateData; */
 const useCreateData = function <T>({
     dataSourceName,
 }: UseCreateDataOptions<T>): UseCreateDataResult<T> {
@@ -73,7 +30,7 @@ const useCreateData = function <T>({
         try {
             const token = Cookies.get("auth_user");
             if (!token) {
-                throw new Error("Authentication token is missing.");
+                throw new Error("رمز المصادقة مفقود.");
             }
 
             const headers = {
@@ -86,15 +43,18 @@ const useCreateData = function <T>({
             const response = await axios.post(url, data, { headers });
 
             if (response.status === 200 || response.status === 201) {
-                setSuccess(true); // تأكد من نجاح الطلب
+                setSuccess(true);
             } else {
-                throw new Error(`Error: ${response.status}`);
+                throw new Error("حدث خطأ غير متوقع أثناء إرسال البيانات.");
             }
         } catch (error: unknown) {
-            if (error instanceof Error) {
+            if (typeof error === "object" && error !== null && "response" in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                setIsError(axiosError.response?.data?.message || "حدث خطأ غير معروف.");
+            } else if (error instanceof Error) {
                 setIsError(error.message);
             } else {
-                setIsError("An unknown error occurred.");
+                setIsError("حدث خطأ غير معروف.");
             }
         } finally {
             setIsLoading(false);

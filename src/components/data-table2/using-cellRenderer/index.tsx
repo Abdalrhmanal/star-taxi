@@ -61,6 +61,8 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
         />
       );
     case "image":
+      console.log(`https://tawsella.online/${row.image}`);
+      
       return (
         <Avatar
           alt="User Avatar"

@@ -14,6 +14,7 @@ import { useForm, Controller } from "react-hook-form";
 import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
 import HeaderPageD from "@/components/header-page";
+import Cookies from "js-cookie";
 
 // تعريف نوع البيانات
 type Advertisement = {
@@ -94,6 +95,7 @@ const CreateAdvertisements = () => {
         // ✅ **إضافة الصور فقط إذا كانت متاحة**
         if (data.image) formData.append("image", data.image);
         if (data.logo) formData.append("logo", data.logo);
+        const token = Cookies.get("auth_user");
 
         try {
             const response = await fetch("https://tawsella.online/api/advertisements", {
@@ -101,7 +103,7 @@ const CreateAdvertisements = () => {
                 body: formData,
                 headers: {
                     "Accept": "application/json",
-                    "Authorization": "Bearer 17|c8mxBjLNEJwNn6XaACZ2EHWXrl5gujs517Zw8O4Ue3b7f312",
+                    "Authorization": `Bearer ${token}`,
                 },
             });
 
