@@ -10,26 +10,26 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import useCreateData from "@/hooks/post-global";
-import { useForm, Controller, FieldValues } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import HeaderPageD from "@/components/header-page";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 type SocialLink = {
-  id?: string;
   title: string;
   link: string;
   icon?: File | null;
 };
 
 const CreateSocialLinks = () => {
-  const { isLoading, isError, success, createData } = useCreateData<FormData>({
-    dataSourceName: "api/social-links",
-  });
-
   const [file, setFile] = useState<File | null>(null);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+  const token = Cookies.get("auth_user");
 
   const { control, handleSubmit, reset, setValue, formState: { errors } } = useForm<SocialLink>({
     defaultValues: {
@@ -42,8 +42,8 @@ const CreateSocialLinks = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFile = event.target.files[0];
-      
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+      
       if (!allowedTypes.includes(selectedFile.type)) {
         setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");
         setAlertSeverity("error");
@@ -51,7 +51,7 @@ const CreateSocialLinks = () => {
         return;
       }
 
-      if (selectedFile.size > 15 * 1024 * 1024) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
         setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
         setAlertSeverity("error");
         setOpenAlert(true);
@@ -83,18 +83,36 @@ const CreateSocialLinks = () => {
     formData.append("link", data.link);
     formData.append("icon", file);
 
-    await createData(formData);
+    try {
+      setIsLoading(true);
+      const response = await fetch("https://tawsella.online/api/social-links", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
-    if (success) {
-      setAlertMessage("تمت إضافة الرابط بنجاح!");
-      setAlertSeverity("success");
-      setOpenAlert(true);
-      reset();
-      setFile(null);
-    } else if (isError) {
-      setAlertMessage(`خطأ: ${isError}`);
+      const result = await response.json();
+      if (response.ok) {
+        setAlertMessage("تمت إضافة المنصة بنجاح!");
+        setAlertSeverity("success");
+        setOpenAlert(true);
+        reset();
+        setFile(null);
+        router.back();
+      } else {
+        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء الإرسال"}`);
+        setAlertSeverity("error");
+        setOpenAlert(true);
+      }
+    } catch (error) {
+      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
       setAlertSeverity("error");
       setOpenAlert(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -122,7 +140,7 @@ const CreateSocialLinks = () => {
             name="title"
             control={control}
             rules={{ required: "اسم الموقع مطلوب" }}
-            render={({ field }: { field: FieldValues }) => (
+            render={({ field }) => (
               <TextField
                 fullWidth
                 label="اسم الموقع"
@@ -139,10 +157,8 @@ const CreateSocialLinks = () => {
           <Controller
             name="link"
             control={control}
-            rules={{ 
-              required: "الرابط مطلوب",
-            }}
-            render={({ field }: { field: FieldValues }) => (
+            rules={{ required: "الرابط مطلوب" }}
+            render={({ field }) => (
               <TextField
                 fullWidth
                 label="رابط الموقع"

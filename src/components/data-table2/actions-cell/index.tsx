@@ -151,6 +151,14 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 </IconButton>
                             </>
                         );
+                    case "/social-links":
+                        return (
+                            <>
+                                <IconButton onClick={handleDelete}>
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </>
+                        );
                     default:
                         return (
                             <>
