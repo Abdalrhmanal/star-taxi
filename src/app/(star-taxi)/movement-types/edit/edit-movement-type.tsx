@@ -12,6 +12,7 @@ import {
   Alert,
   Switch,
   FormControlLabel,
+  Autocomplete,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -92,6 +93,8 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
     }
   };
 
+  const paymentOptions = ["TL", "USD", "SYP"];
+
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
       {/* التنبيه أعلى الصفحة */}
@@ -165,14 +168,22 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             control={control}
             rules={{ required: "طريقة الدفع مطلوبة" }}
             render={({ field }) => (
-              <TextField
-                fullWidth
-                label="طريقة الدفع الأولى"
-                variant="outlined"
-                {...field}
-                error={!!errors.payment1}
-                helperText={errors.payment1 ? errors.payment1.message : ""}
-                sx={{ textAlign: "right" }}
+              <Autocomplete
+                options={paymentOptions}
+                getOptionLabel={(option) => option}
+                onChange={(_, value) => field.onChange(value)}
+                value={field.value}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    label="طريقة الدفع الأولى"
+                    variant="outlined"
+                    error={!!errors.payment1}
+                    helperText={errors.payment1 ? errors.payment1.message : ""}
+                    sx={{ textAlign: "right" }}
+                  />
+                )}
               />
             )}
           />
@@ -209,14 +220,22 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             control={control}
             rules={{ required: "طريقة الدفع مطلوبة" }}
             render={({ field }) => (
-              <TextField
-                fullWidth
-                label="طريقة الدفع الثانية"
-                variant="outlined"
-                {...field}
-                error={!!errors.payment2}
-                helperText={errors.payment2 ? errors.payment2.message : ""}
-                sx={{ textAlign: "right" }}
+              <Autocomplete
+                options={paymentOptions}
+                getOptionLabel={(option) => option}
+                onChange={(_, value) => field.onChange(value)}
+                value={field.value}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    label="طريقة الدفع الثانية"
+                    variant="outlined"
+                    error={!!errors.payment2}
+                    helperText={errors.payment2 ? errors.payment2.message : ""}
+                    sx={{ textAlign: "right" }}
+                  />
+                )}
               />
             )}
           />
