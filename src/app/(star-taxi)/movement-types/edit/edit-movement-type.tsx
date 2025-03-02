@@ -30,20 +30,6 @@ export type Movement = {
   is_general: boolean;
 };
 
-// دوال التحقق من القيم:
-const validateType = (type: string) =>
-  !type ? "نوع الحركة مطلوب" : "";
-const validatePrice1 = (price1: number) =>
-  price1 <= 0 ? "السعر يجب أن يكون أكبر من 0" : "";
-const validatePayment1 = (payment1: string) =>
-  !payment1 ? " نوع العملة " : "";
-const validatePrice2 = (price2: number) =>
-  price2 <= 0 ? "السعر يجب أن يكون أكبر من 0" : "";
-const validatePayment2 = (payment2: string) =>
-  !payment2 ? " نوع العملة " : "";
-// تعريف Props للمكون
-
-
 const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () => void; }) => {
   const { isLoading, isError, success, updateData } =
     useUpdateData<Movement>({
@@ -92,37 +78,20 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
 
   // دالة معالجة التحديث
   const handleUpdate = async (formData: Movement) => {
-    // تحقق من الحقول قبل الإرسال
-    const typeError = validateType(formData.type);
-    const price1Error = validatePrice1(formData.price1);
-    const payment1Error = validatePayment1(formData.payment1);
-    const price2Error = validatePrice1(formData.price2);
-    const payment2Error = validatePayment1(formData.payment2);
-    if (typeError || price1Error || payment1Error || price2Error || payment2Error) {
-      setAlertMessage("الرجاء تعبئة جميع الحقول المطلوبة");
-      setAlertSeverity("error");
-      setOpenAlert(true);
-      return;
-    }
-
     await updateData(formData);
 
     if (success) {
       setAlertMessage("تم تعديل البيانات بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-     // if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess();
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
   };
-  useEffect(() => {
-    if (success && onSuccess) {
-      onSuccess();
-    }
-  }, [success, onSuccess]);
+
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
       {/* التنبيه أعلى الصفحة */}
@@ -150,6 +119,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
           <Controller
             name="type"
             control={control}
+            rules={{ required: "نوع الحركة مطلوب" }}
             render={({ field }) => (
               <TextField
                 fullWidth
@@ -164,15 +134,19 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
           />
         </Grid>
 
-        {/* السعر */}
+        {/* السعر الأول */}
         <Grid item xs={12}>
           <Controller
             name="price1"
             control={control}
+            rules={{
+              required: "السعر مطلوب",
+              min: { value: 1, message: "السعر يجب أن يكون أكبر من 0" },
+            }}
             render={({ field }) => (
               <TextField
                 fullWidth
-                label="السعر"
+                label="السعر الأول"
                 variant="outlined"
                 type="number"
                 {...field}
@@ -184,15 +158,16 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
           />
         </Grid>
 
-        {/* طريقة الدفع */}
+        {/* طريقة الدفع الأولى */}
         <Grid item xs={12}>
           <Controller
             name="payment1"
             control={control}
+            rules={{ required: "طريقة الدفع مطلوبة" }}
             render={({ field }) => (
               <TextField
                 fullWidth
-                label="طريقة الدفع"
+                label="طريقة الدفع الأولى"
                 variant="outlined"
                 {...field}
                 error={!!errors.payment1}
@@ -202,15 +177,20 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
-        {/* السعر */}
+
+        {/* السعر الثاني */}
         <Grid item xs={12}>
           <Controller
             name="price2"
             control={control}
+            rules={{
+              required: "السعر مطلوب",
+              min: { value: 1, message: "السعر يجب أن يكون أكبر من 0" },
+            }}
             render={({ field }) => (
               <TextField
                 fullWidth
-                label="السعر"
+                label="السعر الثاني"
                 variant="outlined"
                 type="number"
                 {...field}
@@ -222,15 +202,16 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
           />
         </Grid>
 
-        {/* طريقة الدفع */}
+        {/* طريقة الدفع الثانية */}
         <Grid item xs={12}>
           <Controller
             name="payment2"
             control={control}
+            rules={{ required: "طريقة الدفع مطلوبة" }}
             render={({ field }) => (
               <TextField
                 fullWidth
-                label="طريقة الدفع"
+                label="طريقة الدفع الثانية"
                 variant="outlined"
                 {...field}
                 error={!!errors.payment2}
@@ -240,6 +221,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
+
         {/* الوصف */}
         <Grid item xs={12}>
           <Controller
@@ -275,8 +257,6 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
-
-
 
         {/* نوع الحركة (عام أو خاص) */}
         <Grid item xs={12}>
