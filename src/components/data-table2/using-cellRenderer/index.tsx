@@ -31,9 +31,12 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
             <Grid item xs={12} >
               <Typography fontWeight="bold" sx={{ color: "red" }}>{row.name || row.driverName || ''}</Typography>
             </Grid>
-            <Grid item xs={12} >
-              <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender == "male" ? <>ذكر</> : <>انثى</> || ''}</Typography>
-            </Grid>
+            {row.gender ? <>
+              <Grid item xs={12} >
+                <Typography fontWeight="bold" sx={{ color: "red" }}>{row.gender == "male" ? <>ذكر</> : <>انثى</> || ''}</Typography>
+              </Grid>
+            </> : null}
+
           </Grid>
         </Grid>
       </>;
@@ -62,7 +65,7 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
       );
     case "image":
       console.log(`https://tawsella.online/${row.image}`);
-      
+
       return (
         <Avatar
           alt="User Avatar"
