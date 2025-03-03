@@ -92,8 +92,16 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
       setOpenAlert(true);
     }
   };
-
-  const paymentOptions = ["TL", "USD", "SYP"];
+  useEffect(() => {
+    if (success && onSuccess) {
+      onSuccess();
+    }
+  }, [success, onSuccess]);
+  const paymentOptions = [
+    { label: "TL - تركي", value: "TL" },
+    { label: "USD - دولار", value: "USD" },
+    { label: "SYP - سوري", value: "SYP" },
+  ];
 
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
@@ -144,7 +152,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             control={control}
             rules={{
               required: "السعر مطلوب",
-              min: { value: 1, message: "السعر يجب أن يكون أكبر من 0" },
+              min: { value: 0, message: "السعر يجب أن يكون 0 أو أكبر" },
             }}
             render={({ field }) => (
               <TextField
@@ -170,9 +178,9 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             render={({ field }) => (
               <Autocomplete
                 options={paymentOptions}
-                getOptionLabel={(option) => option}
-                onChange={(_, value) => field.onChange(value ?? "TL")}
-                value={field.value ?? "TL"} // Ensure it's not null
+                getOptionLabel={(option) => option.label}
+                onChange={(_, value) => field.onChange(value?.value ?? "TL")}
+                value={paymentOptions.find(option => option.value === field.value) || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -181,12 +189,12 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
                     variant="outlined"
                     error={!!errors.payment1}
                     helperText={errors.payment1 ? errors.payment1.message : ""}
+                    sx={{ textAlign: "right" }}
                   />
                 )}
               />
             )}
           />
-
         </Grid>
 
         {/* السعر الثاني */}
@@ -196,7 +204,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             control={control}
             rules={{
               required: "السعر مطلوب",
-              min: { value: 1, message: "السعر يجب أن يكون أكبر من 0" },
+              min: { value: 0, message: "السعر يجب أن يكون 0 أو أكبر" },
             }}
             render={({ field }) => (
               <TextField
@@ -222,9 +230,9 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             render={({ field }) => (
               <Autocomplete
                 options={paymentOptions}
-                getOptionLabel={(option) => option}
-                onChange={(_, value) => field.onChange(value ?? "LT")}
-                value={field.value ?? "LT"}
+                getOptionLabel={(option) => option.label}
+                onChange={(_, value) => field.onChange(value?.value ?? "TL")}
+                value={paymentOptions.find(option => option.value === field.value) || null}
                 renderInput={(params) => (
                   <TextField
                     {...params}
