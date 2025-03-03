@@ -14,15 +14,16 @@ import {
   Snackbar,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import useUpdateData from "@/hooks/put-global";
-import useCreateData from "@/hooks/post-global";
+import Cookies from "js-cookie";
 
 type SocialLink = {
   id: string;
   title: string;
   link: string;
-  icon: File | null; // تغيير النوع إلى File
+  icon: File | null;
 };
+
+const token = Cookies.get("auth_user");
 
 const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: () => void }) => {
   const {
@@ -30,6 +31,7 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm<SocialLink>({
     defaultValues: {
       id: "",
@@ -39,24 +41,19 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
     },
   });
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // حالة لتخزين الملف المحدد
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // تعيين القيم الأولية عند تحميل البيانات
   useEffect(() => {
     if (data) {
       setValue("id", data.id);
       setValue("title", data.title);
       setValue("link", data.link);
-      // لا نقوم بتعيين قيمة icon هنا لأنها ستكون ملفًا
     }
   }, [data, setValue]);
-
-  const { isLoading, isError, success, createData: updateData } = useCreateData<FormData>({
-    dataSourceName: `api/social-links/${data.id}`, // مسار API لتحديث الرابط
-  });
 
   const handleUpdate = async (updatedData: SocialLink) => {
     if (!updatedData.title || !updatedData.link) {
@@ -66,33 +63,49 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
       return;
     }
 
-    const formData = new FormData(); // إنشاء FormData لإرسال الملف
-
-    // إضافة الحقول إلى FormData
+    const formData = new FormData();
     formData.append("title", updatedData.title);
     formData.append("link", updatedData.link);
     if (selectedFile) {
       formData.append("icon", selectedFile);
     }
 
-    await updateData(formData);
+    try {
+      setIsLoading(true);
+      const response = await fetch(`https://tawsella.online/api/social-links/${data.id}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (success) {
-      setAlertMessage("تم التحديث بنجاح!");
-      setAlertSeverity("success");
-      setOpenAlert(true);
-      if (onSuccess) onSuccess();
-    } else if (isError) {
-      setAlertMessage(`خطأ: ${isError || "حدث خطأ أثناء التحديث"}`);
+      const result = await response.json();
+      if (response.ok) {
+        setAlertMessage("تم التحديث بنجاح!");
+        setAlertSeverity("success");
+        setOpenAlert(true);
+        reset();
+        setSelectedFile(null);
+        if (onSuccess) onSuccess();
+      } else {
+        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء التحديث"}`);
+        setAlertSeverity("error");
+        setOpenAlert(true);
+      }
+    } catch (error) {
+      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
       setAlertSeverity("error");
       setOpenAlert(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
-
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
       if (!allowedTypes.includes(selectedFile.type)) {
         setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");
@@ -100,14 +113,12 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
         setOpenAlert(true);
         return;
       }
-
       if (selectedFile.size > 5 * 1024 * 1024) {
         setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
         setAlertSeverity("error");
         setOpenAlert(true);
         return;
       }
-
       setSelectedFile(selectedFile);
       setValue("icon", selectedFile);
     }
@@ -115,86 +126,43 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
 
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={6000}
-        onClose={() => setOpenAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
         <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
           {alertMessage}
         </Alert>
       </Snackbar>
-
       <Typography variant="h4" gutterBottom sx={{ textAlign: "right" }}>
         تعديل رابط التواصل الاجتماعي
       </Typography>
-
       <Grid container spacing={2}>
-        {/* حقل العنوان */}
         <Grid item xs={12}>
           <Controller
             name="title"
             control={control}
             rules={{ required: "العنوان مطلوب" }}
             render={({ field }) => (
-              <TextField
-                fullWidth
-                label="العنوان"
-                variant="outlined"
-                {...field}
-                error={!!errors.title}
-                helperText={errors.title ? errors.title.message : ""}
-                sx={{ textAlign: "right" }}
-              />
+              <TextField fullWidth label="العنوان" variant="outlined" {...field} error={!!errors.title} helperText={errors.title?.message} />
             )}
           />
         </Grid>
-
-        {/* حقل الرابط */}
         <Grid item xs={12}>
           <Controller
             name="link"
             control={control}
             rules={{ required: "الرابط مطلوب" }}
             render={({ field }) => (
-              <TextField
-                fullWidth
-                label="الرابط"
-                variant="outlined"
-                {...field}
-                error={!!errors.link}
-                helperText={errors.link ? errors.link.message : ""}
-                sx={{ textAlign: "right" }}
-              />
+              <TextField fullWidth label="الرابط" variant="outlined" {...field} error={!!errors.link} helperText={errors.link?.message} />
             )}
           />
         </Grid>
-
-        {/* حقل الأيقونة (اختياري) */}
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <InputLabel htmlFor="icon-input" sx={{ textAlign: "right" }}>
-              الأيقونة (اختياري)
-            </InputLabel>
-            <Input
-              id="icon-input"
-              type="file"
-              inputProps={{ accept: "image/*" }} // قبول ملفات الصور فقط
-              onChange={handleFileChange}
-            />
+            <InputLabel htmlFor="icon-input">الأيقونة (اختياري)</InputLabel>
+            <Input id="icon-input" type="file" inputProps={{ accept: "image/*" }} onChange={handleFileChange} />
           </FormControl>
         </Grid>
-
-        {/* زر التحديث */}
         <Grid item xs={12}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleUpdate)}
-            disabled={isLoading}
-          >
+          <Button fullWidth variant="contained" color="primary" onClick={handleSubmit(handleUpdate)} disabled={isLoading}>
             {isLoading ? <CircularProgress size={24} color="inherit" /> : "تحديث"}
           </Button>
         </Grid>
