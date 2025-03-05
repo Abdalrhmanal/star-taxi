@@ -10,8 +10,9 @@ import {
   Box,
   Autocomplete,
   Alert,
+  Avatar,
 } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FieldValues } from "react-hook-form";
 
 type User = {
   id: string;
@@ -21,10 +22,13 @@ type User = {
   phone_number: string;
   password?: string;
   password_confirmation?: string;
+  birthdate?: string;
+  avatar?: string; // إضافة الصورة الشخصية كجزء من النموذج
 };
 
 const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [image, setImage] = useState<File | null>(null); // حالة لتخزين الصورة الجديدة
 
   const {
     control,
@@ -42,6 +46,7 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       phone_number: "",
       password: "",
       password_confirmation: "",
+      avatar: "", // إضافة قيمة افتراضية للصورة
     },
   });
 
@@ -52,6 +57,8 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       setValue("email", data.email);
       setValue("gender", data.gender === 0 ? "male" : "female");
       setValue("phone_number", data.phone_number);
+      setValue("birthdate", data.birthdate);
+      setValue("avatar", data.avatar); // إضافة الصورة الحالية في الuseEffect
     }
   }, [data, setValue]);
 
@@ -70,7 +77,21 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       delete updatedData.password;
       delete updatedData.password_confirmation;
     }
+    if (image) {
+      updatedData.avatar = URL.createObjectURL(image); // تعيين الصورة الجديدة في البيانات
+    }
     await updateData(updatedData);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      if (file.size <= 10 * 1024 * 1024) { // تحقق من حجم الصورة (10 ميجابايت)
+        setImage(file);
+      } else {
+        alert("حجم الصورة يجب أن لا يتجاوز 10 ميجابايت.");
+      }
+    }
   };
 
   return (
@@ -81,6 +102,16 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       <Typography variant="h4" gutterBottom sx={{ textAlign: "right" }}>تعديل المستخدم</Typography>
 
       <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Avatar src={image ? URL.createObjectURL(image) : `https://tawsella.online/${data.avatar}`} sx={{ width: 100, height: 100 }} />
+          <Button variant="outlined" color="primary" component="label">
+            اختيار صورة
+            <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+          </Button>
+          <Button variant="outlined" color="error">
+            حذف الصورة
+          </Button>
+        </Grid>
         <Grid item xs={12}>
           <Controller
             name="name"
@@ -120,7 +151,7 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
                 getOptionLabel={(option) => (option === "male" ? "ذكر" : "أنثى")}
                 isOptionEqualToValue={(option, value) => option === value}
                 onChange={(_, value) => field.onChange(value)}
-                value={field.value} // استخدام القيمة مباشرة من الحقل
+                value={field.value}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -151,7 +182,26 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
             )}
           />
         </Grid>
-
+        <Grid item xs={12}>
+          <Controller
+            name="birthdate"
+            control={control}
+            rules={{ required: "تاريخ الميلاد مطلوب" }}
+            render={({ field }: { field: FieldValues }) => (
+              <TextField
+                fullWidth
+                label="تاريخ الميلاد"
+                variant="outlined"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                {...field}
+                error={!!errors.birthdate}
+                helperText={errors.birthdate ? errors.birthdate.message : ""}
+                sx={{ textAlign: "right" }}
+              />
+            )}
+          />
+        </Grid>
         <Grid item xs={12}>
           <Button fullWidth variant="outlined" onClick={() => setShowPasswordFields(!showPasswordFields)}>
             {showPasswordFields ? "إخفاء حقل تغيير كلمة المرور" : "تغيير كلمة المرور"}

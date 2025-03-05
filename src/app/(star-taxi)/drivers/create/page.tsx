@@ -13,7 +13,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { UploadFile, Visibility, VisibilityOff } from "@mui/icons-material";
 import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
@@ -27,10 +27,13 @@ type User = {
   birthdate: Date;
   password: string;
   password_confirmation: string;
+  image?: File;
 };
 
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const CreateDriver = () => {
-  const { isLoading, isError, success, createData } = useCreateData<User>({
+  const { isLoading, isError, success, createData } = useCreateData<User | any>({
     dataSourceName: "api/drivers",
   });
 
@@ -40,6 +43,8 @@ const CreateDriver = () => {
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imageError, setImageError] = useState("");
 
   const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<User>({
     defaultValues: {
@@ -54,15 +59,12 @@ const CreateDriver = () => {
   });
 
   const handleCreate = async (data: User) => {
-    await createData({
-      name: data.name,
-      email: data.email,
-      gender: data.gender,
-      phone_number: data.phone_number,
-      birthdate: data.birthdate,
-      password: data.password,
-      password_confirmation: data.password_confirmation,
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) formData.append(key, value as string);
     });
+    if (selectedImage) formData.append("image", selectedImage);
+    await createData(formData);
   };
 
   useEffect(() => {
@@ -78,9 +80,24 @@ const CreateDriver = () => {
     }
   }, [success, isError, router]);
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        setImageError("يجب أن يكون حجم الصورة أقل من 10MB");
+        setSelectedImage(null);
+      } else {
+        setImageError("");
+        setSelectedImage(file);
+      }
+    }
+  };
+
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
-      <HeaderPageD pluralName="السائقين"/>
+      <HeaderPageD pluralName="السائقين" />
+
       {/* التنبيه أعلى الصفحة */}
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
         <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
@@ -147,7 +164,7 @@ const CreateDriver = () => {
               <Autocomplete
                 {...field}
                 options={["male", "female"]}
-                getOptionLabel={(option) => option === "male" ? "ذكر" : "أنثى"}
+                getOptionLabel={(option) => (option === "male" ? "ذكر" : "أنثى")}
                 onChange={(_, value) => field.onChange(value)}
                 value={field.value || ""}
                 renderInput={(params) => (
@@ -232,10 +249,7 @@ const CreateDriver = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -245,7 +259,6 @@ const CreateDriver = () => {
             )}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Controller
             name="password_confirmation"
@@ -280,6 +293,22 @@ const CreateDriver = () => {
             )}
           />
         </Grid>
+        <Grid item xs={12}>
+          <Typography variant="subtitle1">صورة السائق</Typography>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            startIcon={<UploadFile />}
+          >
+            تحميل صورة
+            <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
+          </Button>
+          {selectedImage && <Typography variant="body2" sx={{ mt: 1 }}>{selectedImage.name}</Typography>}
+          {imageError && <Alert severity="error" sx={{ mt: 1 }}>{imageError}</Alert>}
+        </Grid>
+
+
 
         <Grid item xs={12}>
           <Button
