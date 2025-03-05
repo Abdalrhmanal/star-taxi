@@ -1,5 +1,4 @@
 "use client";
-import useUpdateData from "@/hooks/put-global";
 import React, { useState, useEffect } from "react";
 import {
   TextField,
@@ -13,6 +12,7 @@ import {
   Avatar,
 } from "@mui/material";
 import { useForm, Controller, FieldValues } from "react-hook-form";
+import Cookies from "js-cookie";
 
 type User = {
   id: string;
@@ -23,12 +23,17 @@ type User = {
   password?: string;
   password_confirmation?: string;
   birthdate?: string;
-  avatar?: string; // إضافة الصورة الشخصية كجزء من النموذج
+  avatar?: string;
 };
 
 const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
-  const [image, setImage] = useState<File | null>(null); // حالة لتخزين الصورة الجديدة
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error" | undefined>(undefined);
+
+  const token = Cookies.get("auth_user");
 
   const {
     control,
@@ -46,7 +51,8 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       phone_number: "",
       password: "",
       password_confirmation: "",
-      avatar: "", // إضافة قيمة افتراضية للصورة
+      birthdate: "",
+      avatar: "",
     },
   });
 
@@ -55,62 +61,78 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       setValue("id", data.driver_id);
       setValue("name", data.name);
       setValue("email", data.email);
-      setValue("gender", data.gender); // تعيين القيمة الافتراضية للجنس
+      setValue("gender", data.gender);
       setValue("phone_number", data.phone_number);
-      setValue("birthdate", data.birthdate); // تعيين القيمة الافتراضية لتاريخ الميلاد
-      setValue("avatar", data.avatar); // إضافة الصورة الحالية في الuseEffect
+      setValue("birthdate", data.birthdate);
+      setValue("avatar", data.avatar);
     }
   }, [data, setValue]);
-  console.log(data);
-
-  const { isLoading, isError, success, updateData } = useUpdateData<User>({
-    dataSourceName: `api/drivers/${data.driver_id}`,
-  });
-
-  useEffect(() => {
-    if (success && onSuccess) {
-      onSuccess();
-    }
-  }, [success, onSuccess]);
 
   const handleUpdate = async (updatedData: User) => {
+    setIsLoading(true);
+
     if (!showPasswordFields) {
       delete updatedData.password;
       delete updatedData.password_confirmation;
     }
-    if (image) {
-      updatedData.avatar = URL.createObjectURL(image); // تعيين الصورة الجديدة في البيانات
+
+    const formData = new FormData();
+    formData.append("name", updatedData.name);
+    formData.append("email", updatedData.email);
+    formData.append("gender", updatedData.gender || "");
+    formData.append("phone_number", updatedData.phone_number);
+    formData.append("birthdate", updatedData.birthdate || "");
+    if (updatedData.password) formData.append("password", updatedData.password);
+    if (updatedData.password_confirmation) formData.append("password_confirmation", updatedData.password_confirmation);
+    if (avatar) formData.append("avatar", avatar);
+
+    try {
+      const response = await fetch(`https://tawsella.online/api/drivers/${data.driver_id}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setAlertMessage("تم تعديل السائق بنجاح!");
+        setAlertSeverity("success");
+        if (onSuccess) onSuccess();
+      } else {
+        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء الإرسال"}`);
+        setAlertSeverity("error");
+      }
+    } catch (error) {
+      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
+      setAlertSeverity("error");
+    } finally {
+      setIsLoading(false);
     }
-    await updateData(updatedData);
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      if (file.size <= 10 * 1024 * 1024) { // تحقق من حجم الصورة (10 ميجابايت)
-        setImage(file);
-      } else {
-        alert("حجم الصورة يجب أن لا يتجاوز 10 ميجابايت.");
-      }
+    if (file && file.size <= 10 * 1024 * 1024) {
+      setAvatar(file);
+    } else {
+      alert("حجم الصورة يجب أن لا يتجاوز 10 ميجابايت.");
     }
   };
 
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-      {isError && <Alert severity="error" sx={{ mb: 2 }}>خطأ: {isError}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>تم التعديل بنجاح!</Alert>}
+      {alertMessage && <Alert severity={alertSeverity} sx={{ mb: 2 }}>{alertMessage}</Alert>}
 
       <Typography variant="h4" gutterBottom sx={{ textAlign: "right" }}>تعديل المستخدم</Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <Avatar src={image ? URL.createObjectURL(image) : `https://tawsella.online/${data.avatar}`} sx={{ width: 100, height: 100 }} />
-          <Button variant="outlined" color="primary" component="label">
+          <Avatar src={avatar ? URL.createObjectURL(avatar) : `https://tawsella.online/${data.avatar}`} sx={{ width: 100, height: 100 }} />
+          <Button variant="outlined" component="label">
             اختيار صورة
-            <input type="file" hidden accept="image/*" onChange={handleImageChange} />
-          </Button>
-          <Button variant="outlined" color="error">
-            حذف الصورة
+            <input type="file" hidden accept="image/*" onChange={handleAvatarChange} />
           </Button>
         </Grid>
         <Grid item xs={12}>

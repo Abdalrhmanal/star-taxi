@@ -18,26 +18,25 @@ import useCreateData from "@/hooks/post-global";
 import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import HeaderPageD from "@/components/header-page";
+import Cookies from "js-cookie";
 
 type User = {
   name: string;
   email: string;
   gender: "male" | "female" | null;
   phone_number: string;
-  birthdate: Date;
+  birthdate: string;
   password: string;
   password_confirmation: string;
-  image?: File;
+  avatar?: File;
 };
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
 const CreateDriver = () => {
-  const { isLoading, isError, success, createData } = useCreateData<User | any>({
-    dataSourceName: "api/drivers",
-  });
-
   const router = useRouter();
+  const token = Cookies.get("auth_user");
+
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
@@ -46,13 +45,13 @@ const CreateDriver = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageError, setImageError] = useState("");
 
-  const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<User>({
+  const { control, handleSubmit, getValues, formState: { errors } } = useForm<User>({
     defaultValues: {
       name: "",
       email: "",
       gender: null,
       phone_number: "",
-      birthdate: new Date(),
+      birthdate: "",
       password: "",
       password_confirmation: "",
     },
@@ -63,22 +62,35 @@ const CreateDriver = () => {
     Object.entries(data).forEach(([key, value]) => {
       if (value) formData.append(key, value as string);
     });
-    if (selectedImage) formData.append("image", selectedImage);
-    await createData(formData);
-  };
+    if (selectedImage) formData.append("avatar", selectedImage);
 
-  useEffect(() => {
-    if (success) {
-      setAlertMessage("تمت الإضافة بنجاح!");
-      setAlertSeverity("success");
-      setOpenAlert(true);
-      router.push('/drivers');
-    } else if (isError) {
-      setAlertMessage(`خطأ: ${isError}`);
+    try {
+      const response = await fetch("https://tawsella.online/api/drivers", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setAlertMessage("تمت إضافة السائق بنجاح!");
+        setAlertSeverity("success");
+        setOpenAlert(true);
+        router.push("/drivers");
+      } else {
+        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء الإرسال"}`);
+        setAlertSeverity("error");
+        setOpenAlert(true);
+      }
+    } catch (error) {
+      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
       setAlertSeverity("error");
       setOpenAlert(true);
     }
-  }, [success, isError, router]);
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -98,7 +110,6 @@ const CreateDriver = () => {
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
       <HeaderPageD pluralName="السائقين" />
 
-      {/* التنبيه أعلى الصفحة */}
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
         <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
           {alertMessage}
@@ -307,18 +318,9 @@ const CreateDriver = () => {
           {selectedImage && <Typography variant="body2" sx={{ mt: 1 }}>{selectedImage.name}</Typography>}
           {imageError && <Alert severity="error" sx={{ mt: 1 }}>{imageError}</Alert>}
         </Grid>
-
-
-
         <Grid item xs={12}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit(handleCreate)}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : "إضافة"}
+          <Button fullWidth variant="contained" color="primary" onClick={handleSubmit(handleCreate)} >
+            إضافة
           </Button>
         </Grid>
       </Grid>
