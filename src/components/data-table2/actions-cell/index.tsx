@@ -67,11 +67,13 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
     };
 
     const confirmDelete = async () => {
-        const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
-        if (confirm) {
-            await deleteData(id);
-            onDataUpdated();
-        }
+        // const confirm = window.confirm("هل أنت متأكد أنك تريد حذف هذا العنصر؟");
+        // if (confirm) {
+        //     await deleteData(id);
+        //     onDataUpdated();
+        // }
+        await deleteData(id);
+        onDataUpdated();
         setIsDialogOpen(false);
     };
 
