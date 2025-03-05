@@ -8,20 +8,20 @@ import {
   CircularProgress,
   Box,
   Alert,
-  Input,
+  Snackbar,
   FormControl,
   InputLabel,
-  Snackbar,
+  Input,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import Cookies from "js-cookie";
 
-type SocialLink = {
+interface SocialLink {
   id: string;
   title: string;
   link: string;
   icon: File | null;
-};
+}
 
 const token = Cookies.get("auth_user");
 
@@ -33,19 +33,12 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
     setValue,
     reset,
   } = useForm<SocialLink>({
-    defaultValues: {
-      id: "",
-      title: "",
-      link: "",
-      icon: null,
-    },
+    defaultValues: { id: "", title: "", link: "", icon: null },
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [openAlert, setOpenAlert] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertSeverity, setAlertSeverity] = useState<"error" | "success">("success");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [alert, setAlert] = useState<{ message: string; severity: "success" | "error" } | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -57,83 +50,66 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
 
   const handleUpdate = async (updatedData: SocialLink) => {
     if (!updatedData.title || !updatedData.link) {
-      setAlertMessage("يرجى ملء جميع الحقول المطلوبة!");
-      setAlertSeverity("error");
-      setOpenAlert(true);
+      setAlert({ message: "يرجى ملء جميع الحقول المطلوبة!", severity: "error" });
       return;
     }
 
     const formData = new FormData();
     formData.append("title", updatedData.title);
     formData.append("link", updatedData.link);
-    if (selectedFile) {
-      formData.append("icon", selectedFile);
-    }
+    if (selectedFile) formData.append("icon", selectedFile);
 
     try {
       setIsLoading(true);
       const response = await fetch(`https://tawsella.online/api/social-links/${data.id}`, {
         method: "POST",
         body: formData,
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
       });
 
       const result = await response.json();
       if (response.ok) {
-        setAlertMessage("تم التحديث بنجاح!");
-        setAlertSeverity("success");
-        setOpenAlert(true);
+        setAlert({ message: "تم التحديث بنجاح!", severity: "success" });
         reset();
         setSelectedFile(null);
-        if (onSuccess) onSuccess();
+        onSuccess?.();
       } else {
-        setAlertMessage(`خطأ: ${result.message || "حدث خطأ أثناء التحديث"}`);
-        setAlertSeverity("error");
-        setOpenAlert(true);
+        setAlert({ message: `خطأ: ${result.message || "حدث خطأ أثناء التحديث"}`, severity: "error" });
       }
-    } catch (error) {
-      setAlertMessage("حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.");
-      setAlertSeverity("error");
-      setOpenAlert(true);
+    } catch {
+      setAlert({ message: "حدث خطأ أثناء الإرسال، يرجى المحاولة مرة أخرى.", severity: "error" });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const selectedFile = event.target.files[0];
+    const file = event.target.files?.[0];
+    if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-      if (!allowedTypes.includes(selectedFile.type)) {
-        setAlertMessage("يرجى اختيار ملف صورة بصيغة JPEG أو PNG.");
-        setAlertSeverity("error");
-        setOpenAlert(true);
+      if (!allowedTypes.includes(file.type)) {
+        setAlert({ message: "يرجى اختيار ملف صورة بصيغة JPEG أو PNG.", severity: "error" });
         return;
       }
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        setAlertMessage("حجم الملف يجب أن يكون أقل من 5MB!");
-        setAlertSeverity("error");
-        setOpenAlert(true);
+      if (file.size > 5 * 1024 * 1024) {
+        setAlert({ message: "حجم الملف يجب أن يكون أقل من 5MB!", severity: "error" });
         return;
       }
-      setSelectedFile(selectedFile);
-      setValue("icon", selectedFile);
+      setSelectedFile(file);
+      setValue("icon", file);
     }
   };
 
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-      <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
-        <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
-          {alertMessage}
-        </Alert>
+      <Snackbar open={!!alert} autoHideDuration={6000} onClose={() => setAlert(undefined)}>
+        {alert && <Alert severity={alert.severity}>{alert.message}</Alert>}
       </Snackbar>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: "right" }}>
+
+      <Typography variant="h4" gutterBottom align="right">
         تعديل رابط التواصل الاجتماعي
       </Typography>
+
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Controller
@@ -145,6 +121,7 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
             )}
           />
         </Grid>
+
         <Grid item xs={12}>
           <Controller
             name="link"
@@ -155,12 +132,14 @@ const EditSocialLinks = ({ data, onSuccess }: { data: SocialLink; onSuccess?: ()
             )}
           />
         </Grid>
+
         <Grid item xs={12}>
           <FormControl fullWidth>
             <InputLabel htmlFor="icon-input">الأيقونة (اختياري)</InputLabel>
             <Input id="icon-input" type="file" inputProps={{ accept: "image/*" }} onChange={handleFileChange} />
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <Button fullWidth variant="contained" color="primary" onClick={handleSubmit(handleUpdate)} disabled={isLoading}>
             {isLoading ? <CircularProgress size={24} color="inherit" /> : "تحديث"}

@@ -34,6 +34,7 @@ import PageTaxiEdit from "@/app/(star-taxi)/taxis/edit";
 import PageEdetDriver from "@/app/(star-taxi)/drivers/edit";
 import PageMovment from "@/app/(star-taxi)/movement-types/edit";
 import MapComponent from "@/app/(star-taxi)/drivers/[driverId]/location-drivers";
+import PageEditAdvertisements from "@/app/(star-taxi)/advertisements/edit";
 
 const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: () => void }> = ({ row, onDataUpdated, onSuccess }) => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
@@ -102,7 +103,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 <IconButton onClick={handlePaymentClick}>
                                     <AccountBalanceWalletIcon color="secondary" />
                                 </IconButton>
-                               {/*  <IconButton onClick={handleDelete}>
+                                {/*  <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
                                 </IconButton> */}
                             </>
@@ -148,6 +149,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     case "/advertisements":
                         return (
                             <>
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon color="secondary" />
+                                </IconButton>
                                 <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
                                 </IconButton>
@@ -156,11 +160,15 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     case "/social-links":
                         return (
                             <>
+                                <IconButton onClick={handleEdit}>
+                                    <EditIcon color="secondary" />
+                                </IconButton>
                                 <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
                                 </IconButton>
                             </>
                         );
+
                     default:
                         return (
                             <>
@@ -213,6 +221,7 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     {currentPath === "/movement-types/m-inside" && <PageMovment data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/movement-types/m-out" && <PageMovment data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                     {currentPath === "/social-links" && <PageSocialLinks data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
+                    {currentPath === "/advertisements" && <PageEditAdvertisements data={row} onSuccess={() => { setIsDrawerOpen(false); if (onSuccess) onSuccess(); }} />}
                 </Box>
             </Drawer>
 
