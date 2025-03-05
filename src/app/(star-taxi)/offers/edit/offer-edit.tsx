@@ -86,8 +86,6 @@ const EditOffer = ({ data, onSuccess }: { data: Offer & { id: string }; onSucces
       }
     }
   }, [data, setValue, GlobalData]);
-  console.log(data);
-  console.log(selectedMovementType);
 
   // دالة معالجة التحديث
   const handleUpdate = async (formData: Offer) => {
