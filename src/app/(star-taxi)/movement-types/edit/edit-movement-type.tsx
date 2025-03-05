@@ -42,6 +42,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
   const [alertSeverity, setAlertSeverity] = useState<"error" | "success">(
     "success"
   );
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
 
   // تهيئة النموذج باستخدام القيم الافتراضية من البيانات
   const {
@@ -144,6 +145,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
+
 
         {/* السعر الأول */}
         <Grid item xs={12}>
@@ -265,44 +267,46 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
+        {currentPath === "/movement-types/m-out" ? <>
+          {/* تحديد الحساب بالكيلومتر */}
+          <Grid item xs={12}>
+            <Controller
+              name="is_onKM"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="الحساب بالكيلومتر"
+                />
+              )}
+            />
+          </Grid>
 
-        {/* تحديد الحساب بالكيلومتر */}
-        <Grid item xs={12}>
-          <Controller
-            name="is_onKM"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                  />
-                }
-                label="الحساب بالكيلومتر"
-              />
-            )}
-          />
-        </Grid>
+          {/* نوع الحركة (عام أو خاص) */}
+          <Grid item xs={12}>
+            <Controller
+              name="is_general"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="عام"
+                />
+              )}
+            />
+          </Grid>
+        </> : null}
 
-        {/* نوع الحركة (عام أو خاص) */}
-        <Grid item xs={12}>
-          <Controller
-            name="is_general"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                  />
-                }
-                label="عام"
-              />
-            )}
-          />
-        </Grid>
 
         {/* زر التحديث */}
         <Grid item xs={12}>
