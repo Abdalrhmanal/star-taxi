@@ -20,7 +20,7 @@ const LoadingTable: React.FC<LoadingTableProps> = ({
 }) => {
   return (
     <Box p={1}>
-      <Table>
+      <Table sx={{ direction: "rtl" }}>
         {/* Table Header */}
         <TableHead sx={{ borderBottom: "2px solid", backgroundColor: "#f0f8ff" }}>
           <TableRow>
