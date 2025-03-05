@@ -38,8 +38,9 @@ interface GlobalDataType {
     movementTypes: MovementType[];
   };
 }
+
 // مكون تعديل العرض
-const EditOffer = ({ data ,onSuccess}: { data: Offer & { id: string } ;onSuccess?: () => void }) => {
+const EditOffer = ({ data, onSuccess }: { data: Offer & { id: string }; onSuccess?: () => void }) => {
   const { isLoading, isError, success, updateData } = useUpdateData<Offer>({
     dataSourceName: `api/offers/${data.id}`, // مسار API لتحديث العرض
   });
@@ -78,13 +79,15 @@ const EditOffer = ({ data ,onSuccess}: { data: Offer & { id: string } ;onSuccess
       setValue("valid_date", data.valid_date);
       setValue("description", data.description);
 
-      // تعيين نوع الحركة المحدد مسبقًا إذا وجد في بيانات الـ GlobalData
+      // تعيين نوع الحركة المحدد مسبقًا بناءً على البيانات القادمة من API
       if (GlobalData?.data?.movementTypes) {
         const existingMovementType = GlobalData.data.movementTypes.find(mt => mt.id === data.movement_type_id);
-        setSelectedMovementType(existingMovementType || null);
+        setSelectedMovementType(existingMovementType || null); // تعيين القيمة الافتراضية بناءً على البيانات
       }
     }
   }, [data, setValue, GlobalData]);
+  console.log(data);
+  console.log(selectedMovementType);
 
   // دالة معالجة التحديث
   const handleUpdate = async (formData: Offer) => {
@@ -119,18 +122,20 @@ const EditOffer = ({ data ,onSuccess}: { data: Offer & { id: string } ;onSuccess
       setAlertMessage("تم تعديل العرض بنجاح!");
       setAlertSeverity("success");
       setOpenAlert(true);
-     // if (onSuccess) onSuccess();
+      // if (onSuccess) onSuccess();
     } else if (isError) {
       setAlertMessage(`خطأ: ${isError}`);
       setAlertSeverity("error");
       setOpenAlert(true);
     }
   };
+
   useEffect(() => {
     if (success && onSuccess) {
       onSuccess();
     }
   }, [success, onSuccess]);
+
   return (
     <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
