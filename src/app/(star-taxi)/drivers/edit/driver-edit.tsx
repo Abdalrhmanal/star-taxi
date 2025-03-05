@@ -55,12 +55,13 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
       setValue("id", data.driver_id);
       setValue("name", data.name);
       setValue("email", data.email);
-      setValue("gender", data.gender === 0 ? "male" : "female");
+      setValue("gender", data.gender); // تعيين القيمة الافتراضية للجنس
       setValue("phone_number", data.phone_number);
-      setValue("birthdate", data.birthdate);
+      setValue("birthdate", data.birthdate); // تعيين القيمة الافتراضية لتاريخ الميلاد
       setValue("avatar", data.avatar); // إضافة الصورة الحالية في الuseEffect
     }
   }, [data, setValue]);
+  console.log(data);
 
   const { isLoading, isError, success, updateData } = useUpdateData<User>({
     dataSourceName: `api/drivers/${data.driver_id}`,
@@ -151,7 +152,7 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
                 getOptionLabel={(option) => (option === "male" ? "ذكر" : "أنثى")}
                 isOptionEqualToValue={(option, value) => option === value}
                 onChange={(_, value) => field.onChange(value)}
-                value={field.value}
+                value={field.value} // تعيين القيمة الافتراضية هنا
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -195,6 +196,7 @@ const EditDriver = ({ data, onSuccess }: { data: any; onSuccess?: () => void }) 
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 {...field}
+                value={field.value} // تعيين القيمة الافتراضية هنا
                 error={!!errors.birthdate}
                 helperText={errors.birthdate ? errors.birthdate.message : ""}
                 sx={{ textAlign: "right" }}
