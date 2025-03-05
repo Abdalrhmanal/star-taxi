@@ -11,7 +11,8 @@ function Offers() {
         { headerName: "حجم الخصم", field: "value_of_discount", sortable: true },
         { headerName: "التاريخ", field: "valid_date", sortable: true },
         { headerName: "النوع ", field: "type", sortable: true },
-        { headerName: "السعر", field: "price", sortable: true },
+        { headerName: "1 السعر", field: "price1", sortable: true },
+        { headerName: "2 السعر", field: "price2", sortable: true },
         { headerName: "الوصف", field: "description", sortable: true },
 
     ];

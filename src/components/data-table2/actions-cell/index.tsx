@@ -102,9 +102,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 <IconButton onClick={handlePaymentClick}>
                                     <AccountBalanceWalletIcon color="secondary" />
                                 </IconButton>
-                                <IconButton onClick={handleDelete}>
+                               {/*  <IconButton onClick={handleDelete}>
                                     <DeleteIcon color="error" />
-                                </IconButton>
+                                </IconButton> */}
                             </>
                         );
                     case "/requests/live":
