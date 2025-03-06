@@ -10,6 +10,7 @@ const publicRoutes = [
   "/confirm-password",
   "/reset-password",
   "/platform",
+  "/privacypolicy",
 ];
 
 export function middleware(request: NextRequest) {
