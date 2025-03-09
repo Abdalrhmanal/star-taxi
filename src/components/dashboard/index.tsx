@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Grid,
   Typography,
@@ -21,6 +21,7 @@ import Cookies from "js-cookie";
 import TabDynamis from "@/components/Dynamic-Tabs";
 import useGlobalData from "@/hooks/get-global";
 import Requests from "@/components/requests";
+import bidi from "bidi-js";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
@@ -81,6 +82,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
     },
     [adminId, playNotificationSound]
   );
+
   const subscribeToChannel_found = useCallback(
     (
       channelName: string,
@@ -106,6 +108,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
     },
     [adminId, playNotificationSound]
   );
+
   const subscribeToChannel_movement = useCallback(
     (
       channelName: string,
@@ -131,6 +134,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
     },
     [adminId, playNotificationSound]
   );
+
   const subscribeToChannel_Cancel = useCallback(
     (
       channelName: string,
@@ -156,6 +160,7 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
     },
     [adminId, playNotificationSound]
   );
+
   // إعدادات القنوات والإشعارات
   useEffect(() => {
     if (!adminId) return;
@@ -165,23 +170,27 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         "TaxiMovement",
         ".requestingTransportationService",
         (event) => {
+          const message = `طلب جديد من الزبون ${event.customer}: الموقع الحالي ${event.customer_address} الوجهة إلى → ${event.destination_address}`;
           setNotification({
             open: true,
-            message: `طلب جديد من ${event.customer}: الموقع الحالي: ${event.customer_address} الوجهة إلى → ${event.destination_address}`,
+            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
           });
           setNotificationMessage(
-            `طلب جديد من الزبون ${event.customer}: الموقع الحالي ${event.customer_address} الوجهة إلى → ${event.destination_address}`
+            bidi.processText(message, bidi.DEFAULT_OPTIONS)
           );
           setNotificationOpen(true);
           refetch();
         }
       ),
       subscribeToChannel_found("foundCustomer", ".foundCustomer", (event) => {
+        const message = `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`;
         setNotification({
           open: true,
-          message: `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`,
+          message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
         });
-        setNotificationMessage(`السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`);
+        setNotificationMessage(
+          bidi.processText(message, bidi.DEFAULT_OPTIONS)
+        );
         setNotificationOpen(true);
         refetch();
       }),
@@ -189,11 +198,14 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         "movementCompleted",
         ".movementCompleted",
         (event) => {
+          const message = `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`;
           setNotification({
             open: true,
-            message: `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`,
+            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
           });
-          setNotificationMessage(`السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`);
+          setNotificationMessage(
+            bidi.processText(message, bidi.DEFAULT_OPTIONS)
+          );
           setNotificationOpen(true);
           refetch();
         }
@@ -202,11 +214,14 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         "customerCancelMovement",
         ".customerCancelMovement",
         (event) => {
+          const message = `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`;
           setNotification({
             open: true,
-            message: `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`,
+            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
           });
-          setNotificationMessage(`الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`);
+          setNotificationMessage(
+            bidi.processText(message, bidi.DEFAULT_OPTIONS)
+          );
           setNotificationOpen(true);
           refetch();
         }
