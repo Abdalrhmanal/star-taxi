@@ -21,7 +21,7 @@ import Cookies from "js-cookie";
 import TabDynamis from "@/components/Dynamic-Tabs";
 import useGlobalData from "@/hooks/get-global";
 import Requests from "@/components/requests";
-import bidi from "bidi-js";
+import { processText, DEFAULT_OPTIONS } from "bidi-js";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
 const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
@@ -173,10 +173,10 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           const message = `طلب جديد من الزبون ${event.customer}: الموقع الحالي ${event.customer_address} الوجهة إلى → ${event.destination_address}`;
           setNotification({
             open: true,
-            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
+            message: processText(message, DEFAULT_OPTIONS),
           });
           setNotificationMessage(
-            bidi.processText(message, bidi.DEFAULT_OPTIONS)
+            processText(message, DEFAULT_OPTIONS)
           );
           setNotificationOpen(true);
           refetch();
@@ -186,10 +186,10 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
         const message = `السائق ${event.driverName} وجد الزبون ${event.customerName} → ${event.message}`;
         setNotification({
           open: true,
-          message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
+          message: processText(message, DEFAULT_OPTIONS),
         });
         setNotificationMessage(
-          bidi.processText(message, bidi.DEFAULT_OPTIONS)
+          processText(message, DEFAULT_OPTIONS)
         );
         setNotificationOpen(true);
         refetch();
@@ -201,10 +201,10 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           const message = `السائق ${event.driver.name} أكمل طلب الزبون ${event.customer.name} → ${event.message}`;
           setNotification({
             open: true,
-            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
+            message: processText(message, DEFAULT_OPTIONS),
           });
           setNotificationMessage(
-            bidi.processText(message, bidi.DEFAULT_OPTIONS)
+            processText(message, DEFAULT_OPTIONS)
           );
           setNotificationOpen(true);
           refetch();
@@ -217,10 +217,10 @@ function Home({ adminId, onSuccess }: { adminId: string; onSuccess?: () => void 
           const message = `الزبون ${event.customer.name} برقم جوال ${event.customer.phone_number} ألغى الطلب → ${event.message}`;
           setNotification({
             open: true,
-            message: bidi.processText(message, bidi.DEFAULT_OPTIONS),
+            message: processText(message, DEFAULT_OPTIONS),
           });
           setNotificationMessage(
-            bidi.processText(message, bidi.DEFAULT_OPTIONS)
+            processText(message, DEFAULT_OPTIONS)
           );
           setNotificationOpen(true);
           refetch();
