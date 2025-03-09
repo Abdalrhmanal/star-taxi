@@ -90,7 +90,11 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
       console.error("❌ حدث خطأ أثناء تمييز جميع الإشعارات كمقروءة:", error);
     }
   };
-  
+
+  const refreshUnreadNotifications = () => {
+    refetchUnread();
+  };
+
   useEffect(() => {
     if (success) {
       setNotificationMessage("تم تمييز جميع الإشعارات كمقروءة بنجاح.");
@@ -128,11 +132,10 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
   
   const readNotifications = notifications.filter(
     (n) => !unreadNotifications.some((u) => u.id === n.id)
-  );
+  ).slice(0, 20); // عرض آخر 20 إشعار مقروء فقط
   const unreadNotificationsFiltered = notifications.filter((n) =>
     unreadNotifications.some((u) => u.id === n.id)
   );
-
 
   const handleCloseNotification = () => {
     setNotificationOpen(false);
@@ -154,7 +157,7 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
         الإشعارات
       </Typography>
 
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, display: "flex", gap: 2 }}>
         <Button
           variant="contained"
           color="primary"
@@ -163,6 +166,15 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
           startIcon={markingLoading && <CircularProgress size={20} />}
         >
           {markingLoading ? "جارٍ التحديث..." : "تمييز الكل كمقروء"}
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={refreshUnreadNotifications}
+          disabled={UnreadLoading}
+          startIcon={UnreadLoading && <CircularProgress size={20} />}
+        >
+          {UnreadLoading ? "جارٍ التحديث..." : "تحديث"}
         </Button>
       </Box>
 
