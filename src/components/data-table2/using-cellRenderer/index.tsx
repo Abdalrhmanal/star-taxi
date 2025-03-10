@@ -3,6 +3,8 @@ import { Typography, Chip, Grid, Avatar } from "@mui/material";
 import { getStatusStyle } from "@/components/helper/style-status";
 
 export const renderCell = (field: string, value: any, row: any): React.ReactNode => {
+  console.log(row);
+
   switch (field) {
     case "driver_state":
       if (row.driver_state === "Ready") {
@@ -105,18 +107,27 @@ export const renderCell = (field: string, value: any, row: any): React.ReactNode
         <Typography fontWeight="bold">{formattedDate}</Typography>
       );
     case "today_accounted":
-      return (
+      console.log(row.today_account);
+
+      return (<>
         <Typography fontWeight="bold">
-          {Array.isArray(row.today_account) && row.today_account.length > 0
-            ? `${row.today_account[0].coin} ${row.today_account[0].total_amount}`
+          {Array.isArray(row.today_account) && row.today_account.length > 0 ?
+            row.today_account.map((itemc: any, indexc: any) => (
+              <Typography key={indexc}>{`${itemc.coin} ${itemc.total_amount} /`}</Typography>
+            ))
             : '00'}
         </Typography>
-      );
+        {row.payment2 && <Typography fontWeight="bold">{row.payment2}</Typography>}
+      </>);
     case "all_accounted":
+      console.log(row.all_account);
+
       return (
         <Typography fontWeight="bold">
-          {Array.isArray(row.all_account) && row.all_account.length > 0
-            ? `${row.all_account[0].coin} ${row.all_account[0].total_amount}`
+          {Array.isArray(row.all_account) && row.all_account.length > 0 ?
+            row.all_account.map((item: any) => {
+              return `${item.coin} ${item.total_amount} /`;
+            })
             : '00'}
         </Typography>
       );

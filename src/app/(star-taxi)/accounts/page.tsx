@@ -12,7 +12,6 @@ function Accounts() {
         { headerName: "لوحة السيارة", field: "plate_number", sortable: true },
         { headerName: "الحساب اليومي", field: "today_accounted", sortable: true },
         { headerName: "جميع الحسابات", field: "all_accounted", sortable: true },
-
     ];
     const handleActionClick = (row: any) => {
         console.log("Row clicked:", row);
