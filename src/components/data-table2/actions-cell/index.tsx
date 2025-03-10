@@ -168,7 +168,14 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                                 </IconButton>
                             </>
                         );
-
+                        case "/movement-types/m-out":
+                            return (
+                                <>
+                                    <IconButton onClick={handleEdit}>
+                                        <EditIcon color="secondary" />
+                                    </IconButton>
+                                </>
+                            );
                     default:
                         return (
                             <>

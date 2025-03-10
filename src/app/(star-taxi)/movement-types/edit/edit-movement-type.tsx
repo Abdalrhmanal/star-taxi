@@ -267,8 +267,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             )}
           />
         </Grid>
-        {currentPath === "/movement-types/m-out" ? <>
-          {/* تحديد الحساب بالكيلومتر */}
+  {/*       {currentPath === "/movement-types/m-out" ? <>
           <Grid item xs={12}>
             <Controller
               name="is_onKM"
@@ -287,7 +286,6 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
             />
           </Grid>
 
-          {/* نوع الحركة (عام أو خاص) */}
           <Grid item xs={12}>
             <Controller
               name="is_general"
@@ -305,7 +303,7 @@ const EditMovementType = ({ data, onSuccess }: { data: Movement; onSuccess?: () 
               )}
             />
           </Grid>
-        </> : null}
+        </> : null} */}
 
 
         {/* زر التحديث */}
