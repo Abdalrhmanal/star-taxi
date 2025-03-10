@@ -91,8 +91,9 @@ function Notifications({ onSuccess }: { onSuccess?: () => void }) {
     }
   };
 
-  const refreshUnreadNotifications = () => {
-    refetchUnread();
+  const refreshUnreadNotifications = async () => {
+    await refetch();
+    await refetchUnread();
   };
 
   useEffect(() => {

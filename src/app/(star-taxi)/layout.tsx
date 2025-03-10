@@ -136,28 +136,28 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         "TaxiMovement",
         ".requestingTransportationService",
         (event) => {
-          console.log("TaxiMovement event:", event);
+          console.log("TaxiMovement event layout:", event);
         }
       ),
       subscribeToChannel1(
         "foundCustomer",
         ".foundCustomer",
         (event) => {
-          console.log("foundCustomer event:", event);
+          console.log("foundCustomer event layout:", event);
         }
       ),
       subscribeToChannel2(
         "movementCompleted",
         ".movementCompleted",
         (event) => {
-          console.log("movementCompleted event:", event);
+          console.log("movementCompleted event layout:", event);
         }
       ),
       subscribeToChannel3(
         "customerCancelMovement",
         ".customerCancelMovement",
         (event) => {
-          console.log("customerCancelMovement event:", event);
+          console.log("customerCancelMovement event layout:", event);
         }
       ),
     ];
