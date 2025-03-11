@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     TextField,
     Button,
@@ -79,7 +79,11 @@ const CreateMovementType = () => {
             setOpenAlert(true);
         }
     };
-
+    useEffect(() => {
+        if (success) {
+            router.push('/movement-types/m-out');
+        }
+    }, [success,]);
     const paymentOptions = [
         { label: "TL - تركي", value: "TL" },
         { label: "USD - دولار", value: "USD" },
@@ -89,7 +93,7 @@ const CreateMovementType = () => {
     return (
         <Box sx={{ width: "100%", maxWidth: 600, margin: "0 auto", padding: 3 }}>
             <HeaderPageD pluralName="الرحلات" />
-            
+
             <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={() => setOpenAlert(false)} severity={alertSeverity} sx={{ width: "100%" }}>
                     {alertMessage}

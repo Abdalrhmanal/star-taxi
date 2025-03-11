@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     TextField,
     Button,
@@ -79,6 +79,11 @@ const CreateMovementType = () => {
         }
     };
 
+    useEffect(() => {
+        if (success) {
+            router.push('/movement-types/m-inside');
+        }
+    }, [success,]);
     const paymentOptions = [
         { label: "TL - تركي", value: "TL" },
         { label: "USD - دولار", value: "USD" },
