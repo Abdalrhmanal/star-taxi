@@ -1,109 +1,103 @@
 "use client";
-import React from 'react'
+import React from 'react';
 import { Container, Typography, Paper } from "@mui/material";
 
 function PrivacyPolicy() {
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
-            <Paper elevation={3} sx={{ p: 4 }}>
-                <Typography variant="h4" gutterBottom>
-                    سياسة الخصوصية - StarTaxi
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    تاريخ التحديث: [أدخل التاريخ]
-                </Typography>
-
+            <Typography variant="h3" align="center" gutterBottom>
+                Privacy Policy for Star Taxi (Star Taxi)
+            </Typography>
+            <Typography variant="body1" align="center" paragraph>
+                Star Taxi (Star Taxi) is a private transportation company that provides transportation services for people using modern and safe cars and offers the possibility of renting a car for a specific period of time. Our motto is speed, safety and comfort.            </Typography>
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
                 <Typography variant="h5" gutterBottom>
-                    1. المعلومات التي نقوم بجمعها
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                    1.1 المعلومات التي تقدمها لنا
+                    1. Information We Collect
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    عند استخدام تطبيق StarTaxi، قد نطلب منك تقديم بعض المعلومات الشخصية مثل:
-                    <ul>
-                        <li>الاسم</li>
-                        <li>البريد الإلكتروني</li>
-                        <li>رقم الهاتف</li>
-                        <li>معلومات الدفع عند الحاجة</li>
-                    </ul>
+                    When you use the Star Taxi (Star Taxi) app, we may collect the following information:
                 </Typography>
+                <ul>
+                    <li><strong>Personal Information:</strong> Such as your name, email address, phone number, and any other information you provide during registration or while using the app.</li>
+                    <li><strong>Device Information:</strong> Including device type, operating system, IP address, and unique device identifiers.</li>
+                    <li><strong>Usage Data:</strong> Information about your interactions with the app, such as pages visited, time spent on the app, and actions taken.</li>
+                </ul>
+            </Paper>
 
-                <Typography variant="h6" gutterBottom>
-                    1.2 المعلومات التي يتم جمعها تلقائيًا
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    نقوم بجمع بعض المعلومات تلقائيًا، مثل:
-                    <ul>
-                        <li>بيانات الجهاز (نظام التشغيل، نوع الجهاز، معرف الجهاز)</li>
-                        <li>الموقع الجغرافي لتحديد موقع المستخدم والسائق</li>
-                        <li>بيانات الاستخدام مثل الصفحات التي تزورها داخل التطبيق</li>
-                    </ul>
-                </Typography>
-
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
                 <Typography variant="h5" gutterBottom>
-                    2. كيفية استخدام المعلومات
+                    2. How We Use Your Information
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    نستخدم المعلومات التي نجمعها من أجل:
-                    <ul>
-                        <li>تقديم خدمات StarTaxi وتحسين تجربة المستخدم</li>
-                        <li>تتبع موقع السائق وعرضه على الخريطة داخل التطبيق</li>
-                        <li>تحليل أداء التطبيق وتحسينه</li>
-                        <li>إرسال الإشعارات والتحديثات حول الخدمة</li>
-                    </ul>
+                    We use the collected information for the following purposes:
                 </Typography>
+                <ul>
+                    <li>To provide and improve the services offered through the Star Taxi (Star Taxi) app.</li>
+                    <li>To communicate with you regarding updates, announcements, or changes to the app.</li>
+                    <li>To analyze app usage and performance to enhance functionality and user experience.</li>
+                    <li>To ensure the security and integrity of the app and its users.</li>
+                </ul>
+            </Paper>
 
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
                 <Typography variant="h5" gutterBottom>
-                    3. مشاركة المعلومات مع جهات خارجية
+                    3. Sharing Your Information
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    نحن لا نبيع أو نشارك بياناتك مع أطراف ثالثة، إلا في الحالات التالية:
-                    <ul>
-                        <li>عند استخدام خدمات طرف ثالث مثل خرائط Google لعرض موقع السائق</li>
-                        <li>عندما يكون ذلك مطلوبًا بموجب القانون</li>
-                    </ul>
+                    Star Taxi (Star Taxi) is committed to protecting your privacy. We do not sell, trade, or rent your personal information to third parties. We may share your information in the following limited circumstances:
                 </Typography>
+                <ul>
+                    <li>With trusted service providers who assist us in operating the app and providing services to you, under strict confidentiality agreements.</li>
+                    <li>When required by law or to comply with legal obligations.</li>
+                    <li>To protect the rights, property, or safety of Star Taxi (Star Taxi), our users, or others.</li>
+                </ul>
+            </Paper>
 
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
                 <Typography variant="h5" gutterBottom>
-                    4. الأمان
+                    4. Data Security
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    نحن نتخذ إجراءات أمان لحماية بياناتك، ولكن لا يمكن ضمان الأمان الكامل للمعلومات عبر الإنترنت.
-                </Typography>
-
-                <Typography variant="h5" gutterBottom>
-                    5. حقوق المستخدم
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    يمكنك طلب الوصول إلى بياناتك أو تعديلها أو حذفها من خلال التواصل معنا عبر البريد الإلكتروني التالي:
-                    <br />
-                    ✉️ support@startaxi.com
-                </Typography>
-
-                <Typography variant="h5" gutterBottom>
-                    6. التعديلات على سياسة الخصوصية
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    قد نقوم بتحديث هذه السياسة من وقت لآخر، وسنقوم بإعلامك بأي تغييرات جوهرية.
-                </Typography>
-
-                <Typography variant="h5" gutterBottom>
-                    7. التواصل معنا
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    إذا كان لديك أي استفسارات حول سياسة الخصوصية، يمكنك التواصل معنا عبر:
-                    <br />
-                    ✉️ البريد الإلكتروني: startaxi@gmail.com
-                    <br />
-                    🌍 الموقع الإلكتروني: www.startaxi-sk.com
+                    We implement reasonable security measures to protect your information from unauthorized access, alteration, disclosure, or destruction. However, please be aware that no method of transmission over the internet or electronic storage is completely secure, and we cannot guarantee absolute security.
                 </Typography>
             </Paper>
+
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
+                <Typography variant="h5" gutterBottom>
+                    5. Your Rights
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    You have the right to access, update, or request deletion of your personal information. To exercise these rights, please contact us at <a href="mailto:info@startaxi.org">info@startaxi.org</a>.
+                </Typography>
+            </Paper>
+
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
+                <Typography variant="h5" gutterBottom>
+                    6. Changes to This Privacy Policy
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    We may update this Privacy Policy periodically. We will notify you of any significant changes by posting the new policy on this page or through other communication methods.
+                </Typography>
+            </Paper>
+
+            <Paper elevation={3} sx={{ p: 4, mb: 2 }}>
+                <Typography variant="h5" gutterBottom>
+                    7. Contact Us
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:
+                </Typography>
+                <ul>
+                    <li>Email: <a href="mailto:info@startaxi.org">info@startaxi.org</a></li>
+                    <li>Phone: <a href="tel:+352681555826">+352 681 555 826</a></li>
+                </ul>
+            </Paper>
+
+            <Typography variant="body1">
+                Last Updated: March 12, 2025
+            </Typography>
         </Container>
-    )
+    );
 }
 
 export default PrivacyPolicy;
-
-
-
