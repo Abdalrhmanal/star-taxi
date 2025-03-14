@@ -111,9 +111,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     case "/requests/live":
                         return (
                             <>
-                                <IconButton onClick={handleEdit}>
+                                {/* <IconButton onClick={handleEdit}>
                                     <EditIcon color="secondary" />
-                                </IconButton>
+                                </IconButton> */}
                                 <IconButton onClick={handleView}>
                                     <VisibilityIcon color="secondary" />
                                 </IconButton>
@@ -135,9 +135,9 @@ const ActionsCell: React.FC<{ row: any, onDataUpdated: () => void, onSuccess?: (
                     case "/requests/done":
                         return (
                             <>
-                                <IconButton onClick={handleEdit}>
+                               {/*  <IconButton onClick={handleEdit}>
                                     <EditIcon color="secondary" />
-                                </IconButton>
+                                </IconButton> */}
                                 <IconButton onClick={handleView}>
                                     <VisibilityIcon color="secondary" />
                                 </IconButton>
