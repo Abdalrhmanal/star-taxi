@@ -19,7 +19,7 @@ interface DriverLocation {
 const MapComponent = ({ data }: any) => {
   const driverId = data.driver_id;
   const [driverMarker, setDriverMarker] = useState<DriverLocation | null>(null);
-  const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
+  const googleMapsApiKey = "AIzaSyC4V8cI_ozB1LTeJwjpwmhhyUC_iBrA2FY";
   const mapContainerStyle = {
     width: "100%",
     height: "87vh",

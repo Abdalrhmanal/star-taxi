@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Grid, Typography, Box, Card, CardContent, CardHeader, Divider } from "@mui/material";
 import { GoogleMap, useLoadScript, Marker, DirectionsRenderer } from "@react-google-maps/api";
 
-const googleMapsApiKey = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
+const googleMapsApiKey = "AIzaSyC4V8cI_ozB1LTeJwjpwmhhyUC_iBrA2FY";
 
 const mapContainerStyle = {
   width: "100%",

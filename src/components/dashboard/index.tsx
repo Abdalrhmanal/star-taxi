@@ -22,7 +22,7 @@ import TabDynamis from "@/components/Dynamic-Tabs";
 import useGlobalData from "@/hooks/get-global";
 import Requests from "@/components/requests";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyCz7MVXwh_VtjqnPh5auan0QCVwVce2JX0";
+const GOOGLE_MAPS_API_KEY = "AIzaSyC4V8cI_ozB1LTeJwjpwmhhyUC_iBrA2FY";
 const MAP_CONTAINER_STYLE = { width: "100%", height: "70vh" };
 const DEFAULT_CENTER = { lat: 34.8021, lng: 38.9968 };
 
