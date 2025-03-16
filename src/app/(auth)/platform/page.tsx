@@ -72,6 +72,7 @@ const ImageOverlay = styled(Box)(({ theme }) => ({
   alignItems: "center",
   opacity: 0,
   transition: "opacity 0.3s ease",
+  padding: theme.spacing(2),
 }));
 
 const AndroidButton = styled(Button)(({ theme }) => ({
@@ -187,8 +188,9 @@ function AppDownloadPage() {
           <Image
             src="/images/logo.png"
             alt="التطبيق الرئيسي"
-            layout="fill"
-            objectFit="cover"
+            width={200}
+            height={200}
+            style={{ objectFit: "cover" }}
           />
         </Box>
         
@@ -233,13 +235,15 @@ function AppDownloadPage() {
       <Grid container spacing={3} sx={{ mb: 5 }}>
         {imageContents.map((content, index) => (
           <Grid item key={index} xs={12} sm={6} md={4}>
-            <GridItem elevation={2}>
-              <Box sx={{ position: "relative", width: "100%", paddingTop: "200%" }}>
+            <GridItem elevation={2} sx={{ height: 600 ,p:1 }}>
+              <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
                 <Image
                   src={`/images/${index + 1}.png`}
                   alt={`صورة ${index + 1}`}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 33vw"
+                  style={{ objectFit: "cover" }}
+                  priority={index < 2} // Prioritize loading first two images
                 />
                 <ImageOverlay className="overlay">
                   <Typography variant="h6" component="h3" gutterBottom>
