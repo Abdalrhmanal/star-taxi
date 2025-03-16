@@ -220,13 +220,13 @@ function AppDownloadPage() {
             >
               تحميل أندرويد
             </AndroidButton>
-            <IosButton 
+            {/* <IosButton 
               variant="contained" 
               startIcon={<AppleIcon />}
               onClick={() => startDownload("ios")}
             >
               تحميل iOS
-            </IosButton>
+            </IosButton> */}
           </Box>
         </HeaderInfo>
       </HeaderContainer>
@@ -275,16 +275,16 @@ function AppDownloadPage() {
           startIcon={<AndroidIcon />}
           onClick={() => startDownload("android")}
         >
-          تحميل أندرويد
+           تحميل أندرويد 
         </AndroidButton>
-        <IosButton 
+      {/*   <IosButton 
           variant="contained" 
           size="large"
           startIcon={<AppleIcon />}
           onClick={() => startDownload("ios")}
         >
           تحميل iOS
-        </IosButton>
+        </IosButton> */}
         <ShareButton 
           variant="contained" 
           size="large"
