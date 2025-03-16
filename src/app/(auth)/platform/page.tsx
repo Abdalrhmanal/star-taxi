@@ -106,8 +106,8 @@ function AppDownloadPage() {
   
   // روابط التنزيل لكل منصة
   const downloadLinks: { [key in "android" | "ios"]: string } = {
-    android: "/downloads/app-release.apk",
-    ios: "/downloads/app-release.ipa",
+    android: "/app-release.apk", // Updated path to match the file in public directory
+    ios: "/app-release.ipa",
   };
 
   // بدء عملية التنزيل مع العد التنازلي
@@ -141,7 +141,7 @@ function AppDownloadPage() {
     // إنشاء عنصر <a> وتنزيل الملف
     const anchor = document.createElement("a");
     anchor.href = link;
-    anchor.download = link.split("/").pop() || "app-download";
+    anchor.download = platform === "android" ? "app-release.apk" : "app-release.ipa";
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
@@ -220,13 +220,7 @@ function AppDownloadPage() {
             >
               تحميل أندرويد
             </AndroidButton>
-            {/* <IosButton 
-              variant="contained" 
-              startIcon={<AppleIcon />}
-              onClick={() => startDownload("ios")}
-            >
-              تحميل iOS
-            </IosButton> */}
+
           </Box>
         </HeaderInfo>
       </HeaderContainer>
@@ -277,14 +271,7 @@ function AppDownloadPage() {
         >
            تحميل أندرويد 
         </AndroidButton>
-      {/*   <IosButton 
-          variant="contained" 
-          size="large"
-          startIcon={<AppleIcon />}
-          onClick={() => startDownload("ios")}
-        >
-          تحميل iOS
-        </IosButton> */}
+
         <ShareButton 
           variant="contained" 
           size="large"
