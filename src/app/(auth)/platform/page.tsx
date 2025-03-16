@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -103,11 +103,36 @@ function AppDownloadPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const [downloadPlatform, setDownloadPlatform] = useState<"android" | "ios" | null>(null);
+  const [autoDownloadTriggered, setAutoDownloadTriggered] = useState(false);
   
   // روابط التنزيل لكل منصة
   const downloadLinks: { [key in "android" | "ios"]: string } = {
     android: "/app-release.apk", // Updated path to match the file in public directory
     ios: "/app-release.ipa",
+  };
+
+  // دالة للتحقق مما إذا كان المستخدم يستخدم جهاز محمول
+  const isMobileDevice = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      return mobileRegex.test(userAgent);
+    }
+    return false;
+  };
+
+  // دالة للتحقق من نوع نظام التشغيل المحمول
+  const getMobileOS = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      if (/android/i.test(userAgent)) {
+        return "android";
+      }
+      if (/iPad|iPhone|iPod/.test(userAgent)) {
+        return "ios";
+      }
+    }
+    return null;
   };
 
   // بدء عملية التنزيل مع العد التنازلي
@@ -161,6 +186,25 @@ function AppDownloadPage() {
         console.error('فشل في نسخ النص: ', err);
       });
   };
+
+  // تنفيذ التحميل التلقائي عند فتح الصفحة من جهاز محمول
+  useEffect(() => {
+    // تحقق مما إذا كان الجهاز محمولًا وإذا لم يتم تشغيل التنزيل التلقائي بعد
+    if (isMobileDevice() && !autoDownloadTriggered) {
+      const os = getMobileOS();
+      if (os === "android") {
+        // تأخير قصير لضمان تحميل الصفحة بالكامل
+        const timer = setTimeout(() => {
+          handleDownload("android");
+        }, 1000);
+        
+        // تعيين علامة لمنع التنزيل المتكرر
+        setAutoDownloadTriggered(true);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [autoDownloadTriggered]);
 
   // محتوى الصور والعناوين
   const imageContents = [
