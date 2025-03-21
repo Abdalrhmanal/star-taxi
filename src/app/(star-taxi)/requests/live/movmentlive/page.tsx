@@ -19,7 +19,8 @@ function MovmentLive({ data }: any) {
   const [taxiLocation, setTaxiLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const directionsService = useRef<google.maps.DirectionsService | null>(null);
-  const pathUpdatedRef = useRef(false);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const lastCalculationRef = useRef<number>(0);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: googleMapsApiKey,
@@ -32,34 +33,54 @@ function MovmentLive({ data }: any) {
     lng: data?.start_longitude,
   };
 
+  const destinationLocation = {
+    lat: data?.destination_latitude,
+    lng: data?.destination_longitude,
+  };
+
   // Function to calculate route using Google Directions service
   const calculateRoute = useCallback(async () => {
-    if (!directionsService.current || pathCoordinates.length < 2) return;
+    if (!directionsService.current || !taxiLocation) return;
+    
+    // Throttle calculations to avoid hitting API limits (no more than once every 2 seconds)
+    const now = Date.now();
+    if (now - lastCalculationRef.current < 2000) return;
+    lastCalculationRef.current = now;
 
     try {
-      // Create waypoints from all points except first and last
-      // Limit waypoints to 23 (Google Maps API limit is 25 including origin and destination)
-      const allPoints = [...pathCoordinates];
-      const origin = allPoints[0];
-      const destination = allPoints[allPoints.length - 1];
+      console.log("🗺️ Calculating new route...");
       
-      // Take at most 23 waypoints, evenly distributed
+      // Always use the start location as the origin
+      const origin = startLocation;
+      
+      // Use taxi's current location as an intermediate waypoint
+      const currentWaypoint = {
+        location: new google.maps.LatLng(taxiLocation.lat, taxiLocation.lng),
+        stopover: false
+      };
+      
+      // Always use the destination as the final point
+      const destination = destinationLocation;
+      
+      // Create waypoints from collected path, but limit to avoid API restrictions
       let waypoints = [];
-      if (allPoints.length > 25) {
-        const step = Math.floor(allPoints.length / 23);
-        for (let i = 1; i < allPoints.length - 1; i += step) {
-          if (waypoints.length < 23) {
+      
+      // Add taxi's current location as a waypoint
+      waypoints.push(currentWaypoint);
+      
+      // Add some historical points if available (max 8 points to stay under the 10 waypoint limit)
+      if (pathCoordinates.length > 3) {
+        // Get a subset of the path to use as waypoints
+        const step = Math.max(1, Math.floor(pathCoordinates.length / 8));
+        for (let i = 0; i < pathCoordinates.length; i += step) {
+          if (waypoints.length < 8) {
+            const point = pathCoordinates[i];
             waypoints.push({
-              location: new google.maps.LatLng(allPoints[i].lat, allPoints[i].lng),
+              location: new google.maps.LatLng(point.lat, point.lng),
               stopover: false
             });
           }
         }
-      } else {
-        waypoints = allPoints.slice(1, -1).map(point => ({
-          location: new google.maps.LatLng(point.lat, point.lng),
-          stopover: false
-        }));
       }
 
       const result = await new Promise<google.maps.DirectionsResult>((resolve, reject) => {
@@ -83,10 +104,24 @@ function MovmentLive({ data }: any) {
       });
 
       setDirections(result);
+      
+      // Fit the map to show the entire route
+      if (mapRef.current && result.routes[0]) {
+        const bounds = new google.maps.LatLngBounds();
+        result.routes[0].legs.forEach(leg => {
+          leg.steps.forEach(step => {
+            step.path.forEach(point => {
+              bounds.extend(point);
+            });
+          });
+        });
+        mapRef.current.fitBounds(bounds);
+      }
+      
     } catch (error) {
       console.error("Failed to calculate route:", error);
     }
-  }, [pathCoordinates]);
+  }, [taxiLocation, startLocation, destinationLocation, pathCoordinates]);
 
   // Initialize directions service when map is loaded
   useEffect(() => {
@@ -112,7 +147,7 @@ function MovmentLive({ data }: any) {
         setPathCoordinates([startLocation]);
       }
     }
-  }, [data]); // Remove startLocation from dependencies to avoid loops
+  }, [data]);
 
   // Listen for real-time taxi location updates
   useEffect(() => {
@@ -155,20 +190,46 @@ function MovmentLive({ data }: any) {
     }
   }, [driverId]);
 
-  // Calculate route whenever path coordinates change
+  // Calculate route whenever taxi location changes
   useEffect(() => {
-    if (pathCoordinates.length >= 2 && isLoaded && directionsService.current) {
-      // Use a ref to track if we need to calculate route
-      if (!pathUpdatedRef.current) {
-        pathUpdatedRef.current = true;
-        // Use setTimeout to break the potential update cycle
-        setTimeout(() => {
-          calculateRoute();
-          pathUpdatedRef.current = false;
-        }, 100);
-      }
+    if (isLoaded && directionsService.current && taxiLocation && destinationLocation) {
+      calculateRoute();
     }
-  }, [pathCoordinates, isLoaded, calculateRoute]);
+  }, [taxiLocation, isLoaded, calculateRoute, destinationLocation]);
+
+  // Initial route calculation when component loads
+  useEffect(() => {
+    if (isLoaded && directionsService.current && startLocation && destinationLocation) {
+      // Calculate initial route from start to destination
+      const initialRoute = async () => {
+        try {
+          const result = await new Promise<google.maps.DirectionsResult>((resolve, reject) => {
+            directionsService.current?.route(
+              {
+                origin: new google.maps.LatLng(startLocation.lat, startLocation.lng),
+                destination: new google.maps.LatLng(destinationLocation.lat, destinationLocation.lng),
+                travelMode: google.maps.TravelMode.DRIVING,
+              },
+              (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                  resolve(result as google.maps.DirectionsResult);
+                } else {
+                  console.error(`Error calculating initial route: ${status}`);
+                  reject(status);
+                }
+              }
+            );
+          });
+          
+          setDirections(result);
+        } catch (error) {
+          console.error("Failed to calculate initial route:", error);
+        }
+      };
+      
+      initialRoute();
+    }
+  }, [isLoaded, startLocation, destinationLocation]);
 
   const endLocation = taxiLocation || (pathCoordinates.length > 1 ? pathCoordinates[pathCoordinates.length - 1] : startLocation);
 
@@ -218,6 +279,9 @@ function MovmentLive({ data }: any) {
             fullscreenControl: true,
             streetViewControl: true,
           }}
+          onLoad={(map) => {
+            mapRef.current = map;
+          }}
         >
           {/* Render directions on the map */}
           {directions && (
@@ -225,9 +289,9 @@ function MovmentLive({ data }: any) {
               directions={directions}
               options={{
                 polylineOptions: {
-                  strokeColor: "#FF0000",
+                  strokeColor: "#0066FF",
                   strokeOpacity: 0.8,
-                  strokeWeight: 5,
+                  strokeWeight: 6,
                 },
                 suppressMarkers: true, // We'll add our own markers
               }}
@@ -245,20 +309,21 @@ function MovmentLive({ data }: any) {
             icon={{
               url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
               labelOrigin: new google.maps.Point(15, 10),
+              scaledSize: new google.maps.Size(40, 40),
             }}
           />
           
-          {/* Last reached point marker (yellow pin) */}
-          {endLocation && endLocation !== startLocation && (
+          {/* Destination marker */}
+          {destinationLocation && (
             <Marker 
-              position={endLocation}
+              position={destinationLocation}
               icon={{
-                url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
                 scaledSize: new google.maps.Size(40, 40),
               }}
               label={{
                 text: "B",
-                color: "black",
+                color: "white",
                 fontWeight: "bold"
               }}
             />
