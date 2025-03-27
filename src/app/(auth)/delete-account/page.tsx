@@ -13,16 +13,22 @@ const DeleteAccount: React.FC = () => {
                 </Typography>
                 <Box component="ol" sx={{ paddingRight: 2 }}>
                     <li>
-                        <Typography variant="body2">افتح تطبيقنا وتوجه إلى صفحة البروفايل.</Typography>
-                        <img src="/images/step1.png" alt="الخطوة 1" style={{ maxWidth: '100%', borderRadius: '8px',height:'600px' }} />
+                        <Typography variant="h5">افتح تطبيقنا وتوجه إلى صفحة البروفايل.</Typography>
+                        <Box display="flex" justifyContent="center">
+                            <img src="/images/step1.png" alt="الخطوة 1" style={{ width: '300px', height: '600px', borderRadius: '8px' }} />
+                        </Box>
                     </li>
                     <li>
-                        <Typography variant="body2">اختر خيار "حذف الحساب".</Typography>
-                        <img src="/images/step2.png" alt="الخطوة 3" style={{ maxWidth: '100%', borderRadius: '8px' ,height:'600px'}} />
+                        <Typography variant="h5">اختر خيار "حذف الحساب".</Typography>
+                        <Box display="flex" justifyContent="center">
+                            <img src="/images/step2.png" alt="الخطوة 2" style={{ width: '300px', height: '600px', borderRadius: '8px' }} />
+                        </Box>
                     </li>
                     <li>
-                        <Typography variant="body2">قم بتأكيد عملية الحذف من خلال النقر على زر التأكيد في الواجهة المنبثقة.</Typography>
-                        <img src="/images/step3.png" alt="الخطوة 4" style={{ maxWidth: '100%', borderRadius: '8px',height:'600px' }} />
+                        <Typography variant="h5">قم بتأكيد عملية الحذف من خلال النقر على زر التأكيد في الواجهة المنبثقة.</Typography>
+                        <Box display="flex" justifyContent="center">
+                            <img src="/images/step3.png" alt="الخطوة 3" style={{ width: '300px', height: '600px', borderRadius: '8px' }} />
+                        </Box>
                     </li>
                 </Box>
                 <Typography variant="body1" align="center" style={{ margin: '20px 0' }}>
@@ -36,6 +42,49 @@ const DeleteAccount: React.FC = () => {
                         <Typography variant="body2">تسجيل خروجك من التطبيق فور حذف الحساب.</Typography>
                     </li>
                 </Box>
+
+                {/* قسم أمان بياناتك */}
+                <Typography variant="h5" align="center" style={{ margin: '20px 0', color: '#1976d2' }}>
+                    🔒 أمان بياناتك
+                </Typography>
+                <Typography variant="body1" align="center" style={{ margin: '10px 0' }}>
+                    نلتزم بحماية خصوصيتك، ونسعى لجعل تجربتك آمنة.
+                </Typography>
+
+                <Typography variant="h6" style={{ margin: '20px 0' }}>
+                    📍 البيانات التي نجمعها:
+                </Typography>
+                <Box component="ul" sx={{ paddingRight: 2 }}>
+                    <li>
+                        <Typography variant="body2">*الموقع الجغرافي* (اختياري): لتحسين الخدمات المقدمة.</Typography>
+                    </li>
+                    <li>
+                        <Typography variant="body2">*البريد الإلكتروني* (مطلوب): لتسجيل الدخول وإرسال التحديثات.</Typography>
+                    </li>
+                    <li>
+                        <Typography variant="body2">*المدينة المقيم بها حاليا*</Typography>
+                    </li>
+                    <li>
+                        <Typography variant="body2">*رقم الجوال* (اختياري)</Typography>
+                    </li>
+                </Box>
+
+                <Typography variant="h6" style={{ margin: '20px 0' }}>
+                    🔐 كيف نحمي بياناتك؟
+                </Typography>
+                <Box component="ul" sx={{ paddingRight: 2 }}>
+                    <li>
+                        <Typography variant="body2">نستخدم تشفير AES-256 لنقل البيانات.</Typography>
+                    </li>
+                    <li>
+                        <Typography variant="body2">لا نشارك بياناتك مع جهات خارجية إلا للضرورة (مثل مزودي الدفع).</Typography>
+                    </li>
+                </Box>
+
+                <Typography variant="h6" style={{ margin: '20px 0' }}>
+                    📜 سياسة الخصوصية
+                </Typography>
+  
                 <Box textAlign="center" marginTop={2}>
                     <Button variant="contained" color="error" href="/privacypolicy">
                         قراءة سياسة الخصوصية الخاصة بالتطبيق
