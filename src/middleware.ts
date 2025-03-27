@@ -11,6 +11,7 @@ const publicRoutes = [
   "/reset-password",
   "/platform",
   "/privacypolicy",
+  "/delete-account",
 ];
 
 export function middleware(request: NextRequest) {
